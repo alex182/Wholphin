@@ -14,20 +14,24 @@ Updated as tickets land on the `accessible` branch. "Checked on emulator" means 
 | A11Y-002 | Done | `LocalAccessibility` in `ui/theme/Accessibility.kt`. |
 | A11Y-003 | Partly done | System font scale and animation scale are followed by default. TalkBack detection is still to do (needed by A11Y-106). |
 | A11Y-004 | Done | Settings > Accessibility, at the top of Settings. Checked on emulator. |
-| A11Y-101, 102 | Done | One app-wide overlay (`FocusRingOverlay`) outlines whatever has focus, including inside dialogs, instead of a modifier on every component. Thickness and colour settings. Checked on emulator (home, settings, dialogs); not yet checked on every screen. |
-| A11Y-201 | Done | Text size: follow system or 85-200%. Not yet checked on emulator at each size. |
-| A11Y-202 | Done, differently | Implemented as **Interface zoom** (100/110/125/140%), which enlarges cards, buttons, spacing and text together. Page headers shrink when zoomed so a full row of cards fits. Checked on emulator at 125% on the home page only. |
+| A11Y-101, 102 | Done | One app-wide overlay (`FocusRingOverlay`) outlines whatever has focus, including inside dialogs, instead of a modifier on every component. Thickness and colour settings. Skips anything covering half the screen or more (video, loading pages). Checked on emulator (home, settings, dialogs, details, player); not yet checked on every screen. |
+| A11Y-201 | Done | Text size: follow system or 85-200%. Checked on emulator at 150%. Combined with 125% zoom, the details line under the title is cut short. |
+| A11Y-202 | Done, differently | Implemented as **Interface zoom** (100/110/125/140%), which enlarges cards, buttons, spacing and text together. Page headers shrink when zoomed so a full row of cards fits. Checked on emulator at 125% (home, movie details, player). 110% and 140% not yet checked. |
 | A11Y-208 (new) | Done | **Plain text titles**: every media title uses the one standard title font instead of logo artwork (headers, player, screensaver). Checked on emulator. |
-| A11Y-301 | Done, differently | A separate **High contrast** setting (white on black, yellow on black, black on white) that overrides the application theme, rather than new entries in the theme list. Checked on emulator (white on black). |
+| A11Y-301 | Done, differently | A separate **High contrast** setting (white on black, yellow on black, black on white) that overrides the application theme, rather than new entries in the theme list. All three checked on emulator (home, settings, details, player). Known gap: sliders show no difference between the filled and unfilled part of the track. |
 | A11Y-302 | Done | **Dim background image** slider (0-90%). Checked on emulator. |
 | A11Y-303 | Already upstream | Backdrop style "None" exists; it is now also listed under Accessibility. |
-| A11Y-401 | Done, main switch only | **Reduce motion** stops all animations app-wide. Per-animation switches are not done. Not yet checked on emulator. |
+| A11Y-401 | Done, main switch only | **Reduce motion** stops all animations app-wide. Per-animation switches are not done. Checked on emulator: focus zoom and backdrop change are immediate. |
 | A11Y-402 | Partly done | **Keep background still** added. Theme music setting is repeated under Accessibility. Not yet checked on emulator. |
 | A11Y-701 | Done | Subtitle **Preset**: Classic, High visibility, Low vision, Minimal. Not yet checked on emulator. |
 | A11Y-1001 | Done | `TestThemeContrast`: high-contrast themes must meet AAA; regular themes are reported. |
 | A11Y-1004 | Partly done | Docker dev container and emulator container are in `docker/`. Application id/name and CONTRIBUTING notes are still to do. |
 
 Everything else is not started.
+
+**Default check:** with every accessibility setting at its default, the home page on the emulator matches upstream (logo title, purple theme, same layout). This is a by-eye check plus unit tests; the automated screenshot comparison (A11Y-1002) is not built yet.
+
+**How to try it:** `docker/dev.sh ./gradlew assembleDefaultDebug` builds the APK in the container. `docker/emu.sh` drives the emulator container (`install`, `login`, `start`, `a11y`, `key`, `shot`); screenshots go to `build/a11y-shots/`.
 
 ## Conventions
 
