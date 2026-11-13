@@ -305,8 +305,10 @@ class PlaybackViewModel
             if (preferences.appPreferences.playbackPreferences.refreshRateSwitching) {
                 addCloseable { refreshRateService.resetRefreshRate() }
             }
+            // Accessibility: "Keep player controls on screen" overrides the regular timeout
             controllerViewState.hideMilliseconds =
-                preferences.appPreferences.playbackPreferences.controllerTimeoutMs
+                preferences.appPreferences.accessibilityPreferences.controllerTimeoutMsOrNull()
+                    ?: preferences.appPreferences.playbackPreferences.controllerTimeoutMs
             this.forceTranscoding =
                 (destination as? Destination.Playback)?.forceTranscoding ?: false
             val positionMs: Long

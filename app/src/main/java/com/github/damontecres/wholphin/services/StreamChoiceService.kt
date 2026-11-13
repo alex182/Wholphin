@@ -22,6 +22,7 @@ import com.github.damontecres.wholphin.ui.letNotEmpty
 import com.github.damontecres.wholphin.ui.util.ResProviderStringProvider
 import com.github.damontecres.wholphin.ui.util.ResStringProvider
 import com.github.damontecres.wholphin.ui.util.StringProvider
+import com.github.damontecres.wholphin.util.A11ySubtitles
 import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.model.api.MediaSourceInfo
 import org.jellyfin.sdk.model.api.MediaStream
@@ -180,8 +181,17 @@ class StreamChoiceService
                 }
             } else {
                 val audioLanguage = getPreferredLanguage(MediaStreamType.AUDIO, prefs, userConfig)
+                // Accessibility: "Prefer audio description" picks a described track when there is one
+                val described =
+                    if (prefs.appPreferences.accessibilityPreferences.preferAudioDescription) {
+                        chooseAudioDescription(candidates, audioLanguage)
+                    } else {
+                        null
+                    }
                 val stream =
-                    if (audioLanguage.isNotNullOrBlank()) {
+                    if (described != null) {
+                        described
+                    } else if (audioLanguage.isNotNullOrBlank()) {
                         val sorted =
                             candidates.sortedWith(compareBy<MediaStream> { it.language }.thenByDescending { it.channels })
                         sorted.firstOrNull { it.language == audioLanguage && it.isDefault }
@@ -346,7 +356,14 @@ class StreamChoiceService
                                     it.isForced && it.language.equals(subtitleLanguage, true)
                                 }.thenByDescending { it.isForced && it.language.isUnknown }
                                 .thenByDescending { it.isForced },
-                        )
+                        ).let { sorted ->
+                            // Accessibility: "Prefer subtitles for the deaf and hard of hearing"
+                            if (prefs.appPreferences.accessibilityPreferences.preferSdhSubtitles) {
+                                preferSdh(sorted, subtitleLanguage)
+                            } else {
+                                sorted
+                            }
+                        }
                 val stream =
                     when (subtitleMode) {
                         SubtitlePlaybackMode.ALWAYS -> {
@@ -668,6 +685,30 @@ fun scoreStreams(
             }.sortedByDescending { it.score }
     return scored
 }
+
+/**
+ * Accessibility: the audio description track to use, if there is one. Prefers the given language.
+ */
+fun chooseAudioDescription(
+    candidates: List<MediaStream>,
+    audioLanguage: String?,
+): MediaStream? {
+    val described = candidates.filter { A11ySubtitles.isAudioDescription(it.title, it.displayTitle) }
+    return described.firstOrNull { !audioLanguage.isNullOrBlank() && it.language == audioLanguage }
+        ?: described.firstOrNull().takeIf { audioLanguage.isNullOrBlank() || described.none { it.language != null } }
+}
+
+/**
+ * Accessibility: moves hearing-impaired (SDH) subtitles in the preferred language to the front,
+ * keeping everything else in its existing order. Forced tracks are left where they are.
+ */
+fun preferSdh(
+    sorted: List<MediaStream>,
+    subtitleLanguage: String?,
+): List<MediaStream> =
+    sorted.sortedByDescending {
+        it.isHearingImpaired == true && !it.isForced && it.language.equals(subtitleLanguage, true)
+    }
 
 data class StreamChoiceResult(
     val stream: MediaStream?,

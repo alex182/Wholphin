@@ -370,6 +370,125 @@ object AccessibilityPreference {
 
     // endregion
 
+    val PhotosensitivityWarning =
+        a11ySwitch(
+            title = R.string.a11y_photosensitivity,
+            summary = R.string.a11y_photosensitivity_summary,
+            get = { it.photosensitivityWarning },
+            set = { photosensitivityWarning = it },
+        )
+
+    // endregion
+
+    // region Player
+
+    val playerScaleValues = listOf(100, 125, 150)
+    val PlayerControlsScale =
+        a11yChoice(
+            title = R.string.a11y_player_scale,
+            displayValues = R.array.a11y_player_scales,
+            values = playerScaleValues,
+            get = { it.playerControlsScalePercent.takeIf { v -> v > 0 } ?: 100 },
+            set = { playerControlsScalePercent = if (it == 100) 0 else it },
+        )
+
+    val SolidPlayerBackground =
+        a11ySwitch(
+            title = R.string.a11y_player_solid,
+            summary = R.string.a11y_player_solid_summary,
+            get = { it.solidPlayerBackground },
+            set = { solidPlayerBackground = it },
+        )
+
+    /** Seconds. 0 means use the regular playback setting; 3600 stands for "until dismissed". */
+    val controllerTimeoutValues = listOf(0, 10, 30, 60, 3600)
+    val ControllerTimeout =
+        a11yChoice(
+            title = R.string.a11y_player_timeout,
+            displayValues = R.array.a11y_player_timeouts,
+            values = controllerTimeoutValues,
+            get = { it.controllerTimeoutS },
+            set = { controllerTimeoutS = it },
+        )
+
+    /** Seconds. Stored as 0 for the default of 10. */
+    val skipButtonTimeoutValues = listOf(10, 20, 30, 60)
+    val SkipButtonTimeout =
+        a11yChoice(
+            title = R.string.a11y_skip_timeout,
+            displayValues = R.array.a11y_skip_timeouts,
+            values = skipButtonTimeoutValues,
+            get = { it.skipButtonTimeoutS.takeIf { v -> v > 0 } ?: 10 },
+            set = { skipButtonTimeoutS = if (it == 10) 0 else it },
+        )
+
+    // endregion
+
+    // region Subtitles and audio
+
+    val PreferSdh =
+        a11ySwitch(
+            title = R.string.a11y_prefer_sdh,
+            summary = R.string.a11y_prefer_sdh_summary,
+            get = { it.preferSdhSubtitles },
+            set = { preferSdhSubtitles = it },
+        )
+
+    val PreferAudioDescription =
+        a11ySwitch(
+            title = R.string.a11y_prefer_ad,
+            summary = R.string.a11y_prefer_ad_summary,
+            get = { it.preferAudioDescription },
+            set = { preferAudioDescription = it },
+        )
+
+    val SubtitlesAtTop =
+        a11ySwitch(
+            title = R.string.a11y_subtitles_top,
+            summary = R.string.a11y_subtitles_top_summary,
+            get = { it.subtitlesAtTop },
+            set = { subtitlesAtTop = it },
+        )
+
+    val SubtitleFont =
+        a11yChoice(
+            title = R.string.a11y_subtitle_font,
+            displayValues = R.array.a11y_fonts,
+            values =
+                listOf(
+                    A11yFont.A11Y_FONT_DEFAULT,
+                    A11yFont.A11Y_FONT_ATKINSON,
+                    A11yFont.A11Y_FONT_LEXEND,
+                    A11yFont.A11Y_FONT_OPEN_DYSLEXIC,
+                ),
+            get = { it.subtitleFont },
+            set = { subtitleFont = it },
+        )
+
+    val SoundCues =
+        a11yChoice(
+            title = R.string.a11y_sound_cues,
+            displayValues = R.array.a11y_sound_cue_styles,
+            values =
+                listOf(
+                    SoundCueStyle.SOUND_CUE_NONE,
+                    SoundCueStyle.SOUND_CUE_ITALIC,
+                    SoundCueStyle.SOUND_CUE_COLOR,
+                ),
+            get = { it.soundCueStyle },
+            set = { soundCueStyle = it },
+        )
+
+    val ForceSubtitleStyle =
+        a11ySwitch(
+            title = R.string.a11y_force_sub_style,
+            summary = R.string.a11y_force_sub_style_summary,
+            get = { it.forceSubtitleStyle },
+            set = { forceSubtitleStyle = it },
+        )
+
+    // endregion
+
     // region Screen reader
 
     val CardAnnouncementsTitleOnly =
@@ -460,6 +579,30 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                 ),
         ),
         PreferenceGroup(
+            title = R.string.a11y_group_player,
+            preferences =
+                listOf(
+                    AccessibilityPreference.PlayerControlsScale,
+                    AccessibilityPreference.SolidPlayerBackground,
+                    AccessibilityPreference.ControllerTimeout,
+                    AccessibilityPreference.SkipButtonTimeout,
+                ),
+        ),
+        PreferenceGroup(
+            title = R.string.a11y_group_subtitles_audio,
+            preferences =
+                listOf(
+                    // Existing upstream page, linked here so it is easy to find
+                    AppPreference.SubtitleStyle,
+                    AccessibilityPreference.SubtitleFont,
+                    AccessibilityPreference.SubtitlesAtTop,
+                    AccessibilityPreference.SoundCues,
+                    AccessibilityPreference.ForceSubtitleStyle,
+                    AccessibilityPreference.PreferSdh,
+                    AccessibilityPreference.PreferAudioDescription,
+                ),
+        ),
+        PreferenceGroup(
             title = R.string.a11y_group_screen_reader,
             preferences =
                 listOf(
@@ -473,6 +616,7 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                     AccessibilityPreference.ReduceMotion,
                     AccessibilityPreference.StaticBackdrop,
                     AccessibilityPreference.NavRepeat,
+                    AccessibilityPreference.PhotosensitivityWarning,
                     // Existing upstream setting, repeated here so it is easy to find
                     AppPreference.PlayThemeMusic,
                 ),

@@ -95,6 +95,7 @@ import com.github.damontecres.wholphin.ui.preferences.subtitle.SubtitleSettings.
 import com.github.damontecres.wholphin.ui.seasonEpisode
 import com.github.damontecres.wholphin.ui.theme.A11yLayout
 import com.github.damontecres.wholphin.ui.tryRequestFocus
+import com.github.damontecres.wholphin.util.A11ySubtitles
 import com.github.damontecres.wholphin.util.ExceptionHandler
 import com.github.damontecres.wholphin.util.LoadingState
 import com.github.damontecres.wholphin.util.Media3SubtitleOverride
@@ -103,6 +104,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jellyfin.sdk.model.extensions.ticks
 import timber.log.Timber
+import java.util.UUID
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -171,6 +173,24 @@ fun PlaybackPageContent(
     val playerBackend = playerInstance.backend
 
     val prefs = preferences.appPreferences.playbackPreferences
+
+    // Accessibility: "Photosensitivity warning" pauses and asks before playing tagged titles
+    val warningItem = state.currentPlayback?.item
+    var warningHandledFor by remember { mutableStateOf<UUID?>(null) }
+    if (preferences.appPreferences.accessibilityPreferences.photosensitivityWarning &&
+        warningItem != null &&
+        warningHandledFor != warningItem.id &&
+        A11ySubtitles.hasPhotosensitivityTag(warningItem.data.tags)
+    ) {
+        LaunchedEffect(warningItem.id) { player.pause() }
+        PhotosensitivityWarningDialog(
+            onContinue = {
+                warningHandledFor = warningItem.id
+                player.play()
+            },
+            onGoBack = { viewModel.navigationManager.goBack() },
+        )
+    }
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
     LaunchedEffect(density) { viewModel.updateDensity(density) }
@@ -477,36 +497,44 @@ fun PlaybackPageContent(
 
             // The playback controls
 
-            PlaybackOverlay(
-                modifier =
-                    Modifier
-                        .padding(WindowInsets.systemBars.asPaddingValues())
-                        .fillMaxSize()
-                        .background(Color.Transparent),
-                item = state.currentPlayback?.item,
-                player = player,
-                controllerViewState = controllerViewState,
-                showPlay = playPauseState.showPlay,
-                previousEnabled = true,
-                nextEnabled = state.hasNext,
-                seekEnabled = true,
-                seekForward = preferences.appPreferences.playbackPreferences.skipForwardMs.milliseconds,
-                seekBack = preferences.appPreferences.playbackPreferences.skipBackMs.milliseconds,
-                skipBackOnResume = preferences.appPreferences.playbackPreferences.skipBackOnResume,
-                onPlaybackActionClick = onPlaybackActionClick,
-                onClickPlaybackDialogType = { playbackDialog = it },
-                onSeekBarChange = seekBarState::onValueChange,
-                showDebugInfo = showDebugInfo,
-                currentPlayback = state.currentPlayback,
-                chapters = state.currentMediaInfo.chapters,
-                trickplayInfo = state.currentMediaInfo.trickPlayInfo,
-                trickplayUrlFor = viewModel::getTrickplayUrl,
-                queue = remember(state.playlistIndex, state.playlist) { state.upcomingItems },
-                onClickPlaylist = viewModel::playItemInPlaylist,
-                currentSegment = state.currentSegment?.segment,
-                showClock = preferences.appPreferences.interfacePreferences.showClock,
-                analyticsState = state.analyticsState,
-            )
+            // Accessibility: "Player controls size"
+            A11yPlayerControlsScale(
+                scale =
+                    preferences.appPreferences.accessibilityPreferences
+                        .playerControlsScale(),
+                solidBackground = preferences.appPreferences.accessibilityPreferences.solidPlayerBackground,
+            ) {
+                PlaybackOverlay(
+                    modifier =
+                        Modifier
+                            .padding(WindowInsets.systemBars.asPaddingValues())
+                            .fillMaxSize()
+                            .background(Color.Transparent),
+                    item = state.currentPlayback?.item,
+                    player = player,
+                    controllerViewState = controllerViewState,
+                    showPlay = playPauseState.showPlay,
+                    previousEnabled = true,
+                    nextEnabled = state.hasNext,
+                    seekEnabled = true,
+                    seekForward = preferences.appPreferences.playbackPreferences.skipForwardMs.milliseconds,
+                    seekBack = preferences.appPreferences.playbackPreferences.skipBackMs.milliseconds,
+                    skipBackOnResume = preferences.appPreferences.playbackPreferences.skipBackOnResume,
+                    onPlaybackActionClick = onPlaybackActionClick,
+                    onClickPlaybackDialogType = { playbackDialog = it },
+                    onSeekBarChange = seekBarState::onValueChange,
+                    showDebugInfo = showDebugInfo,
+                    currentPlayback = state.currentPlayback,
+                    chapters = state.currentMediaInfo.chapters,
+                    trickplayInfo = state.currentMediaInfo.trickPlayInfo,
+                    trickplayUrlFor = viewModel::getTrickplayUrl,
+                    queue = remember(state.playlistIndex, state.playlist) { state.upcomingItems },
+                    onClickPlaylist = viewModel::playItemInPlaylist,
+                    currentSegment = state.currentSegment?.segment,
+                    showClock = preferences.appPreferences.interfacePreferences.showClock,
+                    analyticsState = state.analyticsState,
+                )
+            }
 
             var subtitleStyleAppliedForHdr by remember { mutableStateOf(state.currentMediaInfo.videoStream?.hdr == true) }
             val subtitleSettings =
@@ -563,7 +591,8 @@ fun PlaybackPageContent(
                         Timber.v("Switching SDR/HDR, reapplying subtitle style")
                         subtitleSettings.applyTo(subtitleView)
                     }
-                    subtitleView.setCues(state.subtitleCues)
+                    // Accessibility: optional top position and sound-cue styling
+                    subtitleView.setCues(A11ySubtitles.transform(state.subtitleCues))
                     if (state.subtitleCues.size > cueCount) {
                         Timber.i("Applying subtitle style to SubtitleView")
                         // The output creates a painter for each cue, so need to apply the changes when the number of cues increases
@@ -621,7 +650,12 @@ fun PlaybackPageContent(
                 val focusRequester = remember { FocusRequester() }
                 LaunchedEffect(Unit) {
                     focusRequester.tryRequestFocus()
-                    delay(10.seconds)
+                    // Accessibility: "Keep the skip button on screen" (10 seconds by default)
+                    delay(
+                        preferences.appPreferences.accessibilityPreferences
+                            .skipButtonTimeoutSeconds()
+                            .seconds,
+                    )
                     viewModel.updateSegment(segment.segment.id, true)
                 }
                 SkipSegmentButton(

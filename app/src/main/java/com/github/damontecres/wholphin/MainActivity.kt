@@ -76,6 +76,7 @@ import com.github.damontecres.wholphin.ui.theme.WholphinTheme
 import com.github.damontecres.wholphin.ui.theme.colors.PurpleThemeColors
 import com.github.damontecres.wholphin.ui.theme.toSettings
 import com.github.damontecres.wholphin.ui.util.ProvideLocalClock
+import com.github.damontecres.wholphin.util.A11ySubtitles
 import com.github.damontecres.wholphin.util.DebugLogTree
 import com.github.damontecres.wholphin.util.ExceptionHandler
 import com.github.damontecres.wholphin.util.KeyRepeatThrottle
@@ -235,6 +236,7 @@ class MainActivity : AppCompatActivity() {
 
         userPreferencesDataStore.data.collectLatestIn(lifecycleScope) { prefs ->
             A11yMotionDurationScale.reduceMotion = prefs.accessibilityPreferences.reduceMotion
+            A11ySubtitles.update(prefs.accessibilityPreferences)
             KeyRepeatThrottle.intervalMs =
                 when (prefs.accessibilityPreferences.navRepeatSpeed) {
                     NavRepeatSpeed.NAV_REPEAT_SLOW -> 250

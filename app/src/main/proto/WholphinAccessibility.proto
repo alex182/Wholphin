@@ -57,6 +57,12 @@ enum NavRepeatSpeed {
   NAV_REPEAT_VERY_SLOW = 2;
 }
 
+enum SoundCueStyle {
+  SOUND_CUE_NONE = 0;
+  SOUND_CUE_ITALIC = 1;
+  SOUND_CUE_COLOR = 2;
+}
+
 message AccessibilityPreferences {
   // --- Focus (1-9) ---
   bool focus_ring_enabled = 1;
@@ -96,6 +102,8 @@ message AccessibilityPreferences {
   bool static_backdrop = 21;
   // How fast focus moves while a direction button is held down
   NavRepeatSpeed nav_repeat_speed = 22;
+  // Pause and warn before playing titles tagged as having flashing lights
+  bool photosensitivity_warning = 23;
 
   // --- Colour & contrast (30-39) ---
   // Overrides the application theme when not off
@@ -124,4 +132,25 @@ message AccessibilityPreferences {
   // --- Simplified layout (60-69) ---
   // Hide resolution, codec and audio format chips
   bool hide_technical_details = 60;
+
+  // --- Player (70-79) ---
+  // Size of the player controls as a percentage; 0 means 100%
+  int32 player_controls_scale_percent = 70;
+  // A solid dark panel behind the player controls instead of a gradient
+  bool solid_player_background = 71;
+  // Seconds before the player controls hide; 0 means use the regular playback setting
+  int32 controller_timeout_s = 72;
+  // Seconds the skip intro/credits button stays; 0 means the default of 10
+  int32 skip_button_timeout_s = 73;
+
+  // --- Subtitles and audio (80-89) ---
+  // Prefer subtitles for the deaf and hard of hearing (SDH) in the preferred language
+  bool prefer_sdh_subtitles = 80;
+  // Prefer audio description tracks
+  bool prefer_audio_description = 81;
+  bool subtitles_at_top = 82;
+  A11yFont subtitle_font = 83;
+  // MPV only: ignore styling inside ASS/SSA subtitles and use the user's subtitle style
+  bool force_subtitle_style = 84;
+  SoundCueStyle sound_cue_style = 85;
 }

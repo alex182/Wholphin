@@ -165,4 +165,53 @@
         <item>Slow</item>
         <item>Very slow</item>
     </string-array>
+
+    <string name="a11y_photosensitivity">Photosensitivity warning</string>
+    <string name="a11y_photosensitivity_summary">Pause and warn before titles tagged as having flashing lights</string>
+    <string name="a11y_photosensitivity_title">Flashing lights warning</string>
+    <string name="a11y_photosensitivity_body">This title is tagged as containing flashing lights or patterns that may affect photosensitive viewers.</string>
+    <string name="a11y_photosensitivity_back">Go back</string>
+    <string name="a11y_photosensitivity_continue">Play anyway</string>
+
+    <string name="a11y_group_player">Player</string>
+    <string name="a11y_player_scale">Player controls size</string>
+    <string-array name="a11y_player_scales">
+        <item>Normal</item>
+        <item>Large</item>
+        <item>Extra large</item>
+    </string-array>
+    <string name="a11y_player_solid">Solid background behind controls</string>
+    <string name="a11y_player_solid_summary">A dark panel instead of a see-through gradient</string>
+    <string name="a11y_player_timeout">Keep player controls on screen</string>
+    <string-array name="a11y_player_timeouts">
+        <item>Use playback setting</item>
+        <item>10 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>Until dismissed</item>
+    </string-array>
+    <string name="a11y_skip_timeout">Keep the skip button on screen</string>
+    <string-array name="a11y_skip_timeouts">
+        <item>10 seconds</item>
+        <item>20 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+    </string-array>
+
+    <string name="a11y_group_subtitles_audio">Subtitles and audio</string>
+    <string name="a11y_prefer_sdh">Prefer subtitles for the deaf and hard of hearing</string>
+    <string name="a11y_prefer_sdh_summary">Choose SDH tracks, which describe sounds, when available</string>
+    <string name="a11y_prefer_ad">Prefer audio description</string>
+    <string name="a11y_prefer_ad_summary">Choose the narrated audio track when a title has one</string>
+    <string name="a11y_subtitles_top">Subtitles at the top</string>
+    <string name="a11y_subtitles_top_summary">Useful when subtitles cover text in the picture</string>
+    <string name="a11y_subtitle_font">Subtitle font</string>
+    <string name="a11y_sound_cues">Sound descriptions in subtitles</string>
+    <string-array name="a11y_sound_cue_styles">
+        <item>Same as speech</item>
+        <item>Italic</item>
+        <item>Different color</item>
+    </string-array>
+    <string name="a11y_force_sub_style">Use my style for styled subtitles</string>
+    <string name="a11y_force_sub_style_summary">Ignore fonts and colors built into ASS/SSA subtitles (MPV player only)</string>
 </resources>

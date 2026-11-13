@@ -30,6 +30,7 @@ import com.github.damontecres.wholphin.ui.indexOfFirstOrNull
 import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.preferences.ConditionalPreferences
 import com.github.damontecres.wholphin.ui.preferences.PreferenceGroup
+import com.github.damontecres.wholphin.util.A11ySubtitles
 import com.github.damontecres.wholphin.util.mpv.setPropertyColor
 import timber.log.Timber
 
@@ -39,7 +40,8 @@ object SubtitleSettings {
             title = R.string.font_size,
             defaultValue = 24,
             min = 8,
-            max = 70,
+            // Accessibility: upstream stops at 70; larger sizes help low-vision viewers
+            max = 110,
             interval = 2,
             getter = {
                 it.fontSize.toLong()
@@ -361,7 +363,23 @@ object SubtitleSettings {
 
     @OptIn(UnstableApi::class)
     fun SubtitlePreferences.applyTo(view: SubtitleView) {
-        view.setStyle(toSubtitleStyle())
+        val style = toSubtitleStyle()
+        // Accessibility: optional subtitle font
+        val typeface = A11ySubtitles.typeface(view.context, fontBold, fontItalic)
+        view.setStyle(
+            if (typeface != null) {
+                CaptionStyleCompat(
+                    style.foregroundColor,
+                    style.backgroundColor,
+                    style.windowColor,
+                    style.edgeType,
+                    style.edgeColor,
+                    typeface,
+                )
+            } else {
+                style
+            },
+        )
         view.setFixedTextSize(Dimension.SP, fontSize.toFloat())
         view.setBottomPaddingFraction(margin.toFloat() / 100f)
     }
@@ -414,6 +432,14 @@ object SubtitleSettings {
 //        } else {
 //            MPVLib.setPropertyString("sub-font", "Roboto Regular")
 //        }
+        // Accessibility: optional position at the top, and forcing the user's style on ASS/SSA.
+        // Only set when turned on, so a user's own mpv.conf is otherwise left alone.
+        if (A11ySubtitles.atTop) {
+            MPVLib.setPropertyInt("sub-pos", 8)
+        }
+        if (A11ySubtitles.forceStyle) {
+            MPVLib.setPropertyString("sub-ass-override", "force")
+        }
         MPVLib.setPropertyBoolean("sub-bold", fontBold)
         MPVLib.setPropertyBoolean("sub-italic", fontItalic)
 
