@@ -103,6 +103,15 @@ fun BannerCard(
     val currentOnClick by rememberUpdatedState(onClick)
     val currentOnLongClick by rememberUpdatedState(onLongClick)
 
+    // Accessibility: describe the card (title and status) for screen readers
+    val description =
+        rememberCardDescription(
+            name = name ?: item?.title,
+            details = item?.subtitle,
+            watched = played,
+            watchedPercent = playPercent,
+            favorite = favorite,
+        )
     Card(
         modifier = modifier.size(cardHeight * aspectRatio, cardHeight),
         onClick = { currentOnClick() },
@@ -116,7 +125,9 @@ fun BannerCard(
         Box(
             modifier =
                 Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    // Inside the card so it becomes part of the focusable element
+                    .cardDescription(description),
 //                    .background(MaterialTheme.colorScheme.surfaceVariant),
         ) {
             if (!imageError && imageUrl != null) {

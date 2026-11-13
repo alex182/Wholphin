@@ -34,6 +34,8 @@ data class AccessibilitySettings(
      * On by default: the one deliberate difference from upstream.
      */
     val plainTextTitles: Boolean = true,
+    /** Screen reader: cards announce only their title, without year and watched status */
+    val cardAnnouncementsTitleOnly: Boolean = false,
 ) {
     /** The high-contrast colours to use instead of the application theme, if enabled */
     val highContrastColors: ThemeColors?
@@ -71,6 +73,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         uiZoom = (uiZoomPercent.takeIf { it > 0 } ?: 100).coerceIn(50, 200) / 100f,
         reduceMotion = reduceMotion,
         plainTextTitles = !allowLogoTitles,
+        cardAnnouncementsTitleOnly = cardAnnouncementsTitleOnly,
         backdropDim = backdropDimPercent.coerceIn(0, 90) / 100f,
         highContrast = if (highContrast == HighContrastMode.UNRECOGNIZED) HighContrastMode.HIGH_CONTRAST_OFF else highContrast,
     )

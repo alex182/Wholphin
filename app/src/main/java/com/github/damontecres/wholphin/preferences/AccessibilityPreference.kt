@@ -19,6 +19,17 @@ object AccessibilityPreference {
             destination = Destination.Settings(PreferenceScreenOption.ACCESSIBILITY),
         )
 
+    val CardAnnouncementsTitleOnly =
+        AppSwitchPreference<AppPreferences>(
+            title = R.string.a11y_card_title_only,
+            defaultValue = false,
+            getter = { it.accessibilityPreferences.cardAnnouncementsTitleOnly },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences { cardAnnouncementsTitleOnly = value }
+            },
+            summary = R.string.a11y_card_title_only_summary,
+        )
+
     /** Turning this on shows the setup screen again straight away */
     val ShowSetupWizard =
         AppSwitchPreference<AppPreferences>(
@@ -232,6 +243,13 @@ val accessibilityPreferences =
                     // Existing upstream setting, repeated here so it is easy to find
                     AppPreference.BackdropStylePref,
                     AccessibilityPreference.BackdropDim,
+                ),
+        ),
+        PreferenceGroup(
+            title = R.string.a11y_group_screen_reader,
+            preferences =
+                listOf(
+                    AccessibilityPreference.CardAnnouncementsTitleOnly,
                 ),
         ),
         PreferenceGroup(

@@ -66,6 +66,20 @@
     <string name="a11y_reduce_motion">Reduce motion</string>
     <string name="a11y_reduce_motion_summary">Turn off animations such as zooming, sliding and fading</string>
 
+    <string name="a11y_group_screen_reader">Screen reader (TalkBack)</string>
+    <string name="a11y_card_title_only">Short card announcements</string>
+    <string name="a11y_card_title_only_summary">Read only the title, without year and watched status</string>
+    <string name="a11y_watched">watched</string>
+    <string name="a11y_favorite">favorite</string>
+    <string name="a11y_percent_watched">%d percent watched</string>
+    <string name="a11y_unwatched_count">%d unwatched</string>
+    <string name="a11y_pause">Pause</string>
+    <string name="a11y_rewind">Rewind</string>
+    <string name="a11y_fast_forward">Fast forward</string>
+    <string name="a11y_previous">Previous</string>
+    <string name="a11y_next">Next</string>
+    <string name="a11y_playback_settings">Playback settings</string>
+
     <string name="a11y_subtitle_preset_group">Quick styles</string>
     <string name="a11y_subtitle_preset">Preset</string>
     <string-array name="a11y_subtitle_presets">

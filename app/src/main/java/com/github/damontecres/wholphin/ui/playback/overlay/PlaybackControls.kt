@@ -49,6 +49,8 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -465,6 +467,26 @@ fun PlaybackButtons(
     }
 }
 
+/**
+ * Accessibility: the spoken name for a player button, looked up from its icon
+ */
+@Composable
+fun playbackButtonLabel(iconRes: Int): String =
+    stringResource(
+        when (iconRes) {
+            R.drawable.baseline_play_arrow_24 -> R.string.play
+            R.drawable.baseline_pause_24 -> R.string.a11y_pause
+            R.drawable.baseline_fast_rewind_24 -> R.string.a11y_rewind
+            R.drawable.baseline_fast_forward_24 -> R.string.a11y_fast_forward
+            R.drawable.baseline_skip_previous_24 -> R.string.a11y_previous
+            R.drawable.baseline_skip_next_24 -> R.string.a11y_next
+            R.drawable.captions_svgrepo_com -> R.string.subtitles
+            R.drawable.vector_settings -> R.string.a11y_playback_settings
+            R.string.fa_volume_high -> R.string.audio
+            else -> R.string.more
+        },
+    )
+
 @Composable
 fun PlaybackButton(
     @DrawableRes iconRes: Int,
@@ -494,7 +516,7 @@ fun PlaybackButton(
         Icon(
             modifier = Modifier.fillMaxSize(),
             painter = painterResource(iconRes),
-            contentDescription = "",
+            contentDescription = playbackButtonLabel(iconRes),
             tint =
                 if (LocalTheme.current == AppThemeColors.OLED_BLACK) {
                     LocalContentColor.current
@@ -532,6 +554,7 @@ fun PlaybackFaButton(
                 .size(36.dp, 36.dp)
                 .onFocusChanged { onControllerInteraction.invoke() },
     ) {
+        val label = playbackButtonLabel(iconRes)
         Text(
             text = stringResource(iconRes),
             fontSize = 18.sp,
@@ -548,7 +571,9 @@ fun PlaybackFaButton(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterVertically),
+                    .align(Alignment.CenterVertically)
+                    // Accessibility: the icon is a font glyph, which a screen reader cannot read
+                    .clearAndSetSemantics { contentDescription = label },
         )
     }
 }

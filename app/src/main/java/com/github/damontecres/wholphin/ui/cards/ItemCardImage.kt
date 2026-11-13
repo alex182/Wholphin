@@ -92,6 +92,7 @@ fun ItemCardImage(
         modifier = modifier,
         useFallbackText = useFallbackText,
         contentScale = contentScale,
+        details = item?.subtitle,
     )
 }
 
@@ -108,6 +109,7 @@ fun ItemCardImage(
     modifier: Modifier = Modifier,
     useFallbackText: Boolean = true,
     contentScale: ContentScale = ContentScale.Fit,
+    details: String? = null,
     fallback: @Composable BoxScope.() -> Unit = {
         ItemCardImageFallback(
             name = name,
@@ -117,13 +119,24 @@ fun ItemCardImage(
     },
 ) {
     var imageError by remember(imageUrl) { mutableStateOf(false) }
+    // Accessibility: describe the whole card (title and status) for screen readers
+    val description =
+        rememberCardDescription(
+            name = name,
+            details = details,
+            watched = watched,
+            watchedPercent = watchedPercent,
+            favorite = favorite,
+            unwatchedCount = unwatchedCount,
+        )
     Box(
-        modifier = modifier,
+        modifier = modifier.cardDescription(description),
     ) {
         if (!imageError && imageUrl.isNotNullOrBlank()) {
             AsyncImage(
                 model = imageUrl,
-                contentDescription = name,
+                // The description is on the containing box
+                contentDescription = null,
                 contentScale = contentScale,
                 alignment = Alignment.Center,
                 onError = {

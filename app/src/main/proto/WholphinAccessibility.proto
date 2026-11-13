@@ -56,6 +56,10 @@ message AccessibilityPreferences {
   // Darkens the background image behind text, 0-90
   int32 backdrop_dim_percent = 31;
 
+  // --- Screen reader (50-59) ---
+  // Cards announce only their title instead of title, year and watched status
+  bool card_announcements_title_only = 50;
+
   // --- Setup (40-49) ---
   // The first-run accessibility setup screen is shown until this is set
   bool setup_wizard_done = 40;
