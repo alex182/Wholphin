@@ -86,6 +86,7 @@ import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.preferences.PreferenceScreenOption
 import com.github.damontecres.wholphin.ui.setup.UserIconCardImage
 import com.github.damontecres.wholphin.ui.spacedByWithFooter
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.theme.LocalTheme
 import com.github.damontecres.wholphin.ui.toServerString
 import com.github.damontecres.wholphin.ui.tryRequestFocus
@@ -749,6 +750,15 @@ fun navItemColor(
     focused: Boolean,
     drawerOpen: Boolean,
 ): Color {
+    if (LocalAccessibility.current.highContrastColors != null) {
+        // Accessibility: high-contrast modes only use the theme's two colours.
+        // A focused item is drawn inverted, so its content uses the inverse colour.
+        return when {
+            focused -> MaterialTheme.colorScheme.inverseOnSurface
+            selected -> MaterialTheme.colorScheme.onSurface
+            else -> MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
+        }
+    }
     val theme = LocalTheme.current
     if (theme == AppThemeColors.OLED_BLACK) {
         return when {

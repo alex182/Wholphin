@@ -85,7 +85,7 @@ fun FocusRingOverlay(modifier: Modifier = Modifier.fillMaxSize()) {
 
 /**
  * Decides whether a focused element's bounds should get a ring. Returns null for elements that
- * are invisible placeholders (zero size) or that fill the whole screen (e.g. the video player
+ * are invisible placeholders (zero size) or that cover most of the screen (e.g. the video player
  * while the controls are hidden).
  */
 fun focusRingRect(
@@ -100,12 +100,15 @@ fun focusRingRect(
     val height = bottom - top
     if (width < MIN_SIZE_PX || height < MIN_SIZE_PX) return null
     if (viewWidth <= 0 || viewHeight <= 0) return null
-    if (width >= viewWidth * FULLSCREEN_FRACTION && height >= viewHeight * FULLSCREEN_FRACTION) return null
+    // Something covering most of the screen is a container (a page that is still loading, or the
+    // video player), not an item. Outlining it would not help anyone find the focus.
+    val areaFraction = (width.toFloat() * height) / (viewWidth.toFloat() * viewHeight)
+    if (areaFraction >= MAX_AREA_FRACTION) return null
     return Rect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
 }
 
 private const val MIN_SIZE_PX = 4
-private const val FULLSCREEN_FRACTION = .9f
+private const val MAX_AREA_FRACTION = .5f
 
 private val RingGap = 2.dp
 private val RingContrastStroke = 2.dp

@@ -106,6 +106,8 @@ class TestAccessibilityDefaults {
         Assert.assertNull(focusRingRect(0, 500, 1920, 500, 1920, 1080))
         // Full screen player surface
         Assert.assertNull(focusRingRect(0, 0, 1920, 1080, 1920, 1080))
+        // A page-sized container, e.g. a tab that is still loading
+        Assert.assertNull(focusRingRect(160, 120, 1900, 1080, 1920, 1080))
         // A wide row that is not full height still gets a ring
         Assert.assertNotNull(focusRingRect(0, 200, 1920, 300, 1920, 1080))
         // View not laid out yet

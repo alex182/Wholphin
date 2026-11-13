@@ -29,10 +29,18 @@ case "$cmd" in
     a input text test; sleep 1; a input keyevent KEYCODE_ENTER; sleep 1
     a input text test; sleep 1; a input keyevent KEYCODE_ENTER; sleep 8 ;;
   start)
-    docker exec "$C" adb shell am start -n com.github.damontecres.wholphin.debug/com.github.damontecres.wholphin.MainActivity >/dev/null 2>&1; sleep 8 ;;
+    # Bring the app to the front and wait until it really is the top activity
+    for _ in 1 2 3 4 5; do
+      docker exec "$C" adb shell am start -n com.github.damontecres.wholphin.debug/com.github.damontecres.wholphin.MainActivity >/dev/null 2>&1 || true
+      sleep 4
+      top=$(docker exec "$C" adb shell dumpsys activity activities 2>/dev/null | grep -m1 "topResumedActivity=" || true)
+      if [[ "$top" == *wholphin* ]]; then sleep 5; exit 0; fi
+    done
+    echo "App did not come to the front" >&2; exit 1 ;;
   a11y)
     # From the home page with a card focused, open Settings > Accessibility
-    "$0" key DPAD_LEFT DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 2; "$0" key DPAD_CENTER; sleep 2 ;;
+    # Settings is the last item in the side menu, so pressing down repeatedly always reaches it
+    "$0" key DPAD_LEFT DPAD_LEFT DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 2; "$0" key DPAD_CENTER; sleep 2 ;;
   adb)
     docker exec "$C" adb "$@" ;;
   *) echo "usage: $0 install|shot|key|adb"; exit 1 ;;

@@ -60,7 +60,9 @@ fun WholphinTheme(
         }
     SideEffect { A11yLayout.uiZoom = accessibility.uiZoom }
     CompositionLocalProvider(
-        LocalTheme provides appThemeColors,
+        // Several components special-case the OLED theme because it has a pure black background.
+        // The high-contrast modes need the same handling.
+        LocalTheme provides if (accessibility.highContrastColors != null) AppThemeColors.OLED_BLACK else appThemeColors,
         LocalAccessibility provides accessibility,
         LocalDensity provides density,
     ) {
