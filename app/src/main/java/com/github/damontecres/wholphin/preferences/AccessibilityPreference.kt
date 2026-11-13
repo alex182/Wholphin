@@ -491,6 +491,22 @@ object AccessibilityPreference {
 
     // region Screen reader
 
+    val SpeakFocusedItem =
+        a11ySwitch(
+            title = R.string.a11y_speak_focus,
+            summary = R.string.a11y_speak_focus_summary,
+            get = { it.speakFocusedItem },
+            set = { speakFocusedItem = it },
+        )
+
+    val QuietTrackAnnouncements =
+        a11ySwitch(
+            title = R.string.a11y_quiet_tracks,
+            summary = R.string.a11y_quiet_tracks_summary,
+            get = { it.quietTrackAnnouncements },
+            set = { quietTrackAnnouncements = it },
+        )
+
     val CardAnnouncementsTitleOnly =
         a11ySwitch(
             title = R.string.a11y_card_title_only,
@@ -606,7 +622,9 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
             title = R.string.a11y_group_screen_reader,
             preferences =
                 listOf(
+                    AccessibilityPreference.SpeakFocusedItem,
                     AccessibilityPreference.CardAnnouncementsTitleOnly,
+                    AccessibilityPreference.QuietTrackAnnouncements,
                 ),
         ),
         PreferenceGroup(

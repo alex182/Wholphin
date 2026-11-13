@@ -73,6 +73,8 @@ message AccessibilityPreferences {
   FocusCue focus_cue = 4;
   // Darkens everything except the focused item, 0-60
   int32 dim_unfocused_percent = 5;
+  // Read the focused item aloud with text-to-speech (when no screen reader is running)
+  bool speak_focused_item = 6;
 
   // --- Text & layout (10-19) ---
   // Text size as a percentage; 0 means follow the system font scale
@@ -128,6 +130,8 @@ message AccessibilityPreferences {
   // --- Screen reader (50-59) ---
   // Cards announce only their title instead of title, year and watched status
   bool card_announcements_title_only = 50;
+  // Do not announce audio and subtitle track changes to the screen reader
+  bool quiet_track_announcements = 51;
 
   // --- Simplified layout (60-69) ---
   // Hide resolution, codec and audio format chips

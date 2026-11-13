@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -27,6 +29,7 @@ import com.github.damontecres.wholphin.R
 import com.github.damontecres.wholphin.preferences.AccessibilityPreferences
 import com.github.damontecres.wholphin.ui.components.Dialog
 import com.github.damontecres.wholphin.ui.tryRequestFocus
+import java.util.UUID
 
 /** How long the player controls stay on screen, or null to use the regular playback setting */
 fun AccessibilityPreferences.controllerTimeoutMsOrNull(): Long? = controllerTimeoutS.takeIf { it > 0 }?.let { it * 1000L }
@@ -112,6 +115,50 @@ fun PhotosensitivityWarningDialog(
                     Text(stringResource(R.string.a11y_photosensitivity_continue))
                 }
             }
+        }
+    }
+}
+
+/**
+ * Accessibility: tells the screen reader when the audio or subtitle track changes during
+ * playback, since nothing on screen shows it once the menu closes. The first tracks of a title
+ * are not announced. Turn off with "Do not announce track changes".
+ */
+@Composable
+fun AnnounceTrackChanges(
+    enabled: Boolean,
+    itemId: UUID?,
+    audioIndex: Int?,
+    subtitleIndex: Int?,
+    audioTitle: (Int) -> String?,
+    subtitleTitle: (Int) -> String?,
+) {
+    if (!enabled) return
+    val view = LocalView.current
+    val resources = LocalResources.current
+    // Remember what was last announced for this title
+    val last = remember(itemId) { arrayOfNulls<Int>(2) }
+    LaunchedEffect(itemId, audioIndex) {
+        val previous = last[0]
+        last[0] = audioIndex
+        if (previous != null && audioIndex != null && previous != audioIndex) {
+            audioTitle(audioIndex)?.let {
+                view.announceForAccessibility(resources.getString(R.string.a11y_audio_changed, it))
+            }
+        }
+    }
+    LaunchedEffect(itemId, subtitleIndex) {
+        val previous = last[1]
+        last[1] = subtitleIndex
+        if (previous != null && subtitleIndex != null && previous != subtitleIndex) {
+            val title = subtitleIndex.takeIf { it >= 0 }?.let(subtitleTitle)
+            view.announceForAccessibility(
+                if (title != null) {
+                    resources.getString(R.string.a11y_subtitles_changed, title)
+                } else {
+                    resources.getString(R.string.a11y_subtitles_off)
+                },
+            )
         }
     }
 }

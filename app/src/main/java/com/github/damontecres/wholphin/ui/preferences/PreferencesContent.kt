@@ -38,6 +38,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -298,6 +300,8 @@ fun PreferencesContent(
                             textAlign = TextAlign.Start,
                             modifier =
                                 Modifier
+                                    // Accessibility: section titles are headings
+                                    .semantics { heading() }
                                     .fillMaxWidth()
                                     .padding(top = 8.dp, bottom = 4.dp),
                         )

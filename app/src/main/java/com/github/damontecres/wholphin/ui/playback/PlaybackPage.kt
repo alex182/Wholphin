@@ -174,6 +174,24 @@ fun PlaybackPageContent(
 
     val prefs = preferences.appPreferences.playbackPreferences
 
+    // Accessibility: announce audio and subtitle changes to screen readers
+    AnnounceTrackChanges(
+        enabled = !preferences.appPreferences.accessibilityPreferences.quietTrackAnnouncements,
+        itemId = state.currentPlayback?.item?.id,
+        audioIndex = state.currentPlayback?.audioIndex,
+        subtitleIndex = state.currentPlayback?.subtitleIndex,
+        audioTitle = { index ->
+            state.currentMediaInfo.audioStreams
+                .firstOrNull { it.index == index }
+                ?.displayTitle
+        },
+        subtitleTitle = { index ->
+            state.currentMediaInfo.subtitleStreams
+                .firstOrNull { it.index == index }
+                ?.displayTitle
+        },
+    )
+
     // Accessibility: "Photosensitivity warning" pauses and asks before playing tagged titles
     val warningItem = state.currentPlayback?.item
     var warningHandledFor by remember { mutableStateOf<UUID?>(null) }

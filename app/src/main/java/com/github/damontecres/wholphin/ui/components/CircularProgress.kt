@@ -15,8 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
+import com.github.damontecres.wholphin.R
 import com.github.damontecres.wholphin.ui.tryRequestFocus
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
@@ -24,7 +30,15 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun CircularProgress(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
+    // Accessibility: tell screen readers that something is loading
+    val loadingLabel = stringResource(R.string.a11y_loading)
+    Box(
+        modifier =
+            modifier.semantics {
+                contentDescription = loadingLabel
+                liveRegion = LiveRegionMode.Polite
+            },
+    ) {
         CircularProgressIndicator(
             color = MaterialTheme.colorScheme.border,
             modifier =

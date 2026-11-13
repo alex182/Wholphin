@@ -67,7 +67,7 @@
     <string name="a11y_reduce_motion">Reduce motion</string>
     <string name="a11y_reduce_motion_summary">Turn off animations such as zooming, sliding and fading</string>
 
-    <string name="a11y_group_screen_reader">Screen reader (TalkBack)</string>
+    <string name="a11y_group_screen_reader">Speech and screen reader</string>
     <string name="a11y_card_title_only">Short card announcements</string>
     <string name="a11y_card_title_only_summary">Read only the title, without year and watched status</string>
     <string name="a11y_watched">watched</string>
@@ -214,4 +214,14 @@
     </string-array>
     <string name="a11y_force_sub_style">Use my style for styled subtitles</string>
     <string name="a11y_force_sub_style_summary">Ignore fonts and colors built into ASS/SSA subtitles (MPV player only)</string>
+
+    <string name="a11y_speak_focus">Speak selected item</string>
+    <string name="a11y_speak_focus_summary">Read the selected item aloud. Not used while TalkBack is on.</string>
+    <string name="a11y_quiet_tracks">Do not announce track changes</string>
+    <string name="a11y_quiet_tracks_summary">Stop the screen reader announcing audio and subtitle changes during playback</string>
+    <string name="a11y_loading">Loading</string>
+    <string name="a11y_seek_position">%1$s of %2$s</string>
+    <string name="a11y_audio_changed">Audio: %s</string>
+    <string name="a11y_subtitles_changed">Subtitles: %s</string>
+    <string name="a11y_subtitles_off">Subtitles off</string>
 </resources>

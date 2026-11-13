@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -43,7 +46,8 @@ fun ErrorMessage(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.padding(16.dp),
+        // Accessibility: errors are announced by screen readers as soon as they appear
+        modifier = modifier.padding(16.dp).semantics { liveRegion = LiveRegionMode.Assertive },
     ) {
         Text(
             text = stringResource(R.string.compose_error_message_title),

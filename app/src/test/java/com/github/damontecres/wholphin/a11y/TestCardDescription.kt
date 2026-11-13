@@ -1,6 +1,7 @@
 package com.github.damontecres.wholphin.a11y
 
 import com.github.damontecres.wholphin.ui.cards.buildCardDescription
+import com.github.damontecres.wholphin.ui.components.spokenLabel
 import org.junit.Assert
 import org.junit.Test
 
@@ -67,5 +68,21 @@ class TestCardDescription {
         Assert.assertEquals("The Matrix", describe(details = "The Matrix"))
         Assert.assertEquals("", describe(name = null))
         Assert.assertEquals("", describe(name = ""))
+    }
+
+    @Test
+    fun `Spoken label prefers the description over visible text`() {
+        Assert.assertEquals("The Matrix, 1999", spokenLabel(listOf("The Matrix, 1999"), listOf("ignored"), null))
+        Assert.assertEquals("Settings", spokenLabel(null, listOf("Settings"), null))
+        Assert.assertEquals("Reduce motion, On", spokenLabel(null, listOf("Reduce motion"), "On"))
+    }
+
+    @Test
+    fun `Spoken label skips icon glyphs and blanks`() {
+        // Icon-font glyphs have no letters or digits, so they are not read out
+        Assert.assertEquals("Movies", spokenLabel(null, listOf("\uf008", "Movies"), null))
+        Assert.assertNull(spokenLabel(null, listOf("\uf008", " "), null))
+        Assert.assertNull(spokenLabel(listOf(""), null, null))
+        Assert.assertNull(spokenLabel(null, null, null))
     }
 }

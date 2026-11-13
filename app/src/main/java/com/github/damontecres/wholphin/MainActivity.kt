@@ -66,6 +66,7 @@ import com.github.damontecres.wholphin.ui.LocalImageUrlService
 import com.github.damontecres.wholphin.ui.collectLatestIn
 import com.github.damontecres.wholphin.ui.components.FocusRingOverlay
 import com.github.damontecres.wholphin.ui.components.LoadingPage
+import com.github.damontecres.wholphin.ui.components.SpeakFocusedItem
 import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.playback.PlayExternalViewModel
@@ -325,6 +326,7 @@ class MainActivity : AppCompatActivity() {
                                                 )
                                             }
                                             FocusRingOverlay()
+                                            SpeakFocusedItem()
                                         }
                                     }
                                 }

@@ -28,6 +28,7 @@ data class AccessibilitySettings(
     val focusCue: FocusCue = FocusCue.FOCUS_CUE_NONE,
     /** 0 to 0.6: how strongly to darken everything except the focused item */
     val dimUnfocused: Float = 0f,
+    val speakFocusedItem: Boolean = false,
     /** null means follow the system font scale */
     val textScale: Float? = null,
     val uiZoom: Float = 1f,
@@ -117,6 +118,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
             },
         focusCue = if (focusCue == FocusCue.UNRECOGNIZED) FocusCue.FOCUS_CUE_NONE else focusCue,
         dimUnfocused = dimUnfocusedPercent.coerceIn(0, 60) / 100f,
+        speakFocusedItem = speakFocusedItem,
         textScale = textScalePercent.takeIf { it > 0 }?.let { it.coerceIn(50, 300) / 100f },
         uiZoom = (uiZoomPercent.takeIf { it > 0 } ?: 100).coerceIn(50, 200) / 100f,
         minTextSizeSp = minTextSizeSp.coerceIn(0, 40),
