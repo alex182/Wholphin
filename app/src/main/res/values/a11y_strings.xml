@@ -256,6 +256,27 @@
         <item>Crop to fill the card</item>
         <item>Show the whole image</item>
     </string-array>
+    <string name="a11y_keyboard">Built-in on-screen keyboard</string>
+    <string-array name="a11y_keyboard_modes">
+        <item>When a screen reader is on</item>
+        <item>Always</item>
+        <item>Never</item>
+    </string-array>
+    <string name="a11y_keyboard_field">%1$s, edit box</string>
+    <string name="a11y_keyboard_field_empty">Empty, edit box</string>
+    <string name="a11y_keyboard_field_password">%1$d characters, password edit box</string>
+    <string name="a11y_keyboard_deleted">Deleted</string>
+    <string name="a11y_keyboard_delete">Delete</string>
+    <string name="a11y_keyboard_space">Space</string>
+    <string name="a11y_keyboard_capital">Capital</string>
+    <string name="a11y_keyboard_shift">Shift</string>
+    <string name="a11y_keyboard_shift_on">Shift, on</string>
+    <string name="a11y_keyboard_symbols">Symbols</string>
+    <string name="a11y_keyboard_letters">Letters</string>
+    <string name="a11y_keyboard_title">Keyboard</string>
+    <string name="a11y_keyboard_done">Done</string>
+    <string name="a11y_keyboard_done_text">Done. Typed so far: %1$s</string>
+    <string name="a11y_keyboard_done_password">Done. Typed so far: %1$d characters</string>
     <string name="a11y_wrap_titles">Wrap long titles under cards</string>
     <string name="a11y_wrap_titles_summary">Show up to two lines instead of cutting the title off</string>
     <string name="a11y_apply_all_profiles">Copy these settings to all profiles</string>

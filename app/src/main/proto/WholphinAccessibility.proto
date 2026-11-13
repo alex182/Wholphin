@@ -73,6 +73,14 @@ enum ArtworkShape {
   ARTWORK_FIT = 2;
 }
 
+// When text fields use the keyboard drawn by the app instead of the system keyboard
+enum BuiltInKeyboard {
+  // Only while a screen reader is running (the system keyboard cannot be reached with TalkBack)
+  BUILT_IN_KEYBOARD_AUTO = 0;
+  BUILT_IN_KEYBOARD_ALWAYS = 1;
+  BUILT_IN_KEYBOARD_NEVER = 2;
+}
+
 enum NavRepeatSpeed {
   NAV_REPEAT_NORMAL = 0;
   NAV_REPEAT_SLOW = 1;
@@ -163,6 +171,8 @@ message AccessibilityPreferences {
   QuickShortcut quick_shortcut = 41;
   // Each user profile keeps its own accessibility settings
   bool per_profile_settings = 42;
+  // Use the app's own on-screen keyboard for text entry
+  BuiltInKeyboard built_in_keyboard = 43;
 
   // --- Screen reader (50-59) ---
   // Cards announce only their title instead of title, year and watched status

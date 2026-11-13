@@ -579,6 +579,20 @@ object AccessibilityPreference {
             set = { speakFocusedItem = it },
         )
 
+    val BuiltInKeyboardPref =
+        a11yChoice(
+            title = R.string.a11y_keyboard,
+            displayValues = R.array.a11y_keyboard_modes,
+            values =
+                listOf(
+                    BuiltInKeyboard.BUILT_IN_KEYBOARD_AUTO,
+                    BuiltInKeyboard.BUILT_IN_KEYBOARD_ALWAYS,
+                    BuiltInKeyboard.BUILT_IN_KEYBOARD_NEVER,
+                ),
+            get = { it.builtInKeyboard },
+            set = { builtInKeyboard = it },
+        )
+
     val QuietTrackAnnouncements =
         a11ySwitch(
             title = R.string.a11y_quiet_tracks,
@@ -718,6 +732,7 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                     AccessibilityPreference.SpeakFocusedItem,
                     AccessibilityPreference.CardAnnouncementsTitleOnly,
                     AccessibilityPreference.QuietTrackAnnouncements,
+                    AccessibilityPreference.BuiltInKeyboardPref,
                 ),
         ),
         PreferenceGroup(

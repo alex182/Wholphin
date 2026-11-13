@@ -5,6 +5,7 @@ import com.github.damontecres.wholphin.preferences.A11yFont
 import com.github.damontecres.wholphin.preferences.AccentColor
 import com.github.damontecres.wholphin.preferences.AppThemeColors
 import com.github.damontecres.wholphin.preferences.HighlightColor
+import com.github.damontecres.wholphin.ui.components.A11yKeyboardLayout
 import com.github.damontecres.wholphin.ui.components.NoStretchContentScale
 import com.github.damontecres.wholphin.ui.components.artworkColorMatrix
 import com.github.damontecres.wholphin.ui.theme.AccessibilitySettings
@@ -152,6 +153,30 @@ class TestAccessibilityHelpers {
         val fit = NoStretchContentScale.Fit.computeScaleFactor(thumbnail, card)
         Assert.assertEquals(fit.scaleX, fit.scaleY, .0001f)
         Assert.assertEquals(200f, thumbnail.width * fit.scaleX, .01f)
+    }
+
+    @Test
+    fun `Built-in keyboard has every character needed for addresses and passwords`() {
+        val keys =
+            (
+                A11yKeyboardLayout.digits + A11yKeyboardLayout.letters.flatten() + A11yKeyboardLayout.symbols.flatten() +
+                    A11yKeyboardLayout.common
+            ).joinToString("")
+        "abcdefghijklmnopqrstuvwxyz0123456789.:/-_@!#$%&*+=?~".forEach {
+            Assert.assertTrue("Missing key '$it'", keys.contains(it))
+        }
+        // Every row is ten keys wide so the direction buttons move in a regular grid
+        (listOf(A11yKeyboardLayout.digits) + A11yKeyboardLayout.letters + A11yKeyboardLayout.symbols).forEach {
+            Assert.assertEquals(10, it.size)
+        }
+        Assert.assertEquals("http://a", A11yKeyboardLayout.apply("http://", "a"))
+        Assert.assertEquals("http:/", A11yKeyboardLayout.apply("http://", null))
+        Assert.assertEquals("", A11yKeyboardLayout.apply("", null))
+        // By default the built-in keyboard is only used while a screen reader runs
+        Assert.assertEquals(
+            com.github.damontecres.wholphin.preferences.BuiltInKeyboard.BUILT_IN_KEYBOARD_AUTO,
+            AccessibilitySettings.Default.builtInKeyboard,
+        )
     }
 
     @Test

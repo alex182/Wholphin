@@ -11,6 +11,7 @@ import com.github.damontecres.wholphin.preferences.AccentColor
 import com.github.damontecres.wholphin.preferences.AccessibilityPreference
 import com.github.damontecres.wholphin.preferences.AccessibilityPreferences
 import com.github.damontecres.wholphin.preferences.ArtworkShape
+import com.github.damontecres.wholphin.preferences.BuiltInKeyboard
 import com.github.damontecres.wholphin.preferences.FocusCue
 import com.github.damontecres.wholphin.preferences.FocusRingColor
 import com.github.damontecres.wholphin.preferences.HighContrastMode
@@ -32,6 +33,8 @@ data class AccessibilitySettings(
     /** 0 to 0.6: how strongly to darken everything except the focused item */
     val dimUnfocused: Float = 0f,
     val speakFocusedItem: Boolean = false,
+    /** When text fields use the app's own keyboard; by default only while a screen reader runs */
+    val builtInKeyboard: BuiltInKeyboard = BuiltInKeyboard.BUILT_IN_KEYBOARD_AUTO,
     /** null means follow the system font scale */
     val textScale: Float? = null,
     val uiZoom: Float = 1f,
@@ -154,6 +157,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         focusCue = if (focusCue == FocusCue.UNRECOGNIZED) FocusCue.FOCUS_CUE_NONE else focusCue,
         dimUnfocused = dimUnfocusedPercent.coerceIn(0, 60) / 100f,
         speakFocusedItem = speakFocusedItem,
+        builtInKeyboard = if (builtInKeyboard == BuiltInKeyboard.UNRECOGNIZED) BuiltInKeyboard.BUILT_IN_KEYBOARD_AUTO else builtInKeyboard,
         textScale = textScalePercent.takeIf { it > 0 }?.let { it.coerceIn(50, 300) / 100f },
         uiZoom = (uiZoomPercent.takeIf { it > 0 } ?: 100).coerceIn(50, 200) / 100f,
         minTextSizeSp = minTextSizeSp.coerceIn(0, 40),
