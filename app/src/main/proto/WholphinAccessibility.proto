@@ -18,6 +18,13 @@ enum FocusRingColor {
   FOCUS_RING_THEME = 4;
 }
 
+enum HighContrastMode {
+  HIGH_CONTRAST_OFF = 0;
+  HIGH_CONTRAST_WHITE_ON_BLACK = 1;
+  HIGH_CONTRAST_YELLOW_ON_BLACK = 2;
+  HIGH_CONTRAST_BLACK_ON_WHITE = 3;
+}
+
 message AccessibilityPreferences {
   // --- Focus (1-9) ---
   bool focus_ring_enabled = 1;
@@ -33,4 +40,8 @@ message AccessibilityPreferences {
 
   // --- Motion (20-29) ---
   bool reduce_motion = 20;
+
+  // --- Colour & contrast (30-39) ---
+  // Overrides the application theme when not off
+  HighContrastMode high_contrast = 30;
 }

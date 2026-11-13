@@ -103,6 +103,23 @@ object AccessibilityPreference {
 
     // endregion
 
+    // region Colour & contrast
+
+    val HighContrast =
+        AppChoicePreference<AppPreferences, HighContrastMode>(
+            title = R.string.a11y_high_contrast,
+            defaultValue = HighContrastMode.HIGH_CONTRAST_OFF,
+            displayValues = R.array.a11y_high_contrast_modes,
+            getter = { it.accessibilityPreferences.highContrast },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences { highContrast = value }
+            },
+            indexToValue = { HighContrastMode.forNumber(it) ?: HighContrastMode.HIGH_CONTRAST_OFF },
+            valueToIndex = { if (it != HighContrastMode.UNRECOGNIZED) it.number else 0 },
+        )
+
+    // endregion
+
     // region Motion
 
     val ReduceMotion =
@@ -145,6 +162,13 @@ val accessibilityPreferences =
                 listOf(
                     AccessibilityPreference.TextScale,
                     AccessibilityPreference.UiZoom,
+                ),
+        ),
+        PreferenceGroup(
+            title = R.string.a11y_group_contrast,
+            preferences =
+                listOf(
+                    AccessibilityPreference.HighContrast,
                 ),
         ),
         PreferenceGroup(

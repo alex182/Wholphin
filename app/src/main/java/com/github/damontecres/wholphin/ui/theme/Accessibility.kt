@@ -8,6 +8,8 @@ import androidx.compose.ui.unit.dp
 import com.github.damontecres.wholphin.preferences.AccessibilityPreference
 import com.github.damontecres.wholphin.preferences.AccessibilityPreferences
 import com.github.damontecres.wholphin.preferences.FocusRingColor
+import com.github.damontecres.wholphin.preferences.HighContrastMode
+import com.github.damontecres.wholphin.ui.theme.colors.HighContrastThemeColors
 
 /**
  * Resolved accessibility settings for use by composables. Read via [LocalAccessibility].
@@ -24,7 +26,18 @@ data class AccessibilitySettings(
     val textScale: Float? = null,
     val uiZoom: Float = 1f,
     val reduceMotion: Boolean = false,
+    val highContrast: HighContrastMode = HighContrastMode.HIGH_CONTRAST_OFF,
 ) {
+    /** The high-contrast colours to use instead of the application theme, if enabled */
+    val highContrastColors: ThemeColors?
+        get() =
+            when (highContrast) {
+                HighContrastMode.HIGH_CONTRAST_WHITE_ON_BLACK -> HighContrastThemeColors.WhiteOnBlack
+                HighContrastMode.HIGH_CONTRAST_YELLOW_ON_BLACK -> HighContrastThemeColors.YellowOnBlack
+                HighContrastMode.HIGH_CONTRAST_BLACK_ON_WHITE -> HighContrastThemeColors.BlackOnWhite
+                else -> null
+            }
+
     companion object {
         val Default = AccessibilitySettings()
     }
@@ -50,4 +63,5 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         textScale = textScalePercent.takeIf { it > 0 }?.let { it.coerceIn(50, 300) / 100f },
         uiZoom = (uiZoomPercent.takeIf { it > 0 } ?: 100).coerceIn(50, 200) / 100f,
         reduceMotion = reduceMotion,
+        highContrast = if (highContrast == HighContrastMode.UNRECOGNIZED) HighContrastMode.HIGH_CONTRAST_OFF else highContrast,
     )

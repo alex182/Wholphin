@@ -40,6 +40,15 @@
         <item>140%</item>
     </string-array>
 
+    <string name="a11y_group_contrast">Color and contrast</string>
+    <string name="a11y_high_contrast">High contrast</string>
+    <string-array name="a11y_high_contrast_modes">
+        <item>Off (use application theme)</item>
+        <item>White on black</item>
+        <item>Yellow on black</item>
+        <item>Black on white</item>
+    </string-array>
+
     <string name="a11y_reduce_motion">Reduce motion</string>
     <string name="a11y_reduce_motion_summary">Turn off animations such as zooming, sliding and fading</string>
 </resources>

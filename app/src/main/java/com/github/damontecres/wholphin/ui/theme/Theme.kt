@@ -41,7 +41,8 @@ fun WholphinTheme(
     accessibility: AccessibilitySettings = AccessibilitySettings.Default,
     content: @Composable () -> Unit,
 ) {
-    val themeColors = getThemeColors(appThemeColors)
+    // Accessibility: a high-contrast mode replaces the chosen application theme
+    val themeColors = accessibility.highContrastColors ?: getThemeColors(appThemeColors)
 
     val colorScheme =
         when {
