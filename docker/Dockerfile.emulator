@@ -1,0 +1,16 @@
+# Android TV emulator for checking UI changes inside a container (needs /dev/kvm).
+FROM wholphin-a11y-dev
+
+ARG SYSTEM_IMAGE="system-images;android-36;android-tv;x86_64"
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libpulse0 libgl1 libnss3 libxcomposite1 libxcursor1 libxi6 libxtst6 libxkbfile1 \
+        libx11-xcb1 libxcb-cursor0 libasound2t64 libdbus-1-3 libxdamage1 libgbm1 libdrm2 imagemagick && \
+    rm -rf /var/lib/apt/lists/*
+USER dev
+
+ENV ANDROID_AVD_HOME=/home/dev/.android/avd
+ENV PATH=$PATH:$ANDROID_HOME/emulator
+RUN sdkmanager --install "emulator" "${SYSTEM_IMAGE}" > /dev/null && \
+    echo no | avdmanager create avd -n tv -k "${SYSTEM_IMAGE}" -d tv_1080p > /dev/null

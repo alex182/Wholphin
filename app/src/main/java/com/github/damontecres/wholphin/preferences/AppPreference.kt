@@ -1170,6 +1170,13 @@ sealed interface AppPreference<Pref, T> {
 val basicPreferences =
     listOf(
         PreferenceGroup(
+            title = R.string.a11y_settings,
+            preferences =
+                listOf(
+                    AccessibilityPreference.Settings,
+                ),
+        ),
+        PreferenceGroup(
             title = R.string.ui_interface,
             preferences =
                 listOf(

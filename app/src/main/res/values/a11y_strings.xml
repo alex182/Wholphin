@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strings added by the accessibility fork. Kept in a separate file to make upstream merges easier. -->
+<resources>
+    <string name="a11y_settings">Accessibility</string>
+    <string name="a11y_settings_summary">Text size, contrast, focus, motion and more</string>
+
+    <string name="a11y_group_focus">Focus</string>
+    <string name="a11y_group_text_layout">Text and layout</string>
+    <string name="a11y_group_motion">Motion</string>
+
+    <string name="a11y_focus_ring">High-visibility focus outline</string>
+    <string name="a11y_focus_ring_summary">Draw a thick, high-contrast outline around the selected item</string>
+    <string name="a11y_focus_ring_thickness">Outline thickness</string>
+    <string name="a11y_focus_ring_color">Outline color</string>
+    <string-array name="a11y_focus_ring_colors">
+        <item>White</item>
+        <item>Yellow</item>
+        <item>Cyan</item>
+        <item>Magenta</item>
+        <item>Theme color</item>
+    </string-array>
+
+    <string name="a11y_text_size">Text size</string>
+    <string-array name="a11y_text_sizes">
+        <item>Follow system</item>
+        <item>85%</item>
+        <item>100%</item>
+        <item>115%</item>
+        <item>130%</item>
+        <item>150%</item>
+        <item>175%</item>
+        <item>200%</item>
+    </string-array>
+    <string name="a11y_ui_zoom">Interface zoom</string>
+    <string name="a11y_ui_zoom_summary">Makes everything larger: cards, buttons, spacing and text</string>
+    <string-array name="a11y_ui_zooms">
+        <item>100%</item>
+        <item>110%</item>
+        <item>125%</item>
+        <item>140%</item>
+    </string-array>
+
+    <string name="a11y_reduce_motion">Reduce motion</string>
+    <string name="a11y_reduce_motion_summary">Turn off animations such as zooming, sliding and fading</string>
+</resources>

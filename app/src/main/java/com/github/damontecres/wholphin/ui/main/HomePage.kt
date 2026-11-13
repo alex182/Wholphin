@@ -84,6 +84,7 @@ import com.github.damontecres.wholphin.ui.playback.isPlayKeyUp
 import com.github.damontecres.wholphin.ui.playback.playable
 import com.github.damontecres.wholphin.ui.playback.scale
 import com.github.damontecres.wholphin.ui.rememberPosition
+import com.github.damontecres.wholphin.ui.theme.A11yLayout
 import com.github.damontecres.wholphin.ui.tryRequestFocus
 import com.github.damontecres.wholphin.ui.util.ScrollToTopBringIntoViewSpec
 import com.github.damontecres.wholphin.util.HomeRowLoadingState
@@ -617,7 +618,9 @@ fun HomePageHeader(
                     .padding(0.dp)
                     .height(48.dp + if (!overviewTwoLines) 12.dp else 0.dp)
                     .width(400.dp)
-            if (overview.isNotNullOrBlank()) {
+            if (A11yLayout.compactHeaders) {
+                // Accessibility: no room for the description when the interface is zoomed
+            } else if (overview.isNotNullOrBlank()) {
                 Text(
                     text = overview,
                     style = MaterialTheme.typography.bodyMedium,

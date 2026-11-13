@@ -12,5 +12,6 @@ TTY=(); [ -t 0 ] && TTY=(-it)
 exec docker run --rm "${TTY[@]}" \
   -v "$REPO_DIR":/workspace \
   -v wholphin-a11y-gradle:/home/dev/.gradle \
+  -v wholphin-a11y-android:/home/dev/.android \
   -e GRADLE_OPTS="-Dorg.gradle.jvmargs='-Xmx8g -XX:MaxMetaspaceSize=1024m'" \
   "$IMAGE" "${@:-bash}"

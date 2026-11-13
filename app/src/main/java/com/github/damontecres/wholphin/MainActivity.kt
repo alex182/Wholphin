@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.Settings
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.widget.Toast
@@ -21,8 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.compositionContext
+import androidx.compose.ui.platform.createLifecycleAwareWindowRecomposer
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
@@ -58,13 +62,16 @@ import com.github.damontecres.wholphin.services.tvprovider.TvProviderSchedulerSe
 import com.github.damontecres.wholphin.ui.CoilConfig
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
 import com.github.damontecres.wholphin.ui.collectLatestIn
+import com.github.damontecres.wholphin.ui.components.FocusRingOverlay
 import com.github.damontecres.wholphin.ui.components.LoadingPage
 import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.playback.PlayExternalViewModel
 import com.github.damontecres.wholphin.ui.showToast
+import com.github.damontecres.wholphin.ui.theme.A11yMotionDurationScale
 import com.github.damontecres.wholphin.ui.theme.WholphinTheme
 import com.github.damontecres.wholphin.ui.theme.colors.PurpleThemeColors
+import com.github.damontecres.wholphin.ui.theme.toSettings
 import com.github.damontecres.wholphin.ui.util.ProvideLocalClock
 import com.github.damontecres.wholphin.util.DebugLogTree
 import com.github.damontecres.wholphin.util.ExceptionHandler
@@ -223,11 +230,13 @@ class MainActivity : AppCompatActivity() {
             }.launchIn(lifecycleScope)
 
         userPreferencesDataStore.data.collectLatestIn(lifecycleScope) { prefs ->
+            A11yMotionDurationScale.reduceMotion = prefs.accessibilityPreferences.reduceMotion
             signInAuto = prefs.signInAutomatically
             playerBackend = prefs.playbackPreferences.playerBackend
         }
 
         viewModel.appStart(intent)
+        installAccessibilityMotionScale()
         setContent {
             MaterialTheme(colorScheme = PurpleThemeColors.darkScheme) {
                 Surface(Modifier.fillMaxSize()) {
@@ -266,16 +275,23 @@ class MainActivity : AppCompatActivity() {
                                 WholphinTheme(
                                     true,
                                     appThemeColors = appPreferences.interfacePreferences.appThemeColors,
+                                    accessibility =
+                                        remember(appPreferences.accessibilityPreferences) {
+                                            appPreferences.accessibilityPreferences.toSettings()
+                                        },
                                 ) {
                                     ProvideLocalClock {
-                                        MainContent(
-                                            backStack = setupNavigationManager.backStack,
-                                            navigationManager = navigationManager,
-                                            userPreferences = userPreferences,
-                                            backdropService = backdropService,
-                                            screensaverService = screensaverService,
-                                            modifier = Modifier.fillMaxSize(),
-                                        )
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            MainContent(
+                                                backStack = setupNavigationManager.backStack,
+                                                navigationManager = navigationManager,
+                                                userPreferences = userPreferences,
+                                                backdropService = backdropService,
+                                                screensaverService = screensaverService,
+                                                modifier = Modifier.fillMaxSize(),
+                                            )
+                                            FocusRingOverlay()
+                                        }
                                     }
                                 }
                             }
@@ -284,6 +300,25 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * Makes every animation in this window use [A11yMotionDurationScale] so the "Reduce motion"
+     * accessibility setting can turn animations off without restarting.
+     */
+    @OptIn(ExperimentalComposeUiApi::class)
+    private fun installAccessibilityMotionScale() {
+        refreshSystemAnimationScale()
+        window.decorView.compositionContext =
+            window.decorView.createLifecycleAwareWindowRecomposer(
+                coroutineContext = A11yMotionDurationScale,
+                lifecycle = lifecycle,
+            )
+    }
+
+    private fun refreshSystemAnimationScale() {
+        A11yMotionDurationScale.systemScale =
+            Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -300,6 +335,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Timber.d("onResume")
+        refreshSystemAnimationScale()
         viewModel.appResume()
         lifecycleScope.launchDefault {
             screensaverService.pulse()

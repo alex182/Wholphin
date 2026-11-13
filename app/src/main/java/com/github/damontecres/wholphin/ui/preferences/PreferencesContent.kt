@@ -58,6 +58,7 @@ import com.github.damontecres.wholphin.preferences.MpvPreferences
 import com.github.damontecres.wholphin.preferences.PlayerBackend
 import com.github.damontecres.wholphin.preferences.ScreensaverPreference
 import com.github.damontecres.wholphin.preferences.SkipSegmentPreferences
+import com.github.damontecres.wholphin.preferences.accessibilityPreferences
 import com.github.damontecres.wholphin.preferences.advancedPreferences
 import com.github.damontecres.wholphin.preferences.basicPreferences
 import com.github.damontecres.wholphin.preferences.experimentalPreferences
@@ -167,6 +168,7 @@ fun PreferencesContent(
             PreferenceScreenOption.SKIP_SEGMENTS -> SkipSegmentPreferences
             PreferenceScreenOption.EXPERIMENTAL -> experimentalPreferences
             PreferenceScreenOption.HDR_FORMATS -> HdrFormatPreferences
+            PreferenceScreenOption.ACCESSIBILITY -> accessibilityPreferences
         }
     val screenTitle =
         when (preferenceScreenOption) {
@@ -178,6 +180,7 @@ fun PreferencesContent(
             PreferenceScreenOption.SKIP_SEGMENTS -> R.string.skip_behavior
             PreferenceScreenOption.EXPERIMENTAL -> R.string.experimental_settings
             PreferenceScreenOption.HDR_FORMATS -> R.string.hdr_formats
+            PreferenceScreenOption.ACCESSIBILITY -> R.string.a11y_settings
         }
 
     var visible by remember { mutableStateOf(false) }
@@ -813,6 +816,7 @@ fun PreferencesPage(
             PreferenceScreenOption.SKIP_SEGMENTS,
             PreferenceScreenOption.EXPERIMENTAL,
             PreferenceScreenOption.HDR_FORMATS,
+            PreferenceScreenOption.ACCESSIBILITY,
             -> {
                 PreferencesContent(
                     initialPreferences,

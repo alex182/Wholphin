@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option java_package = "com.github.damontecres.wholphin.preferences";
+option java_multiple_files = true;
+
+// Settings added by the accessibility fork.
+//
+// Rules:
+// - Every field's proto default (0 / false / first enum value) MUST mean "upstream behaviour",
+//   so existing installs see no change and no migration is needed.
+// - Never renumber or reuse field numbers.
+
+enum FocusRingColor {
+  FOCUS_RING_WHITE = 0;
+  FOCUS_RING_YELLOW = 1;
+  FOCUS_RING_CYAN = 2;
+  FOCUS_RING_MAGENTA = 3;
+  FOCUS_RING_THEME = 4;
+}
+
+message AccessibilityPreferences {
+  // --- Focus (1-9) ---
+  bool focus_ring_enabled = 1;
+  // Thickness in dp; 0 means the default of 4dp
+  int32 focus_ring_thickness_dp = 2;
+  FocusRingColor focus_ring_color = 3;
+
+  // --- Text & layout (10-19) ---
+  // Text size as a percentage; 0 means follow the system font scale
+  int32 text_scale_percent = 10;
+  // Whole-interface zoom as a percentage; 0 means 100%
+  int32 ui_zoom_percent = 11;
+
+  // --- Motion (20-29) ---
+  bool reduce_motion = 20;
+}

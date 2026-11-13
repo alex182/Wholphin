@@ -1,0 +1,53 @@
+package com.github.damontecres.wholphin.ui.theme
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.github.damontecres.wholphin.preferences.AccessibilityPreference
+import com.github.damontecres.wholphin.preferences.AccessibilityPreferences
+import com.github.damontecres.wholphin.preferences.FocusRingColor
+
+/**
+ * Resolved accessibility settings for use by composables. Read via [LocalAccessibility].
+ *
+ * The default instance is exactly upstream behaviour.
+ */
+@Immutable
+data class AccessibilitySettings(
+    val focusRingEnabled: Boolean = false,
+    val focusRingThickness: Dp = AccessibilityPreference.DEFAULT_FOCUS_RING_THICKNESS.dp,
+    /** null means use the theme's border color */
+    val focusRingColor: Color? = Color.White,
+    /** null means follow the system font scale */
+    val textScale: Float? = null,
+    val uiZoom: Float = 1f,
+    val reduceMotion: Boolean = false,
+) {
+    companion object {
+        val Default = AccessibilitySettings()
+    }
+}
+
+val LocalAccessibility = staticCompositionLocalOf { AccessibilitySettings.Default }
+
+fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
+    AccessibilitySettings(
+        focusRingEnabled = focusRingEnabled,
+        focusRingThickness =
+            (focusRingThicknessDp.takeIf { it > 0 } ?: AccessibilityPreference.DEFAULT_FOCUS_RING_THICKNESS)
+                .coerceIn(1, 16)
+                .dp,
+        focusRingColor =
+            when (focusRingColor) {
+                FocusRingColor.FOCUS_RING_YELLOW -> Color(0xFFFFEB3B)
+                FocusRingColor.FOCUS_RING_CYAN -> Color(0xFF00E5FF)
+                FocusRingColor.FOCUS_RING_MAGENTA -> Color(0xFFFF40FF)
+                FocusRingColor.FOCUS_RING_THEME -> null
+                else -> Color.White
+            },
+        textScale = textScalePercent.takeIf { it > 0 }?.let { it.coerceIn(50, 300) / 100f },
+        uiZoom = (uiZoomPercent.takeIf { it > 0 } ?: 100).coerceIn(50, 200) / 100f,
+        reduceMotion = reduceMotion,
+    )

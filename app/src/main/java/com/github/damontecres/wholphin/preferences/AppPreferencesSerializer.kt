@@ -267,6 +267,11 @@ inline fun AppPreferences.updateMusicPreferences(block: MusicPreferences.Builder
         musicPreferences = musicPreferences.toBuilder().apply(block).build()
     }
 
+inline fun AppPreferences.updateAccessibilityPreferences(block: AccessibilityPreferences.Builder.() -> Unit): AppPreferences =
+    update {
+        accessibilityPreferences = accessibilityPreferences.toBuilder().apply(block).build()
+    }
+
 inline fun AppPreferences.updateExperimentalPreferences(block: ExperimentalPreferences.Builder.() -> Unit): AppPreferences =
     update {
         experimentalPreferences = experimentalPreferences.toBuilder().apply(block).build()

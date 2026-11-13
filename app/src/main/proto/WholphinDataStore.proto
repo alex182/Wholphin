@@ -3,6 +3,8 @@ syntax = "proto3";
 option java_package = "com.github.damontecres.wholphin.preferences";
 option java_multiple_files = true;
 
+import "WholphinAccessibility.proto";
+
 enum ShowNextUpWhen{
   END_OF_PLAYBACK = 0;
   DURING_CREDITS = 1;
@@ -261,4 +263,7 @@ message AppPreferences {
   PhotoPreferences photo_preferences = 12;
   MusicPreferences music_preferences = 13;
   ExperimentalPreferences experimental_preferences = 14;
+
+  // Accessibility fork: high field number to stay clear of upstream additions
+  AccessibilityPreferences accessibility_preferences = 1000;
 }
