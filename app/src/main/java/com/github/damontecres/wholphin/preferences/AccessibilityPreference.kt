@@ -96,6 +96,13 @@ object AccessibilityPreference {
             set = { quickShortcut = it },
         )
 
+    /** Copies the current settings to every profile; handled in PreferencesContent */
+    val ApplyToAllProfiles =
+        AppClickablePreference<AppPreferences>(
+            title = R.string.a11y_apply_all_profiles,
+            summary = R.string.a11y_apply_all_profiles_summary,
+        )
+
     val PerProfileSettings =
         a11ySwitch(
             title = R.string.a11y_per_profile,
@@ -255,6 +262,14 @@ object AccessibilityPreference {
             summary = R.string.a11y_always_titles_summary,
             get = { it.alwaysShowCardTitles },
             set = { alwaysShowCardTitles = it },
+        )
+
+    val WrapCardTitles =
+        a11ySwitch(
+            title = R.string.a11y_wrap_titles,
+            summary = R.string.a11y_wrap_titles_summary,
+            get = { it.wrapCardTitles },
+            set = { wrapCardTitles = it },
         )
 
     // endregion
@@ -555,6 +570,13 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                     AccessibilityPreference.QuickShortcutPref,
                     AccessibilityPreference.PerProfileSettings,
                 ),
+            conditionalPreferences =
+                listOf(
+                    ConditionalPreferences(
+                        condition = { it.accessibilityPreferences.perProfileSettings },
+                        preferences = listOf(AccessibilityPreference.ApplyToAllProfiles),
+                    ),
+                ),
         ),
         PreferenceGroup(
             title = R.string.a11y_group_focus,
@@ -594,6 +616,7 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                     AccessibilityPreference.LetterSpacing,
                     AccessibilityPreference.PlainTextTitles,
                     AccessibilityPreference.AlwaysShowCardTitles,
+                    AccessibilityPreference.WrapCardTitles,
                 ),
         ),
         PreferenceGroup(

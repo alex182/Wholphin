@@ -19,6 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -95,7 +97,8 @@ fun StringInputDialog(
                         leadingIcon = null,
                         isInputValid = { true },
                         maxLines = input.maxLines,
-                        modifier = Modifier.fillMaxWidth(),
+                        // Accessibility: name the field after the dialog so screen readers say what it is for
+                        modifier = Modifier.fillMaxWidth().semantics { contentDescription = input.title },
                     )
                 } else {
                     EditTextBox(
@@ -110,7 +113,8 @@ fun StringInputDialog(
                             ),
                         leadingIcon = null,
                         isInputValid = { true },
-                        modifier = Modifier.fillMaxWidth(),
+                        // Accessibility: name the field after the dialog so screen readers say what it is for
+                        modifier = Modifier.fillMaxWidth().semantics { contentDescription = input.title },
                     )
                 }
 

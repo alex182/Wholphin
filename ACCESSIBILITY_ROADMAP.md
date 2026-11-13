@@ -22,9 +22,9 @@ All work is on the `accessible` branch. Every setting below is under **Settings 
 | A11Y-105 | Covered by zoom | Interface zoom enlarges targets and spacing together. No separate spacing setting. | - |
 | A11Y-106 | Done | "Speak selected item" reads the focused item with text-to-speech. Silent during playback and while TalkBack runs. Not active inside dialogs. No speech rate setting. | Emulator log shows the right text; audio not heard |
 | A11Y-201 | Done | Text size: follow system or 85-200%. | Emulator at 150%. With 125% zoom the details line under a title is cut short. |
-| A11Y-202 | Done differently | **Interface zoom** (100/110/125/140%) instead of card-size presets. Home header shrinks when zoomed. | Emulator at 125% (home, details, player). 110% and 140% not checked. Other pages' headers not adapted. |
+| A11Y-202 | Done differently | **Interface zoom** (100/110/125/140%) instead of card-size presets. Page headers shrink when zoomed. | Emulator at 125% and 140% (home, library, details, player). 110% not checked. |
 | A11Y-203 | Done | "Smallest text size" (14-20). Applies to themed text styles; text with a hard-coded size is not raised. | Emulator at 18 |
-| A11Y-204 | Partly done | "Always show titles under cards". Wrapping titles onto several lines is not done. | Emulator |
+| A11Y-204 | Done | "Always show titles under cards" and "Wrap long titles under cards" (two lines). | Emulator |
 | A11Y-205 | Partly done | "Home page rows" limit and "Hide technical details". No single combined switch. | Tests / compile only |
 | A11Y-206 | Done | Fonts: Atkinson Hyperlegible, Lexend, OpenDyslexic (about 650 KB, OFL; see `FONT_LICENSES.md`). Not yet listed on the in-app licence screen. | Emulator (Atkinson) |
 | A11Y-207 | Done | Line spacing and letter spacing. | Tests |
@@ -32,12 +32,12 @@ All work is on the `accessible` branch. Every setting below is under **Settings 
 | A11Y-301 | Done differently | "High contrast" setting (white on black, yellow on black, black on white) that overrides the theme. | Emulator, all three |
 | A11Y-302 | Done | "Dim background image" (0-90%). | Emulator |
 | A11Y-303 | Already upstream | Backdrop style "None"; repeated under Accessibility. | - |
-| A11Y-304 | Partly done | One "Color-blind friendly (blue and orange)" mode. No per-deficiency themes and no simulation tests. | Tests (contrast) |
+| A11Y-304 | Partly done | One "Color-blind friendly (blue and orange)" mode, tested under simulated protanopia, deuteranopia and tritanopia. No separate theme per deficiency. | Tests |
 | A11Y-305 | Done differently | "Accent color" with five preset colours, each tested for contrast on every theme. No free colour picker. | Emulator (cyan) |
-| A11Y-306 | Done | "High-visibility status indicators" and "Show progress as a number". | Compile only; the test library has no partly watched items |
+| A11Y-306 | Done | "High-visibility status indicators" and "Show progress as a number". | Emulator (progress bar and number); watched mark not looked at closely |
 | A11Y-307 | Done | "Dim posters and artwork", "Remove color from artwork". Cards and backdrops only. | Tests |
 | A11Y-401 | Done, one switch | "Reduce motion" stops all animations. No per-animation switches. | Emulator |
-| A11Y-402 | Done | "Keep background still"; theme music setting repeated here. Upstream has no auto-playing trailers to turn off. | Not checked on emulator |
+| A11Y-402 | Done | "Keep background still"; theme music setting repeated here. Upstream has no auto-playing trailers to turn off. | Emulator |
 | A11Y-403 | Covered | In-app screensaver follows Reduce motion and already has an upstream "Animate" setting. The system (Daydream) screensaver does not follow Reduce motion. | - |
 | A11Y-404 | Partly done | "Photosensitivity warning" pauses and asks before titles whose tags mention flashing, strobe, epilepsy or seizures. Depends on such tags existing on the server. The flashing-UI audit was not done. | Tests |
 | A11Y-405 | Done | "Speed when holding a direction" (normal, slow, very slow), app-wide. | Tests |
@@ -46,7 +46,7 @@ All work is on the `accessible` branch. Every setting below is under **Settings 
 | A11Y-503 | Partly done | Headings: row titles, settings sections, page titles, setup screen. Traversal order not reviewed. | Compile only |
 | A11Y-504 | Mostly done | Seek bar position; track change announcements ("Do not announce track changes" turns them off); named buttons. | Compile only |
 | A11Y-505 | Done | Loading and error announcements. No setting (screen reader only). | Compile only |
-| A11Y-506 | Not done | Forms and dialogs were not reviewed. | - |
+| A11Y-506 | Started | Text entry dialogs name their field after the dialog title. Server and sign-in screens and other dialogs were not reviewed. | Compile only |
 | A11Y-507 | Needs a device | Manual TalkBack script written in `docs/ACCESSIBILITY_TESTING.md`. | - |
 | A11Y-601 | Done | "Player controls size" (100/125/150%). | Emulator at 150% ("Ends at" wraps to two lines) |
 | A11Y-602 | Done | "Solid background behind controls". | Emulator |
@@ -55,20 +55,20 @@ All work is on the `accessible` branch. Every setting below is under **Settings 
 | A11Y-605 | Done | "Keep player controls on screen" (up to "until dismissed") and "Keep the skip button on screen". | Tests |
 | A11Y-701 | Done | Subtitle presets on the subtitle style page. | Tests |
 | A11Y-702 | Already upstream | The subtitle style page already has a live preview. | - |
-| A11Y-703 | Done, ExoPlayer only | "Subtitle font". MPV keeps its own font. | Compile only |
+| A11Y-703 | Done, ExoPlayer only | "Subtitle font". MPV keeps its own font. | Emulator |
 | A11Y-704 | Done | Maximum subtitle size raised from 70 to 110. | Compile only |
-| A11Y-705 | Done | "Prefer subtitles for the deaf and hard of hearing". Only reorders tracks when subtitles would be shown anyway. | Tests |
-| A11Y-706 | Done | "Subtitles at the top" (text subtitles; ExoPlayer and MPV). No in-player toggle. | Compile only |
+| A11Y-705 | Done | "Prefer subtitles for the deaf and hard of hearing". Only reorders tracks when subtitles would be shown anyway. | Emulator and tests |
+| A11Y-706 | Done | "Subtitles at the top" (text subtitles; ExoPlayer and MPV). No in-player toggle. | Emulator (ExoPlayer) |
 | A11Y-707 | Done, MPV only | "Use my style for styled subtitles". | Compile only |
-| A11Y-708 | Done, ExoPlayer only | "Sound descriptions in subtitles": italic or coloured. | Tests (detection) |
+| A11Y-708 | Done, ExoPlayer only | "Sound descriptions in subtitles": italic or coloured. | Emulator (colour) |
 | A11Y-801 | Done | "Prefer audio description", detected from track titles. | Tests |
 | A11Y-802 | Covered | Now Playing follows text size, zoom, fonts and contrast; "show lyrics" already exists upstream. | Not checked |
 | A11Y-901 | Done | First-run "Accessibility setup"; can be shown again. | Emulator |
 | A11Y-902 | Done | "Quick settings shortcut": hold Menu, Info or Play/Pause to open a quick panel. Off by default. | Emulator (Menu) |
-| A11Y-903 | Done | "Separate settings for each profile". No "apply to all profiles" button in the UI yet (the function exists). | Tests |
+| A11Y-903 | Done | "Separate settings for each profile" and "Copy these settings to all profiles". | Tests; settings shown on emulator, switching users not tried |
 | A11Y-1001 | Done | `TestThemeContrast`. | Tests |
 | A11Y-1002 | Partly done | Render tests at extreme settings and a settings-coverage test. No screenshot comparison against upstream. | Tests |
-| A11Y-1003 | Done | `.github/workflows/accessibility.yml` builds and tests the `accessible` branch. Not yet seen running (Actions must be enabled on the fork). | - |
+| A11Y-1003 | Done | `.github/workflows/accessibility.yml` builds and tests the `accessible` branch on every push. | See the Actions tab of the fork |
 | A11Y-1004 | Done | Docker dev and emulator containers, own app id and name, fork notes in CONTRIBUTING.md. Upstream had no new commits to merge yet. | - |
 | A11Y-1005 | Not started, on purpose | Offering changes upstream means opening issues on someone else's project, which is the fork owner's call. Candidates are listed below. | - |
 
@@ -76,8 +76,9 @@ All work is on the `accessible` branch. Every setting below is under **Settings 
 
 - TalkBack has not been run. Nothing involving audio has been heard.
 - Screens not looked at with the new settings: live TV, music, search, Seerr/Discover, photo slideshow, playlists.
-- Several subtitle options could not be seen working because the test videos have no subtitle tracks.
-- Interface zoom only adapts the home page header; other pages may clip at 140%.
+- MPV-specific subtitle options (forced style, top position under MPV) were not seen working; the emulator build uses a stub in place of MPV.
+- The bundled fonts are credited in `FONT_LICENSES.md` but not on the in-app licence screen.
+- Icon-only buttons outside the player (for example sort and filter) have no spoken name yet.
 - Strings are English only; translations for the new settings are not done.
 
 ### Candidates to offer upstream (A11Y-1005)

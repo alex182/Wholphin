@@ -104,7 +104,68 @@ class TestThemeContrast {
             }
     }
 
+    /**
+     * The colour-blind friendly mode must keep its three roles (text, accent, background) apart
+     * for the common kinds of colour blindness, not just for typical vision.
+     */
+    @Test
+    fun `Color-blind friendly mode stays distinguishable under simulated colour blindness`() {
+        val scheme = HighContrastThemeColors.ColorBlind.darkScheme
+        colorBlindnessMatrices.forEach { (name, matrix) ->
+            val background = simulate(scheme.background, matrix)
+            val text = simulate(scheme.onBackground, matrix)
+            val accent = simulate(scheme.border, matrix)
+            val textRatio = contrastRatio(text, background)
+            val accentRatio = contrastRatio(accent, background)
+            Assert.assertTrue("$name: text on background is %.2f:1".format(textRatio), textRatio >= AAA_TEXT)
+            Assert.assertTrue("$name: accent on background is %.2f:1".format(accentRatio), accentRatio >= AA_TEXT)
+            // The accent must not collapse into the text colour: compare how different they look
+            val difference =
+                maxOf(
+                    kotlin.math.abs(accent.red - text.red),
+                    kotlin.math.abs(accent.green - text.green),
+                    kotlin.math.abs(accent.blue - text.blue),
+                )
+            Assert.assertTrue("$name: accent and text differ by only %.2f".format(difference), difference >= .2f)
+        }
+    }
+
     companion object {
+        /**
+         * Simulation matrices for complete protanopia, deuteranopia and tritanopia
+         * (Machado, Oliveira and Fernandes, 2009), applied to linear RGB.
+         */
+        val colorBlindnessMatrices =
+            mapOf(
+                "protanopia" to
+                    floatArrayOf(0.152286f, 1.052583f, -0.204868f, 0.114503f, 0.786281f, 0.099216f, -0.003882f, -0.048116f, 1.051998f),
+                "deuteranopia" to
+                    floatArrayOf(0.367322f, 0.860646f, -0.227968f, 0.280085f, 0.672501f, 0.047413f, -0.011820f, 0.042940f, 0.968881f),
+                "tritanopia" to
+                    floatArrayOf(1.255528f, -0.076749f, -0.178779f, -0.078411f, 0.930809f, 0.147602f, 0.004733f, 0.691367f, 0.303900f),
+            )
+
+        private fun toLinear(c: Float): Float = channel(c).toFloat()
+
+        private fun toSrgb(c: Float): Float {
+            val v = c.coerceIn(0f, 1f)
+            return if (v <= 0.0031308f) v * 12.92f else (1.055 * v.toDouble().pow(1 / 2.4) - 0.055).toFloat()
+        }
+
+        fun simulate(
+            color: Color,
+            m: FloatArray,
+        ): Color {
+            val r = toLinear(color.red)
+            val g = toLinear(color.green)
+            val b = toLinear(color.blue)
+            return Color(
+                red = toSrgb(m[0] * r + m[1] * g + m[2] * b),
+                green = toSrgb(m[3] * r + m[4] * g + m[5] * b),
+                blue = toSrgb(m[6] * r + m[7] * g + m[8] * b),
+            )
+        }
+
         const val AAA_TEXT = 7.0
         const val AA_TEXT = 4.5
         const val UI_MINIMUM = 3.0

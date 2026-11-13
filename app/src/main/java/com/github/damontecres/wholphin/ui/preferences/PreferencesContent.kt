@@ -50,6 +50,7 @@ import androidx.tv.material3.surfaceColorAtElevation
 import coil3.SingletonImageLoader
 import coil3.imageLoader
 import com.github.damontecres.wholphin.R
+import com.github.damontecres.wholphin.preferences.AccessibilityPreference
 import com.github.damontecres.wholphin.preferences.AppPreference
 import com.github.damontecres.wholphin.preferences.AppPreferences
 import com.github.damontecres.wholphin.preferences.AppSwitchPreference
@@ -62,6 +63,7 @@ import com.github.damontecres.wholphin.preferences.ScreensaverPreference
 import com.github.damontecres.wholphin.preferences.SkipSegmentPreferences
 import com.github.damontecres.wholphin.preferences.accessibilityPreferences
 import com.github.damontecres.wholphin.preferences.advancedPreferences
+import com.github.damontecres.wholphin.preferences.applyAccessibilityToAllProfiles
 import com.github.damontecres.wholphin.preferences.basicPreferences
 import com.github.damontecres.wholphin.preferences.experimentalPreferences
 import com.github.damontecres.wholphin.preferences.lazyListWrapScrolling
@@ -553,6 +555,30 @@ fun PreferencesContent(
                                             if (currentUser != null) {
                                                 viewModel.resetQuickConnectStatus()
                                                 showQuickConnectDialog = true
+                                            }
+                                        },
+                                        modifier = focusModifier,
+                                        summary = pref.summary(context, null),
+                                        onLongClick = {},
+                                        interactionSource = interactionSource,
+                                    )
+                                }
+
+                                AccessibilityPreference.ApplyToAllProfiles -> {
+                                    ClickPreference(
+                                        title = stringResource(pref.title),
+                                        onClick = {
+                                            scope.launch(ExceptionHandler()) {
+                                                preferences =
+                                                    viewModel.preferenceDataStore.updateData { prefs ->
+                                                        prefs.applyAccessibilityToAllProfiles()
+                                                    }
+                                                Toast
+                                                    .makeText(
+                                                        context,
+                                                        R.string.a11y_applied_all_profiles,
+                                                        Toast.LENGTH_SHORT,
+                                                    ).show()
                                             }
                                         },
                                         modifier = focusModifier,

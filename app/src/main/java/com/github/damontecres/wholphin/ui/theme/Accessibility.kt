@@ -40,6 +40,7 @@ data class AccessibilitySettings(
     /** Extra letter spacing in em, 0 means unchanged */
     val letterSpacingEm: Float = 0f,
     val alwaysShowCardTitles: Boolean = false,
+    val wrapCardTitles: Boolean = false,
     /** 0 means no limit */
     val maxHomeRows: Int = 0,
     val hideTechnicalDetails: Boolean = false,
@@ -126,6 +127,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         lineHeightScale = 1f + lineHeightPercent.coerceIn(0, 100) / 100f,
         letterSpacingEm = letterSpacingPermille.coerceIn(0, 300) / 1000f,
         alwaysShowCardTitles = alwaysShowCardTitles,
+        wrapCardTitles = wrapCardTitles,
         maxHomeRows = maxHomeRows.coerceAtLeast(0),
         hideTechnicalDetails = hideTechnicalDetails,
         reduceMotion = reduceMotion,

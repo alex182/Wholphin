@@ -49,6 +49,7 @@ import com.github.damontecres.wholphin.ui.FontAwesome
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
 import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.enableMarquee
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import org.jellyfin.sdk.model.api.ImageType
 
 /**
@@ -259,11 +260,15 @@ fun BannerCardWithTitle(
             useSeriesForPrimary = useSeriesForPrimary,
         )
         SlidingCardText(focused) {
+            // Accessibility: "Wrap long titles under cards" shows two lines. Two lines are always
+            // reserved then, so cards in a row stay aligned.
+            val wrapTitle = LocalAccessibility.current.wrapCardTitles
             Text(
                 text = title ?: "",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
+                maxLines = if (wrapTitle) 2 else 1,
+                minLines = if (wrapTitle) 2 else 1,
                 textAlign = TextAlign.Center,
                 modifier =
                     Modifier
