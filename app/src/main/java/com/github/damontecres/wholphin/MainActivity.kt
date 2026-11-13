@@ -39,6 +39,7 @@ import com.github.damontecres.wholphin.data.ServerRepository
 import com.github.damontecres.wholphin.preferences.AppPreferences
 import com.github.damontecres.wholphin.preferences.NavRepeatSpeed
 import com.github.damontecres.wholphin.preferences.PlayerBackend
+import com.github.damontecres.wholphin.preferences.switchAccessibilityProfile
 import com.github.damontecres.wholphin.preferences.updateAccessibilityPreferences
 import com.github.damontecres.wholphin.services.AppUpgradeHandler
 import com.github.damontecres.wholphin.services.BackdropService
@@ -64,6 +65,8 @@ import com.github.damontecres.wholphin.services.tvprovider.TvProviderSchedulerSe
 import com.github.damontecres.wholphin.ui.CoilConfig
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
 import com.github.damontecres.wholphin.ui.collectLatestIn
+import com.github.damontecres.wholphin.ui.components.A11yQuickSettings
+import com.github.damontecres.wholphin.ui.components.A11yQuickSettingsDialog
 import com.github.damontecres.wholphin.ui.components.FocusRingOverlay
 import com.github.damontecres.wholphin.ui.components.LoadingPage
 import com.github.damontecres.wholphin.ui.components.SpeakFocusedItem
@@ -88,8 +91,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -221,6 +227,19 @@ class MainActivity : AppCompatActivity() {
                 Timber.e(ex, "Error with settings flag secure")
             }.launchIn(lifecycleScope)
 
+        // Accessibility: "Separate settings for each profile" swaps settings when the user changes
+        viewModel.serverRepository.currentUserFlow
+            .combine(
+                userPreferencesDataStore.data
+                    .map { it.accessibilityPreferences.perProfileSettings }
+                    .distinctUntilChanged(),
+            ) { user, _ -> user?.id?.toString() }
+            .onEach { userId ->
+                userPreferencesDataStore.updateData { it.switchAccessibilityProfile(userId) }
+            }.catch { ex ->
+                Timber.e(ex, "Error switching accessibility profile")
+            }.launchIn(lifecycleScope)
+
         screensaverService.keepScreenOn
             .onEach { keepScreenOn ->
                 Timber.v("keepScreenOn: %s", keepScreenOn)
@@ -238,6 +257,7 @@ class MainActivity : AppCompatActivity() {
         userPreferencesDataStore.data.collectLatestIn(lifecycleScope) { prefs ->
             A11yMotionDurationScale.reduceMotion = prefs.accessibilityPreferences.reduceMotion
             A11ySubtitles.update(prefs.accessibilityPreferences)
+            A11yQuickSettings.shortcut = prefs.accessibilityPreferences.quickShortcut
             KeyRepeatThrottle.intervalMs =
                 when (prefs.accessibilityPreferences.navRepeatSpeed) {
                     NavRepeatSpeed.NAV_REPEAT_SLOW -> 250
@@ -325,6 +345,14 @@ class MainActivity : AppCompatActivity() {
                                                     modifier = Modifier.fillMaxSize(),
                                                 )
                                             }
+                                            A11yQuickSettingsDialog(
+                                                preferences = appPreferences,
+                                                onUpdate = { update ->
+                                                    lifecycleScope.launch {
+                                                        userPreferencesDataStore.updateData(update)
+                                                    }
+                                                },
+                                            )
                                             FocusRingOverlay()
                                             SpeakFocusedItem()
                                         }
@@ -358,6 +386,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Accessibility: holding the chosen button opens the quick settings panel
+        if (A11yQuickSettings.handleKey(event)) {
+            return true
+        }
         // Accessibility: optionally slow down movement while a direction button is held
         if (KeyRepeatThrottle.shouldDrop(event)) {
             return true

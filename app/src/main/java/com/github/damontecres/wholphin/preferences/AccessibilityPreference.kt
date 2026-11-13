@@ -81,6 +81,29 @@ object AccessibilityPreference {
             set = { setupWizardDone = !it },
         )
 
+    val QuickShortcutPref =
+        a11yChoice(
+            title = R.string.a11y_quick_shortcut,
+            displayValues = R.array.a11y_quick_shortcuts,
+            values =
+                listOf(
+                    QuickShortcut.QUICK_SHORTCUT_OFF,
+                    QuickShortcut.QUICK_SHORTCUT_MENU,
+                    QuickShortcut.QUICK_SHORTCUT_INFO,
+                    QuickShortcut.QUICK_SHORTCUT_PLAY_PAUSE,
+                ),
+            get = { it.quickShortcut },
+            set = { quickShortcut = it },
+        )
+
+    val PerProfileSettings =
+        a11ySwitch(
+            title = R.string.a11y_per_profile,
+            summary = R.string.a11y_per_profile_summary,
+            get = { it.perProfileSettings },
+            set = { perProfileSettings = it },
+        )
+
     // endregion
 
     // region Focus
@@ -529,6 +552,8 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
             preferences =
                 listOf(
                     AccessibilityPreference.ShowSetupWizard,
+                    AccessibilityPreference.QuickShortcutPref,
+                    AccessibilityPreference.PerProfileSettings,
                 ),
         ),
         PreferenceGroup(

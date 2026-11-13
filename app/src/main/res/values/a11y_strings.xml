@@ -224,4 +224,15 @@
     <string name="a11y_audio_changed">Audio: %s</string>
     <string name="a11y_subtitles_changed">Subtitles: %s</string>
     <string name="a11y_subtitles_off">Subtitles off</string>
+
+    <string name="a11y_quick_shortcut">Quick settings shortcut</string>
+    <string-array name="a11y_quick_shortcuts">
+        <item>Off</item>
+        <item>Hold the Menu button</item>
+        <item>Hold the Info button</item>
+        <item>Hold Play/Pause (not during playback)</item>
+    </string-array>
+    <string name="a11y_quick_title">Accessibility</string>
+    <string name="a11y_per_profile">Separate settings for each profile</string>
+    <string name="a11y_per_profile_summary">Each person signed in on this device keeps their own accessibility settings</string>
 </resources>

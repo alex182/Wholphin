@@ -63,6 +63,13 @@ enum SoundCueStyle {
   SOUND_CUE_COLOR = 2;
 }
 
+enum QuickShortcut {
+  QUICK_SHORTCUT_OFF = 0;
+  QUICK_SHORTCUT_MENU = 1;
+  QUICK_SHORTCUT_INFO = 2;
+  QUICK_SHORTCUT_PLAY_PAUSE = 3;
+}
+
 message AccessibilityPreferences {
   // --- Focus (1-9) ---
   bool focus_ring_enabled = 1;
@@ -126,6 +133,10 @@ message AccessibilityPreferences {
   // --- Setup (40-49) ---
   // The first-run accessibility setup screen is shown until this is set
   bool setup_wizard_done = 40;
+  // Holding this remote button opens the quick accessibility panel
+  QuickShortcut quick_shortcut = 41;
+  // Each user profile keeps its own accessibility settings
+  bool per_profile_settings = 42;
 
   // --- Screen reader (50-59) ---
   // Cards announce only their title instead of title, year and watched status

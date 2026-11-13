@@ -266,4 +266,8 @@ message AppPreferences {
 
   // Accessibility fork: high field number to stay clear of upstream additions
   AccessibilityPreferences accessibility_preferences = 1000;
+  // Saved accessibility settings per user id, used with "Separate settings for each profile"
+  map<string, AccessibilityPreferences> accessibility_by_user = 1001;
+  // The user id whose settings are currently in accessibility_preferences
+  string active_accessibility_user = 1002;
 }
