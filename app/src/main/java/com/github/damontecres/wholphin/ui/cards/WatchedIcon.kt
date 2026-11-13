@@ -16,6 +16,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import com.github.damontecres.wholphin.preferences.AppThemeColors
 import com.github.damontecres.wholphin.ui.PreviewTvSpec
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.theme.LocalTheme
 import com.github.damontecres.wholphin.ui.theme.WholphinTheme
 
@@ -24,14 +25,17 @@ fun WatchedIcon(
     modifier: Modifier = Modifier,
     padding: Dp = 2.dp,
 ) {
+    // Accessibility: "High-visibility status indicators" uses plain black and white with a
+    // thick outline, so the mark does not depend on the theme's colours
+    val highVisibility = LocalAccessibility.current.highVisibilityStatus
     Icon(
         imageVector = Icons.Default.Check,
         contentDescription = null,
-        tint = WatchedIconColor(),
+        tint = if (highVisibility) Color.White else WatchedIconColor(),
         modifier =
             modifier
-                .background(WatchedIconBackground(), shape = CircleShape)
-                .border(.5.dp, Color.Black, CircleShape)
+                .background(if (highVisibility) Color.Black else WatchedIconBackground(), shape = CircleShape)
+                .border(if (highVisibility) 2.dp else .5.dp, if (highVisibility) Color.White else Color.Black, CircleShape)
                 .padding(padding),
     )
 }

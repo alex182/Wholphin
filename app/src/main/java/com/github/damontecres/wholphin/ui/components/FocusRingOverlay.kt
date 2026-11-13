@@ -13,20 +13,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
+import com.github.damontecres.wholphin.preferences.FocusCue
+import com.github.damontecres.wholphin.ui.theme.A11yLayout
 import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 
 /**
- * Draws a thick, high-contrast outline around whichever element currently has focus.
+ * Draws the accessibility focus indicators around whichever element currently has focus: a thick
+ * high-contrast outline, an optional extra cue (fill or underline), and optional dimming of
+ * everything else.
  *
  * Instead of adding a modifier to every focusable component, this asks the hosting view for the
  * bounds of the focused element on each frame and draws on top of everything. This means it covers
@@ -37,7 +45,7 @@ import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 @Composable
 fun FocusRingOverlay(modifier: Modifier = Modifier.fillMaxSize()) {
     val a11y = LocalAccessibility.current
-    if (!a11y.focusRingEnabled) return
+    if (!a11y.focusOverlayActive) return
 
     val view = LocalView.current
     var focusRect by remember { mutableStateOf<Rect?>(null) }
@@ -68,17 +76,35 @@ fun FocusRingOverlay(modifier: Modifier = Modifier.fillMaxSize()) {
     }
 
     val color = a11y.focusRingColor ?: MaterialTheme.colorScheme.border
+    val dimColor = MaterialTheme.colorScheme.background
     Canvas(
         modifier =
             modifier
                 .onGloballyPositioned { origin = it.positionInRoot() },
     ) {
         focusRect?.let {
-            drawFocusRing(
-                rect = it.translate(-origin.x, -origin.y),
-                color = color,
-                thickness = a11y.focusRingThickness,
-            )
+            val rect = it.translate(-origin.x, -origin.y)
+            if (a11y.dimUnfocused > 0f && !A11yLayout.inPlayer) {
+                drawDimAround(rect, dimColor.copy(alpha = a11y.dimUnfocused))
+            }
+            when (a11y.focusCue) {
+                FocusCue.FOCUS_CUE_FILL -> {
+                    drawFocusFill(rect, color)
+                }
+
+                FocusCue.FOCUS_CUE_UNDERLINE -> {
+                    drawFocusUnderline(rect, color, a11y.focusRingThickness)
+                }
+
+                else -> {}
+            }
+            if (a11y.focusRingEnabled) {
+                drawFocusRing(
+                    rect = rect,
+                    color = color,
+                    thickness = a11y.focusRingThickness,
+                )
+            }
         }
     }
 }
@@ -143,6 +169,55 @@ private fun DrawScope.drawFocusRing(
     }
     ring(total, contrastColor)
     ring(stroke, color)
+}
+
+/** Darkens the whole screen except the focused element */
+private fun DrawScope.drawDimAround(
+    rect: Rect,
+    color: Color,
+) {
+    val hole =
+        Path().apply {
+            addRoundRect(RoundRect(rect.inflate(RingGap.toPx()), CornerRadius(RingCornerRadius.toPx())))
+        }
+    clipPath(hole, clipOp = ClipOp.Difference) {
+        drawRect(color)
+    }
+}
+
+/** A translucent wash over the focused element: a cue that does not rely on its outline */
+private fun DrawScope.drawFocusFill(
+    rect: Rect,
+    color: Color,
+) {
+    drawRoundRect(
+        color = color.copy(alpha = .22f),
+        topLeft = rect.topLeft,
+        size = rect.size,
+        cornerRadius = CornerRadius(RingCornerRadius.toPx()),
+    )
+}
+
+/** A thick bar under the focused element */
+private fun DrawScope.drawFocusUnderline(
+    rect: Rect,
+    color: Color,
+    thickness: Dp,
+) {
+    val height = thickness.toPx() * 1.5f
+    val gap = RingGap.toPx() * 3
+    val contrastColor = if (color.luminanceIsHigh()) Color.Black else Color.White
+    val contrast = RingContrastStroke.toPx()
+    drawRect(
+        color = contrastColor,
+        topLeft = Offset(rect.left - contrast, rect.bottom + gap - contrast),
+        size = Size(rect.width + contrast * 2, height + contrast * 2),
+    )
+    drawRect(
+        color = color,
+        topLeft = Offset(rect.left, rect.bottom + gap),
+        size = Size(rect.width, height),
+    )
 }
 
 private fun Color.luminanceIsHigh(): Boolean = (0.2126f * red + 0.7152f * green + 0.0722f * blue) > 0.4f

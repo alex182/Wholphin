@@ -35,6 +35,7 @@ import com.github.damontecres.wholphin.ui.PreviewTvSpec
 import com.github.damontecres.wholphin.ui.playback.audioStreamCount
 import com.github.damontecres.wholphin.ui.playback.embeddedSubtitleCount
 import com.github.damontecres.wholphin.ui.playback.externalSubtitlesCount
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.theme.WholphinTheme
 import com.github.damontecres.wholphin.ui.util.StreamFormatting.concatWithSpace
 import com.github.damontecres.wholphin.ui.util.StreamFormatting.formatAudioCodec
@@ -69,6 +70,8 @@ fun VideoStreamDetails(
     numberOfVersions: Int = 0,
     modifier: Modifier = Modifier,
 ) {
+    // Accessibility: "Hide technical details" removes the resolution/codec/audio chips
+    if (LocalAccessibility.current.hideTechnicalDetails) return
     val resources = LocalResources.current
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),

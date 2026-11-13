@@ -24,7 +24,7 @@ fun Dialog(
         onDismissRequest = onDismissRequest,
         properties = properties,
     ) {
-        if (LocalAccessibility.current.focusRingEnabled) {
+        if (LocalAccessibility.current.focusOverlayActive) {
             Box {
                 content()
                 FocusRingOverlay(Modifier.matchParentSize())

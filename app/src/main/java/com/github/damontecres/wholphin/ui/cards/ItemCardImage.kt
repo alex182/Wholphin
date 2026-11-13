@@ -39,6 +39,7 @@ import com.github.damontecres.wholphin.ui.AppColors
 import com.github.damontecres.wholphin.ui.Cards
 import com.github.damontecres.wholphin.ui.FontAwesome
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
+import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.gt
 import com.github.damontecres.wholphin.ui.isNotNullOrBlank
 import com.github.damontecres.wholphin.ui.logCoilError
@@ -137,6 +138,7 @@ fun ItemCardImage(
                 model = imageUrl,
                 // The description is on the containing box
                 contentDescription = null,
+                colorFilter = rememberArtworkColorFilter(),
                 contentScale = contentScale,
                 alignment = Alignment.Center,
                 onError = {
@@ -290,6 +292,7 @@ fun ItemCardImageOverlay(
                         .fillMaxWidth((watchedPercent / 100.0).toFloat()),
             )
         }
+        A11yProgressExtras(watchedPercent)
     }
 }
 

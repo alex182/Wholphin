@@ -85,6 +85,7 @@ import com.github.damontecres.wholphin.ui.playback.playable
 import com.github.damontecres.wholphin.ui.playback.scale
 import com.github.damontecres.wholphin.ui.rememberPosition
 import com.github.damontecres.wholphin.ui.theme.A11yLayout
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.tryRequestFocus
 import com.github.damontecres.wholphin.ui.util.ScrollToTopBringIntoViewSpec
 import com.github.damontecres.wholphin.util.HomeRowLoadingState
@@ -111,7 +112,9 @@ fun HomePage(
     val state by viewModel.state.collectAsState()
     val loading = state.loadingState
     val refreshing = state.refreshState
-    val homeRows = state.homeRows
+    // Accessibility: "Home page rows" limits how much is on screen
+    val maxHomeRows = LocalAccessibility.current.maxHomeRows
+    val homeRows = if (maxHomeRows > 0) state.homeRows.take(maxHomeRows) else state.homeRows
 
     when (val state = loading) {
         is LoadingState.Error -> {
@@ -693,7 +696,7 @@ fun HomePageCardContent(
                         viewOptions.contentScale.scale
                     }
                 }
-            if (viewOptions.showTitles) {
+            if (viewOptions.showTitles || LocalAccessibility.current.alwaysShowCardTitles) {
                 BannerCardWithTitle(
                     title = item?.title,
                     subtitle = item?.subtitle,
@@ -760,6 +763,6 @@ fun HomePageViewMoreCard(
         modifier = modifier,
         aspectRatio = aspectRatio,
         size = DpSize(height = viewOptions.heightDp.dp, width = Dp.Unspecified),
-        showTitle = viewOptions.showTitles,
+        showTitle = viewOptions.showTitles || LocalAccessibility.current.alwaysShowCardTitles,
     )
 }

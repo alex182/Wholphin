@@ -1,10 +1,60 @@
 package com.github.damontecres.wholphin.preferences
 
+import androidx.annotation.ArrayRes
+import androidx.annotation.StringRes
 import com.github.damontecres.wholphin.R
 import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.preferences.ConditionalPreferences
 import com.github.damontecres.wholphin.ui.preferences.PreferenceGroup
 import com.github.damontecres.wholphin.ui.preferences.PreferenceScreenOption
+
+private fun a11ySwitch(
+    @StringRes title: Int,
+    @StringRes summary: Int? = null,
+    defaultValue: Boolean = false,
+    get: (AccessibilityPreferences) -> Boolean,
+    set: AccessibilityPreferences.Builder.(Boolean) -> Unit,
+) = AppSwitchPreference<AppPreferences>(
+    title = title,
+    defaultValue = defaultValue,
+    getter = { get(it.accessibilityPreferences) },
+    setter = { prefs, value -> prefs.updateAccessibilityPreferences { set(value) } },
+    summary = summary,
+)
+
+/** A choice between fixed values. The first value is the default. */
+private fun <T> a11yChoice(
+    @StringRes title: Int,
+    @ArrayRes displayValues: Int,
+    values: List<T>,
+    get: (AccessibilityPreferences) -> T,
+    set: AccessibilityPreferences.Builder.(T) -> Unit,
+) = AppChoicePreference<AppPreferences, T>(
+    title = title,
+    defaultValue = values.first(),
+    displayValues = displayValues,
+    getter = { get(it.accessibilityPreferences).takeIf { v -> v in values } ?: values.first() },
+    setter = { prefs, value -> prefs.updateAccessibilityPreferences { set(value) } },
+    indexToValue = { values.getOrElse(it) { values.first() } },
+    valueToIndex = { values.indexOf(it).coerceAtLeast(0) },
+)
+
+private fun a11yPercentSlider(
+    @StringRes title: Int,
+    max: Long,
+    interval: Int = 10,
+    get: (AccessibilityPreferences) -> Int,
+    set: AccessibilityPreferences.Builder.(Int) -> Unit,
+) = AppSliderPreference<AppPreferences>(
+    title = title,
+    defaultValue = 0,
+    min = 0,
+    max = max,
+    interval = interval,
+    getter = { get(it.accessibilityPreferences).toLong() },
+    setter = { prefs, value -> prefs.updateAccessibilityPreferences { set(value.toInt()) } },
+    summarizer = { value -> value?.let { "$it%" } },
+)
 
 /**
  * Settings added by the accessibility fork. All of them live in [AccessibilityPreferences].
@@ -19,40 +69,28 @@ object AccessibilityPreference {
             destination = Destination.Settings(PreferenceScreenOption.ACCESSIBILITY),
         )
 
-    val CardAnnouncementsTitleOnly =
-        AppSwitchPreference<AppPreferences>(
-            title = R.string.a11y_card_title_only,
-            defaultValue = false,
-            getter = { it.accessibilityPreferences.cardAnnouncementsTitleOnly },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { cardAnnouncementsTitleOnly = value }
-            },
-            summary = R.string.a11y_card_title_only_summary,
-        )
+    // region Setup
 
     /** Turning this on shows the setup screen again straight away */
     val ShowSetupWizard =
-        AppSwitchPreference<AppPreferences>(
+        a11ySwitch(
             title = R.string.a11y_wizard_show,
-            defaultValue = true,
-            getter = { !it.accessibilityPreferences.setupWizardDone },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { setupWizardDone = !value }
-            },
             summary = R.string.a11y_wizard_show_summary,
+            defaultValue = true,
+            get = { !it.setupWizardDone },
+            set = { setupWizardDone = !it },
         )
+
+    // endregion
 
     // region Focus
 
     val FocusRingEnabled =
-        AppSwitchPreference<AppPreferences>(
+        a11ySwitch(
             title = R.string.a11y_focus_ring,
-            defaultValue = false,
-            getter = { it.accessibilityPreferences.focusRingEnabled },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { focusRingEnabled = value }
-            },
             summary = R.string.a11y_focus_ring_summary,
+            get = { it.focusRingEnabled },
+            set = { focusRingEnabled = it },
         )
 
     const val DEFAULT_FOCUS_RING_THICKNESS = 4
@@ -75,16 +113,36 @@ object AccessibilityPreference {
         )
 
     val FocusRingColorPref =
-        AppChoicePreference<AppPreferences, FocusRingColor>(
+        a11yChoice(
             title = R.string.a11y_focus_ring_color,
-            defaultValue = FocusRingColor.FOCUS_RING_WHITE,
             displayValues = R.array.a11y_focus_ring_colors,
-            getter = { it.accessibilityPreferences.focusRingColor },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { focusRingColor = value }
-            },
-            indexToValue = { FocusRingColor.forNumber(it) ?: FocusRingColor.FOCUS_RING_WHITE },
-            valueToIndex = { if (it != FocusRingColor.UNRECOGNIZED) it.number else 0 },
+            values =
+                listOf(
+                    FocusRingColor.FOCUS_RING_WHITE,
+                    FocusRingColor.FOCUS_RING_YELLOW,
+                    FocusRingColor.FOCUS_RING_CYAN,
+                    FocusRingColor.FOCUS_RING_MAGENTA,
+                    FocusRingColor.FOCUS_RING_THEME,
+                ),
+            get = { it.focusRingColor },
+            set = { focusRingColor = it },
+        )
+
+    val FocusCuePref =
+        a11yChoice(
+            title = R.string.a11y_focus_cue,
+            displayValues = R.array.a11y_focus_cues,
+            values = listOf(FocusCue.FOCUS_CUE_NONE, FocusCue.FOCUS_CUE_FILL, FocusCue.FOCUS_CUE_UNDERLINE),
+            get = { it.focusCue },
+            set = { focusCue = it },
+        )
+
+    val DimUnfocused =
+        a11yPercentSlider(
+            title = R.string.a11y_dim_unfocused,
+            max = 60,
+            get = { it.dimUnfocusedPercent },
+            set = { dimUnfocusedPercent = it },
         )
 
     // endregion
@@ -94,46 +152,108 @@ object AccessibilityPreference {
     /** Text scale choices in percent. 0 means follow the system font scale. */
     val textScaleValues = listOf(0, 85, 100, 115, 130, 150, 175, 200)
     val TextScale =
-        AppChoicePreference<AppPreferences, Int>(
+        a11yChoice(
             title = R.string.a11y_text_size,
-            defaultValue = 0,
             displayValues = R.array.a11y_text_sizes,
-            getter = { it.accessibilityPreferences.textScalePercent },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { textScalePercent = value }
-            },
-            indexToValue = { textScaleValues.getOrElse(it) { 0 } },
-            valueToIndex = { textScaleValues.indexOf(it).coerceAtLeast(0) },
+            values = textScaleValues,
+            get = { it.textScalePercent },
+            set = { textScalePercent = it },
         )
 
     /** Interface zoom choices in percent. Stored as 0 for 100% so the proto default is upstream. */
     val uiZoomValues = listOf(100, 110, 125, 140)
     val UiZoom =
-        AppChoicePreference<AppPreferences, Int>(
+        a11yChoice(
             title = R.string.a11y_ui_zoom,
-            defaultValue = 100,
             displayValues = R.array.a11y_ui_zooms,
-            getter = {
-                it.accessibilityPreferences.uiZoomPercent
-                    .takeIf { v -> v > 0 } ?: 100
-            },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { uiZoomPercent = if (value == 100) 0 else value }
-            },
-            indexToValue = { uiZoomValues.getOrElse(it) { 100 } },
-            valueToIndex = { uiZoomValues.indexOf(it).coerceAtLeast(0) },
+            values = uiZoomValues,
+            get = { it.uiZoomPercent.takeIf { v -> v > 0 } ?: 100 },
+            set = { uiZoomPercent = if (it == 100) 0 else it },
+        )
+
+    val minTextSizeValues = listOf(0, 14, 16, 18, 20)
+    val MinTextSize =
+        a11yChoice(
+            title = R.string.a11y_min_text_size,
+            displayValues = R.array.a11y_min_text_sizes,
+            values = minTextSizeValues,
+            get = { it.minTextSizeSp },
+            set = { minTextSizeSp = it },
+        )
+
+    val AppFont =
+        a11yChoice(
+            title = R.string.a11y_font,
+            displayValues = R.array.a11y_fonts,
+            values =
+                listOf(
+                    A11yFont.A11Y_FONT_DEFAULT,
+                    A11yFont.A11Y_FONT_ATKINSON,
+                    A11yFont.A11Y_FONT_LEXEND,
+                    A11yFont.A11Y_FONT_OPEN_DYSLEXIC,
+                ),
+            get = { it.appFont },
+            set = { appFont = it },
+        )
+
+    val lineHeightValues = listOf(0, 15, 30, 50)
+    val LineHeight =
+        a11yChoice(
+            title = R.string.a11y_line_height,
+            displayValues = R.array.a11y_line_heights,
+            values = lineHeightValues,
+            get = { it.lineHeightPercent },
+            set = { lineHeightPercent = it },
+        )
+
+    val letterSpacingValues = listOf(0, 30, 60, 120)
+    val LetterSpacing =
+        a11yChoice(
+            title = R.string.a11y_letter_spacing,
+            displayValues = R.array.a11y_letter_spacings,
+            values = letterSpacingValues,
+            get = { it.letterSpacingPermille },
+            set = { letterSpacingPermille = it },
         )
 
     val PlainTextTitles =
-        AppSwitchPreference<AppPreferences>(
+        a11ySwitch(
             title = R.string.a11y_plain_titles,
+            summary = R.string.a11y_plain_titles_summary,
             // On by default: the one deliberate difference from upstream
             defaultValue = true,
-            getter = { !it.accessibilityPreferences.allowLogoTitles },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { allowLogoTitles = !value }
-            },
-            summary = R.string.a11y_plain_titles_summary,
+            get = { !it.allowLogoTitles },
+            set = { allowLogoTitles = !it },
+        )
+
+    val AlwaysShowCardTitles =
+        a11ySwitch(
+            title = R.string.a11y_always_titles,
+            summary = R.string.a11y_always_titles_summary,
+            get = { it.alwaysShowCardTitles },
+            set = { alwaysShowCardTitles = it },
+        )
+
+    // endregion
+
+    // region Simplified layout
+
+    val maxHomeRowValues = listOf(0, 2, 3, 4, 6)
+    val MaxHomeRows =
+        a11yChoice(
+            title = R.string.a11y_max_home_rows,
+            displayValues = R.array.a11y_max_home_rows_values,
+            values = maxHomeRowValues,
+            get = { it.maxHomeRows },
+            set = { maxHomeRows = it },
+        )
+
+    val HideTechnicalDetails =
+        a11ySwitch(
+            title = R.string.a11y_hide_tech,
+            summary = R.string.a11y_hide_tech_summary,
+            get = { it.hideTechnicalDetails },
+            set = { hideTechnicalDetails = it },
         )
 
     // endregion
@@ -141,33 +261,77 @@ object AccessibilityPreference {
     // region Colour & contrast
 
     val HighContrast =
-        AppChoicePreference<AppPreferences, HighContrastMode>(
+        a11yChoice(
             title = R.string.a11y_high_contrast,
-            defaultValue = HighContrastMode.HIGH_CONTRAST_OFF,
             displayValues = R.array.a11y_high_contrast_modes,
-            getter = { it.accessibilityPreferences.highContrast },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { highContrast = value }
-            },
-            indexToValue = { HighContrastMode.forNumber(it) ?: HighContrastMode.HIGH_CONTRAST_OFF },
-            valueToIndex = { if (it != HighContrastMode.UNRECOGNIZED) it.number else 0 },
+            values =
+                listOf(
+                    HighContrastMode.HIGH_CONTRAST_OFF,
+                    HighContrastMode.HIGH_CONTRAST_WHITE_ON_BLACK,
+                    HighContrastMode.HIGH_CONTRAST_YELLOW_ON_BLACK,
+                    HighContrastMode.HIGH_CONTRAST_BLACK_ON_WHITE,
+                    HighContrastMode.HIGH_CONTRAST_COLOR_BLIND,
+                ),
+            get = { it.highContrast },
+            set = { highContrast = it },
+        )
+
+    val Accent =
+        a11yChoice(
+            title = R.string.a11y_accent,
+            displayValues = R.array.a11y_accents,
+            values =
+                listOf(
+                    AccentColor.ACCENT_DEFAULT,
+                    AccentColor.ACCENT_ORANGE,
+                    AccentColor.ACCENT_CYAN,
+                    AccentColor.ACCENT_LIME,
+                    AccentColor.ACCENT_PINK,
+                    AccentColor.ACCENT_WHITE,
+                ),
+            get = { it.accentColor },
+            set = { accentColor = it },
         )
 
     val BackdropDim =
-        AppSliderPreference<AppPreferences>(
+        a11yPercentSlider(
             title = R.string.a11y_backdrop_dim,
-            defaultValue = 0,
-            min = 0,
             max = 90,
-            interval = 10,
-            getter = {
-                it.accessibilityPreferences.backdropDimPercent
-                    .toLong()
-            },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { backdropDimPercent = value.toInt() }
-            },
-            summarizer = { value -> value?.let { "$it%" } },
+            get = { it.backdropDimPercent },
+            set = { backdropDimPercent = it },
+        )
+
+    val ArtworkDim =
+        a11yPercentSlider(
+            title = R.string.a11y_artwork_dim,
+            max = 50,
+            get = { it.artworkDimPercent },
+            set = { artworkDimPercent = it },
+        )
+
+    val ArtworkDesaturate =
+        a11yPercentSlider(
+            title = R.string.a11y_artwork_desaturate,
+            max = 100,
+            interval = 25,
+            get = { it.artworkDesaturatePercent },
+            set = { artworkDesaturatePercent = it },
+        )
+
+    val HighVisibilityStatus =
+        a11ySwitch(
+            title = R.string.a11y_status_indicators,
+            summary = R.string.a11y_status_indicators_summary,
+            get = { it.highVisibilityStatus },
+            set = { highVisibilityStatus = it },
+        )
+
+    val ShowProgressPercent =
+        a11ySwitch(
+            title = R.string.a11y_progress_percent,
+            summary = R.string.a11y_progress_percent_summary,
+            get = { it.showProgressPercent },
+            set = { showProgressPercent = it },
         )
 
     // endregion
@@ -175,31 +339,55 @@ object AccessibilityPreference {
     // region Motion
 
     val ReduceMotion =
-        AppSwitchPreference<AppPreferences>(
+        a11ySwitch(
             title = R.string.a11y_reduce_motion,
-            defaultValue = false,
-            getter = { it.accessibilityPreferences.reduceMotion },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { reduceMotion = value }
-            },
             summary = R.string.a11y_reduce_motion_summary,
+            get = { it.reduceMotion },
+            set = { reduceMotion = it },
         )
 
     val StaticBackdrop =
-        AppSwitchPreference<AppPreferences>(
+        a11ySwitch(
             title = R.string.a11y_static_backdrop,
-            defaultValue = false,
-            getter = { it.accessibilityPreferences.staticBackdrop },
-            setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { staticBackdrop = value }
-            },
             summary = R.string.a11y_static_backdrop_summary,
+            get = { it.staticBackdrop },
+            set = { staticBackdrop = it },
+        )
+
+    val NavRepeat =
+        a11yChoice(
+            title = R.string.a11y_nav_repeat,
+            displayValues = R.array.a11y_nav_repeats,
+            values =
+                listOf(
+                    NavRepeatSpeed.NAV_REPEAT_NORMAL,
+                    NavRepeatSpeed.NAV_REPEAT_SLOW,
+                    NavRepeatSpeed.NAV_REPEAT_VERY_SLOW,
+                ),
+            get = { it.navRepeatSpeed },
+            set = { navRepeatSpeed = it },
+        )
+
+    // endregion
+
+    // region Screen reader
+
+    val CardAnnouncementsTitleOnly =
+        a11ySwitch(
+            title = R.string.a11y_card_title_only,
+            summary = R.string.a11y_card_title_only_summary,
+            get = { it.cardAnnouncementsTitleOnly },
+            set = { cardAnnouncementsTitleOnly = it },
         )
 
     // endregion
 }
 
-val accessibilityPreferences =
+/**
+ * Lazy because this list and the upstream preference lists refer to each other, which otherwise
+ * leaves some entries null depending on which file is loaded first.
+ */
+val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
     listOf(
         PreferenceGroup(
             title = R.string.a11y_group_setup,
@@ -224,6 +412,14 @@ val accessibilityPreferences =
                                 AccessibilityPreference.FocusRingColorPref,
                             ),
                     ),
+                    ConditionalPreferences(
+                        condition = { true },
+                        preferences =
+                            listOf(
+                                AccessibilityPreference.FocusCuePref,
+                                AccessibilityPreference.DimUnfocused,
+                            ),
+                    ),
                 ),
         ),
         PreferenceGroup(
@@ -232,7 +428,20 @@ val accessibilityPreferences =
                 listOf(
                     AccessibilityPreference.TextScale,
                     AccessibilityPreference.UiZoom,
+                    AccessibilityPreference.MinTextSize,
+                    AccessibilityPreference.AppFont,
+                    AccessibilityPreference.LineHeight,
+                    AccessibilityPreference.LetterSpacing,
                     AccessibilityPreference.PlainTextTitles,
+                    AccessibilityPreference.AlwaysShowCardTitles,
+                ),
+        ),
+        PreferenceGroup(
+            title = R.string.a11y_group_simplified,
+            preferences =
+                listOf(
+                    AccessibilityPreference.MaxHomeRows,
+                    AccessibilityPreference.HideTechnicalDetails,
                 ),
         ),
         PreferenceGroup(
@@ -240,9 +449,14 @@ val accessibilityPreferences =
             preferences =
                 listOf(
                     AccessibilityPreference.HighContrast,
+                    AccessibilityPreference.Accent,
                     // Existing upstream setting, repeated here so it is easy to find
                     AppPreference.BackdropStylePref,
                     AccessibilityPreference.BackdropDim,
+                    AccessibilityPreference.ArtworkDim,
+                    AccessibilityPreference.ArtworkDesaturate,
+                    AccessibilityPreference.HighVisibilityStatus,
+                    AccessibilityPreference.ShowProgressPercent,
                 ),
         ),
         PreferenceGroup(
@@ -258,8 +472,10 @@ val accessibilityPreferences =
                 listOf(
                     AccessibilityPreference.ReduceMotion,
                     AccessibilityPreference.StaticBackdrop,
+                    AccessibilityPreference.NavRepeat,
                     // Existing upstream setting, repeated here so it is easy to find
                     AppPreference.PlayThemeMusic,
                 ),
         ),
     )
+}

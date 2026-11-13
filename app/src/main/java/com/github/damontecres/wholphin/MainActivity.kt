@@ -37,6 +37,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import com.github.damontecres.wholphin.data.ServerRepository
 import com.github.damontecres.wholphin.preferences.AppPreferences
+import com.github.damontecres.wholphin.preferences.NavRepeatSpeed
 import com.github.damontecres.wholphin.preferences.PlayerBackend
 import com.github.damontecres.wholphin.preferences.updateAccessibilityPreferences
 import com.github.damontecres.wholphin.services.AppUpgradeHandler
@@ -77,6 +78,7 @@ import com.github.damontecres.wholphin.ui.theme.toSettings
 import com.github.damontecres.wholphin.ui.util.ProvideLocalClock
 import com.github.damontecres.wholphin.util.DebugLogTree
 import com.github.damontecres.wholphin.util.ExceptionHandler
+import com.github.damontecres.wholphin.util.KeyRepeatThrottle
 import com.github.damontecres.wholphin.util.WholphinDispatchers
 import com.github.damontecres.wholphin.util.requestSerializersModule
 import dagger.hilt.android.AndroidEntryPoint
@@ -233,6 +235,12 @@ class MainActivity : AppCompatActivity() {
 
         userPreferencesDataStore.data.collectLatestIn(lifecycleScope) { prefs ->
             A11yMotionDurationScale.reduceMotion = prefs.accessibilityPreferences.reduceMotion
+            KeyRepeatThrottle.intervalMs =
+                when (prefs.accessibilityPreferences.navRepeatSpeed) {
+                    NavRepeatSpeed.NAV_REPEAT_SLOW -> 250
+                    NavRepeatSpeed.NAV_REPEAT_VERY_SLOW -> 500
+                    else -> 0
+                }
             signInAuto = prefs.signInAutomatically
             playerBackend = prefs.playbackPreferences.playerBackend
         }
@@ -346,6 +354,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Accessibility: optionally slow down movement while a direction button is held
+        if (KeyRepeatThrottle.shouldDrop(event)) {
+            return true
+        }
         if (screensaverService.state.value.run { show || showDim }) {
             screensaverService.stop(false)
             screensaverService.pulse()

@@ -20,11 +20,41 @@ enum FocusRingColor {
   FOCUS_RING_THEME = 4;
 }
 
+enum FocusCue {
+  FOCUS_CUE_NONE = 0;
+  FOCUS_CUE_FILL = 1;
+  FOCUS_CUE_UNDERLINE = 2;
+}
+
 enum HighContrastMode {
   HIGH_CONTRAST_OFF = 0;
   HIGH_CONTRAST_WHITE_ON_BLACK = 1;
   HIGH_CONTRAST_YELLOW_ON_BLACK = 2;
   HIGH_CONTRAST_BLACK_ON_WHITE = 3;
+  // Blue and orange, safe for the common forms of colour blindness
+  HIGH_CONTRAST_COLOR_BLIND = 4;
+}
+
+enum A11yFont {
+  A11Y_FONT_DEFAULT = 0;
+  A11Y_FONT_ATKINSON = 1;
+  A11Y_FONT_LEXEND = 2;
+  A11Y_FONT_OPEN_DYSLEXIC = 3;
+}
+
+enum AccentColor {
+  ACCENT_DEFAULT = 0;
+  ACCENT_ORANGE = 1;
+  ACCENT_CYAN = 2;
+  ACCENT_LIME = 3;
+  ACCENT_PINK = 4;
+  ACCENT_WHITE = 5;
+}
+
+enum NavRepeatSpeed {
+  NAV_REPEAT_NORMAL = 0;
+  NAV_REPEAT_SLOW = 1;
+  NAV_REPEAT_VERY_SLOW = 2;
 }
 
 message AccessibilityPreferences {
@@ -33,6 +63,10 @@ message AccessibilityPreferences {
   // Thickness in dp; 0 means the default of 4dp
   int32 focus_ring_thickness_dp = 2;
   FocusRingColor focus_ring_color = 3;
+  // An extra cue besides colour and size
+  FocusCue focus_cue = 4;
+  // Darkens everything except the focused item, 0-60
+  int32 dim_unfocused_percent = 5;
 
   // --- Text & layout (10-19) ---
   // Text size as a percentage; 0 means follow the system font scale
@@ -44,23 +78,50 @@ message AccessibilityPreferences {
   // Media titles are shown as text in the standard font unless this is set. This is the one
   // place where the fork's default differs from upstream on purpose.
   bool allow_logo_titles = 13;
+  // No themed text is smaller than this many sp; 0 means no minimum
+  int32 min_text_size_sp = 14;
+  A11yFont app_font = 15;
+  // Extra line height as a percentage of the normal height; 0 means unchanged
+  int32 line_height_percent = 16;
+  // Extra letter spacing in thousandths of an em; 0 means unchanged
+  int32 letter_spacing_permille = 17;
+  // Show titles under cards even where a row or library has them turned off
+  bool always_show_card_titles = 18;
+  // Show at most this many rows on the home page; 0 means no limit
+  int32 max_home_rows = 19;
 
   // --- Motion (20-29) ---
   bool reduce_motion = 20;
   // Keep the background image still while moving between items on a page
   bool static_backdrop = 21;
+  // How fast focus moves while a direction button is held down
+  NavRepeatSpeed nav_repeat_speed = 22;
 
   // --- Colour & contrast (30-39) ---
   // Overrides the application theme when not off
   HighContrastMode high_contrast = 30;
   // Darkens the background image behind text, 0-90
   int32 backdrop_dim_percent = 31;
+  // Replaces the accent colour of the application theme
+  AccentColor accent_color = 32;
+  // Darkens posters and other artwork, 0-50
+  int32 artwork_dim_percent = 33;
+  // Removes colour from artwork, 0-100
+  int32 artwork_desaturate_percent = 34;
+  // Watched marks and progress bars drawn in black and white with outlines
+  bool high_visibility_status = 35;
+  // Show the watched percentage as a number on cards
+  bool show_progress_percent = 36;
+
+  // --- Setup (40-49) ---
+  // The first-run accessibility setup screen is shown until this is set
+  bool setup_wizard_done = 40;
 
   // --- Screen reader (50-59) ---
   // Cards announce only their title instead of title, year and watched status
   bool card_announcements_title_only = 50;
 
-  // --- Setup (40-49) ---
-  // The first-run accessibility setup screen is shown until this is set
-  bool setup_wizard_done = 40;
+  // --- Simplified layout (60-69) ---
+  // Hide resolution, codec and audio format chips
+  bool hide_technical_details = 60;
 }

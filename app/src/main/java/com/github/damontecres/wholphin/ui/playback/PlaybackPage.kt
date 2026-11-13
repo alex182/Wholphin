@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -92,6 +93,7 @@ import com.github.damontecres.wholphin.ui.playback.overlay.rememberSeekBarState
 import com.github.damontecres.wholphin.ui.preferences.subtitle.SubtitleSettings.applyTo
 import com.github.damontecres.wholphin.ui.preferences.subtitle.SubtitleSettings.calculateEdgeSize
 import com.github.damontecres.wholphin.ui.seasonEpisode
+import com.github.damontecres.wholphin.ui.theme.A11yLayout
 import com.github.damontecres.wholphin.ui.tryRequestFocus
 import com.github.damontecres.wholphin.util.ExceptionHandler
 import com.github.damontecres.wholphin.util.LoadingState
@@ -119,6 +121,11 @@ fun PlaybackPage(
             creationCallback = { it.create(destination) },
         ),
 ) {
+    // Accessibility: tells the focus overlay not to dim the video around the controls
+    DisposableEffect(Unit) {
+        A11yLayout.inPlayer = true
+        onDispose { A11yLayout.inPlayer = false }
+    }
     LifecycleStartEffect(destination) {
         onStopOrDispose {
             viewModel.release()

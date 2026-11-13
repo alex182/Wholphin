@@ -2,6 +2,7 @@ package com.github.damontecres.wholphin.ui.theme
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 /**
@@ -12,6 +13,9 @@ import androidx.compose.runtime.setValue
  */
 object A11yLayout {
     var uiZoom by mutableFloatStateOf(1f)
+
+    /** True while the video player is on screen, where dimming around the focus is not wanted */
+    var inPlayer by mutableStateOf(false)
 
     /** TV screens are 540dp tall before zooming */
     private const val SCREEN_HEIGHT_DP = 540f

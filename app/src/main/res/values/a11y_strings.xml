@@ -57,6 +57,7 @@
         <item>White on black</item>
         <item>Yellow on black</item>
         <item>Black on white</item>
+        <item>Color-blind friendly (blue and orange)</item>
     </string-array>
 
     <string name="a11y_backdrop_dim">Dim background image</string>
@@ -88,5 +89,80 @@
         <item>High visibility (large yellow on dark)</item>
         <item>Low vision (extra large, solid box)</item>
         <item>Minimal</item>
+    </string-array>
+
+    <string name="a11y_focus_cue">Extra focus cue</string>
+    <string-array name="a11y_focus_cues">
+        <item>None</item>
+        <item>Highlight the selected item</item>
+        <item>Underline the selected item</item>
+    </string-array>
+    <string name="a11y_dim_unfocused">Dim everything except the selected item</string>
+
+    <string name="a11y_min_text_size">Smallest text size</string>
+    <string-array name="a11y_min_text_sizes">
+        <item>No minimum</item>
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+        <item>20</item>
+    </string-array>
+    <string name="a11y_font">Font</string>
+    <string-array name="a11y_fonts">
+        <item>Default</item>
+        <item>Atkinson Hyperlegible</item>
+        <item>Lexend</item>
+        <item>OpenDyslexic</item>
+    </string-array>
+    <string name="a11y_line_height">Line spacing</string>
+    <string-array name="a11y_line_heights">
+        <item>Normal</item>
+        <item>+15%</item>
+        <item>+30%</item>
+        <item>+50%</item>
+    </string-array>
+    <string name="a11y_letter_spacing">Letter spacing</string>
+    <string-array name="a11y_letter_spacings">
+        <item>Normal</item>
+        <item>Slightly wider</item>
+        <item>Wider</item>
+        <item>Widest</item>
+    </string-array>
+    <string name="a11y_always_titles">Always show titles under cards</string>
+    <string name="a11y_always_titles_summary">Even where a row or library has titles turned off</string>
+
+    <string name="a11y_group_simplified">Simplified layout</string>
+    <string name="a11y_max_home_rows">Home page rows</string>
+    <string-array name="a11y_max_home_rows_values">
+        <item>Show all</item>
+        <item>First 2</item>
+        <item>First 3</item>
+        <item>First 4</item>
+        <item>First 6</item>
+    </string-array>
+    <string name="a11y_hide_tech">Hide technical details</string>
+    <string name="a11y_hide_tech_summary">Hide the resolution, codec and audio format labels</string>
+
+    <string name="a11y_accent">Accent color</string>
+    <string-array name="a11y_accents">
+        <item>Theme default</item>
+        <item>Orange</item>
+        <item>Cyan</item>
+        <item>Lime</item>
+        <item>Pink</item>
+        <item>White</item>
+    </string-array>
+    <string name="a11y_artwork_dim">Dim posters and artwork</string>
+    <string name="a11y_artwork_desaturate">Remove color from artwork</string>
+    <string name="a11y_status_indicators">High-visibility status indicators</string>
+    <string name="a11y_status_indicators_summary">Black and white watched marks and progress bars with outlines</string>
+    <string name="a11y_progress_percent">Show progress as a number</string>
+    <string name="a11y_progress_percent_summary">Show the watched percentage on cards</string>
+
+    <string name="a11y_nav_repeat">Speed when holding a direction</string>
+    <string-array name="a11y_nav_repeats">
+        <item>Normal</item>
+        <item>Slow</item>
+        <item>Very slow</item>
     </string-array>
 </resources>

@@ -65,6 +65,7 @@ import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.playback.scale
 import com.github.damontecres.wholphin.ui.rememberInt
 import com.github.damontecres.wholphin.ui.showToast
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.toServerString
 import com.github.damontecres.wholphin.ui.tryRequestFocus
 import com.github.damontecres.wholphin.ui.util.goToRandom
@@ -928,7 +929,7 @@ fun CollectionFolderViewContent(
             imageContentScale = viewOptions.contentScale.scale,
             imageAspectRatio = viewOptions.aspectRatio.ratio,
             imageType = viewOptions.imageType,
-            showTitle = viewOptions.showTitles,
+            showTitle = viewOptions.showTitles || LocalAccessibility.current.alwaysShowCardTitles,
             fillWidth = widthPx,
             modifier = mod,
         )

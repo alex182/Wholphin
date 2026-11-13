@@ -5,6 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.tv.material3.MaterialTheme
@@ -44,11 +45,23 @@ fun WholphinTheme(
     // Accessibility: a high-contrast mode replaces the chosen application theme
     val themeColors = accessibility.highContrastColors ?: getThemeColors(appThemeColors)
 
-    val colorScheme =
+    val baseColorScheme =
         when {
             darkTheme -> themeColors.darkScheme
             else -> themeColors.lightScheme
         }
+    // Accessibility: optional accent colour (not used with high contrast, which has its own)
+    val accent = accessibility.accentColor.takeIf { accessibility.highContrastColors == null }
+    val colorScheme =
+        remember(baseColorScheme, accent) {
+            if (accent != null) {
+                baseColorScheme.copy(primary = accent, onPrimary = Color.Black, border = accent)
+            } else {
+                baseColorScheme
+            }
+        }
+    // Accessibility: font, minimum size, line height and letter spacing
+    val typography = remember(accessibility) { AppTypography.withAccessibility(accessibility) }
     // Accessibility: text size and interface zoom are applied by overriding the density
     val baseDensity = LocalDensity.current
     val density =
@@ -72,7 +85,7 @@ fun WholphinTheme(
         ) {
             MaterialTheme(
                 colorScheme = colorScheme,
-                typography = AppTypography,
+                typography = typography,
                 content = content,
             )
         }

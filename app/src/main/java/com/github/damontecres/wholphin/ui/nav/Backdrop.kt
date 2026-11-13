@@ -37,6 +37,7 @@ import coil3.request.transitionFactory
 import com.github.damontecres.wholphin.preferences.BackdropStyle
 import com.github.damontecres.wholphin.services.BackdropResult
 import com.github.damontecres.wholphin.ui.CrossFadeFactory
+import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -163,6 +164,7 @@ fun Backdrop(
                         .transitionFactory(CrossFadeFactory(crossfadeDuration))
                         .build(),
                 contentDescription = null,
+                colorFilter = rememberArtworkColorFilter(),
                 contentScale = ContentScale.Fit,
                 alignment = Alignment.TopEnd,
                 modifier =

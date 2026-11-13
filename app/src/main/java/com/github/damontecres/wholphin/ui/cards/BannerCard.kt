@@ -46,6 +46,7 @@ import com.github.damontecres.wholphin.ui.AspectRatios
 import com.github.damontecres.wholphin.ui.Cards
 import com.github.damontecres.wholphin.ui.FontAwesome
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
+import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.enableMarquee
 import org.jellyfin.sdk.model.api.ImageType
 
@@ -134,6 +135,7 @@ fun BannerCard(
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = null,
+                    colorFilter = rememberArtworkColorFilter(),
                     contentScale = imageContentScale,
                     onError = remember { { imageError = true } },
                     modifier = Modifier.fillMaxSize(),
@@ -205,6 +207,7 @@ fun BannerCard(
                             .fillMaxWidth((playPercent / 100).toFloat()),
                 )
             }
+            A11yProgressExtras(playPercent)
         }
     }
 }

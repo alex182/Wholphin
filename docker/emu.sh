@@ -8,6 +8,7 @@
 #   docker/emu.sh login              clear app data and sign in to the test server
 #   docker/emu.sh start              bring the app to the front
 #   docker/emu.sh a11y               from home, open Settings > Accessibility
+#   docker/emu.sh prefs <n=v...>     set accessibility settings by proto field number
 #   docker/emu.sh adb <args...>      run any adb command
 set -euo pipefail
 C=wholphin-a11y-emu
@@ -61,6 +62,15 @@ case "$cmd" in
     # From the home page with a card focused, open Settings > Accessibility
     # Settings is the last item in the side menu, so pressing down repeatedly always reaches it
     "$0" key DPAD_LEFT DPAD_LEFT DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 2; "$0" key DPAD_CENTER; sleep 2 ;;
+  prefs)
+    # Set accessibility settings directly, e.g.: docker/emu.sh prefs 1=1 11=125 30=1
+    # (field numbers from WholphinAccessibility.proto). Restarts the app.
+    PKG=com.github.alex182.wholphin.accessible.debug
+    HERE="$(cd "$(dirname "$0")" && pwd)"
+    HEX=$(python3 -I "$HERE/a11y_prefs.py" "$@" | od -An -v -tx1 | tr -d ' \n' | sed 's/../\\x&/g')
+    docker exec "$C" adb shell am force-stop "$PKG"
+    docker exec "$C" adb shell "run-as $PKG sh -c 'printf \"$HEX\" >> files/datastore/app_preferences.pb'"
+    "$0" start ;;
   adb)
     docker exec "$C" adb "$@" ;;
   *) echo "usage: $0 install|shot|key|adb"; exit 1 ;;

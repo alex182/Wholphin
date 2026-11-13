@@ -67,6 +67,7 @@ class TestThemeContrast {
                 "White on black" to HighContrastThemeColors.WhiteOnBlack,
                 "Yellow on black" to HighContrastThemeColors.YellowOnBlack,
                 "Black on white" to HighContrastThemeColors.BlackOnWhite,
+                "Color-blind friendly" to HighContrastThemeColors.ColorBlind,
             )
         val failures = mutableListOf<String>()
         themes.forEach { (name, theme) ->
