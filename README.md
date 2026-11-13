@@ -1,5 +1,7 @@
 # Wholphin - an OSS Android TV client for Jellyfin
 
+> **This is Wholphin Accessible**, a fork of [damontecres/Wholphin](https://github.com/damontecres/Wholphin) that adds visual accessibility options: a high-visibility focus outline, text size and interface zoom, high-contrast and colour-blind-friendly modes, legibility fonts, reduced motion, larger player controls, subtitle presets, spoken item names and screen reader labels. Everything is under **Settings > Accessibility** and is off by default, apart from plain text titles. See [ACCESSIBILITY_ROADMAP.md](ACCESSIBILITY_ROADMAP.md) for what is done and what is not, and [docs/ACCESSIBILITY_TESTING.md](docs/ACCESSIBILITY_TESTING.md) for how it is tested. The rest of this page is upstream's README.
+
 > "Never half-phin two jellies. Always wholphin one jelly."
 
 Wholphin is an open-source Android TV client for Jellyfin. It aims to provide a different app UI that's inspired by Plex for users interested in migrating to Jellyfin.

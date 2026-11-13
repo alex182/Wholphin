@@ -6,35 +6,91 @@ This file breaks the roadmap into tickets. Each ticket is sized to be roughly on
 
 ## Status
 
-Updated as tickets land on the `accessible` branch. "Checked on emulator" means it was tried on the Android TV emulator container against a test Jellyfin server.
+All work is on the `accessible` branch. Every setting below is under **Settings > Accessibility** and changes apply without a restart. "Emulator" means it was tried on the Android TV emulator container against a test Jellyfin server; "tests" means unit tests only.
 
-| Ticket | Status | Notes |
+**Not possible in this environment:** running TalkBack (the emulator image does not include it) and hearing audio. Screen reader work was checked through the app's accessibility tree and the text-to-speech log instead. A manual pass on a real device is still needed; see `docs/ACCESSIBILITY_TESTING.md`.
+
+| Ticket | Status | What was built / notes | Checked |
+|---|---|---|---|
+| A11Y-001 | Done | `WholphinAccessibility.proto`, field 1000 on `AppPreferences`. Every default is upstream behaviour, so no migration. | Tests |
+| A11Y-002 | Done | `LocalAccessibility` (`ui/theme/Accessibility.kt`). | Tests |
+| A11Y-003 | Done | System font and animation scale are followed by default. TalkBack is detected (used to silence "Speak selected item"). | Tests |
+| A11Y-004 | Done | Settings > Accessibility, first entry in Settings. | Emulator |
+| A11Y-101, 102 | Done | High-visibility focus outline, drawn by one app-wide overlay (also inside dialogs). Thickness and colour settings. Skips anything covering half the screen. | Emulator: home, settings, dialogs, details, player. Not live TV, music, search, Seerr. |
+| A11Y-103 | Done | "Extra focus cue": highlight or underline. | Emulator (underline is hidden behind the outline when both are on) |
+| A11Y-104 | Done | "Dim everything except the selected item" (0-60%). Not applied over video. | Emulator |
+| A11Y-105 | Covered by zoom | Interface zoom enlarges targets and spacing together. No separate spacing setting. | - |
+| A11Y-106 | Done | "Speak selected item" reads the focused item with text-to-speech. Silent during playback and while TalkBack runs. Not active inside dialogs. No speech rate setting. | Emulator log shows the right text; audio not heard |
+| A11Y-201 | Done | Text size: follow system or 85-200%. | Emulator at 150%. With 125% zoom the details line under a title is cut short. |
+| A11Y-202 | Done differently | **Interface zoom** (100/110/125/140%) instead of card-size presets. Home header shrinks when zoomed. | Emulator at 125% (home, details, player). 110% and 140% not checked. Other pages' headers not adapted. |
+| A11Y-203 | Done | "Smallest text size" (14-20). Applies to themed text styles; text with a hard-coded size is not raised. | Emulator at 18 |
+| A11Y-204 | Partly done | "Always show titles under cards". Wrapping titles onto several lines is not done. | Emulator |
+| A11Y-205 | Partly done | "Home page rows" limit and "Hide technical details". No single combined switch. | Tests / compile only |
+| A11Y-206 | Done | Fonts: Atkinson Hyperlegible, Lexend, OpenDyslexic (about 650 KB, OFL; see `FONT_LICENSES.md`). Not yet listed on the in-app licence screen. | Emulator (Atkinson) |
+| A11Y-207 | Done | Line spacing and letter spacing. | Tests |
+| A11Y-208 | Done | **Plain text titles**, on by default (the one default that differs from upstream). | Emulator |
+| A11Y-301 | Done differently | "High contrast" setting (white on black, yellow on black, black on white) that overrides the theme. | Emulator, all three |
+| A11Y-302 | Done | "Dim background image" (0-90%). | Emulator |
+| A11Y-303 | Already upstream | Backdrop style "None"; repeated under Accessibility. | - |
+| A11Y-304 | Partly done | One "Color-blind friendly (blue and orange)" mode. No per-deficiency themes and no simulation tests. | Tests (contrast) |
+| A11Y-305 | Done differently | "Accent color" with five preset colours, each tested for contrast on every theme. No free colour picker. | Emulator (cyan) |
+| A11Y-306 | Done | "High-visibility status indicators" and "Show progress as a number". | Compile only; the test library has no partly watched items |
+| A11Y-307 | Done | "Dim posters and artwork", "Remove color from artwork". Cards and backdrops only. | Tests |
+| A11Y-401 | Done, one switch | "Reduce motion" stops all animations. No per-animation switches. | Emulator |
+| A11Y-402 | Done | "Keep background still"; theme music setting repeated here. Upstream has no auto-playing trailers to turn off. | Not checked on emulator |
+| A11Y-403 | Covered | In-app screensaver follows Reduce motion and already has an upstream "Animate" setting. The system (Daydream) screensaver does not follow Reduce motion. | - |
+| A11Y-404 | Partly done | "Photosensitivity warning" pauses and asks before titles whose tags mention flashing, strobe, epilepsy or seizures. Depends on such tags existing on the server. The flashing-UI audit was not done. | Tests |
+| A11Y-405 | Done | "Speed when holding a direction" (normal, slow, very slow), app-wide. | Tests |
+| A11Y-501 | Mostly done | Player buttons have names; icon-font glyphs are hidden from screen readers. Icon-only buttons elsewhere that had only a glyph are now silent rather than read as a symbol and still need names. Ratings still contain glyphs. | Emulator tree and speech log |
+| A11Y-502 | Mostly done | Poster and banner cards describe themselves; "Short card announcements". Genre, studio, chapter and person cards rely on their visible text. | Emulator tree and speech log |
+| A11Y-503 | Partly done | Headings: row titles, settings sections, page titles, setup screen. Traversal order not reviewed. | Compile only |
+| A11Y-504 | Mostly done | Seek bar position; track change announcements ("Do not announce track changes" turns them off); named buttons. | Compile only |
+| A11Y-505 | Done | Loading and error announcements. No setting (screen reader only). | Compile only |
+| A11Y-506 | Not done | Forms and dialogs were not reviewed. | - |
+| A11Y-507 | Needs a device | Manual TalkBack script written in `docs/ACCESSIBILITY_TESTING.md`. | - |
+| A11Y-601 | Done | "Player controls size" (100/125/150%). | Emulator at 150% ("Ends at" wraps to two lines) |
+| A11Y-602 | Done | "Solid background behind controls". | Emulator |
+| A11Y-603 | Covered | Clock and "Ends at" already exist upstream and scale with A11Y-601. | - |
+| A11Y-604 | Covered | Seek preview and its timestamp scale with A11Y-601. | - |
+| A11Y-605 | Done | "Keep player controls on screen" (up to "until dismissed") and "Keep the skip button on screen". | Tests |
+| A11Y-701 | Done | Subtitle presets on the subtitle style page. | Tests |
+| A11Y-702 | Already upstream | The subtitle style page already has a live preview. | - |
+| A11Y-703 | Done, ExoPlayer only | "Subtitle font". MPV keeps its own font. | Compile only |
+| A11Y-704 | Done | Maximum subtitle size raised from 70 to 110. | Compile only |
+| A11Y-705 | Done | "Prefer subtitles for the deaf and hard of hearing". Only reorders tracks when subtitles would be shown anyway. | Tests |
+| A11Y-706 | Done | "Subtitles at the top" (text subtitles; ExoPlayer and MPV). No in-player toggle. | Compile only |
+| A11Y-707 | Done, MPV only | "Use my style for styled subtitles". | Compile only |
+| A11Y-708 | Done, ExoPlayer only | "Sound descriptions in subtitles": italic or coloured. | Tests (detection) |
+| A11Y-801 | Done | "Prefer audio description", detected from track titles. | Tests |
+| A11Y-802 | Covered | Now Playing follows text size, zoom, fonts and contrast; "show lyrics" already exists upstream. | Not checked |
+| A11Y-901 | Done | First-run "Accessibility setup"; can be shown again. | Emulator |
+| A11Y-902 | Done | "Quick settings shortcut": hold Menu, Info or Play/Pause to open a quick panel. Off by default. | Emulator (Menu) |
+| A11Y-903 | Done | "Separate settings for each profile". No "apply to all profiles" button in the UI yet (the function exists). | Tests |
+| A11Y-1001 | Done | `TestThemeContrast`. | Tests |
+| A11Y-1002 | Partly done | Render tests at extreme settings and a settings-coverage test. No screenshot comparison against upstream. | Tests |
+| A11Y-1003 | Done | `.github/workflows/accessibility.yml` builds and tests the `accessible` branch. Not yet seen running (Actions must be enabled on the fork). | - |
+| A11Y-1004 | Done | Docker dev and emulator containers, own app id and name, fork notes in CONTRIBUTING.md. Upstream had no new commits to merge yet. | - |
+| A11Y-1005 | Not started, on purpose | Offering changes upstream means opening issues on someone else's project, which is the fork owner's call. Candidates are listed below. | - |
+
+### Known gaps
+
+- TalkBack has not been run. Nothing involving audio has been heard.
+- Screens not looked at with the new settings: live TV, music, search, Seerr/Discover, photo slideshow, playlists.
+- Several subtitle options could not be seen working because the test videos have no subtitle tracks.
+- Interface zoom only adapts the home page header; other pages may clip at 140%.
+- Strings are English only; translations for the new settings are not done.
+
+### Candidates to offer upstream (A11Y-1005)
+
+| Change | Why it is self-contained | Status |
 |---|---|---|
-| A11Y-001 | Done | Stored in `WholphinAccessibility.proto`, field 1000 on `AppPreferences`. Every proto default is upstream behaviour, so no migration is needed. |
-| A11Y-002 | Done | `LocalAccessibility` in `ui/theme/Accessibility.kt`. |
-| A11Y-003 | Partly done | System font scale and animation scale are followed by default. TalkBack detection is still to do (needed by A11Y-106). |
-| A11Y-004 | Done | Settings > Accessibility, at the top of Settings. Checked on emulator. |
-| A11Y-101, 102 | Done | One app-wide overlay (`FocusRingOverlay`) outlines whatever has focus, including inside dialogs, instead of a modifier on every component. Thickness and colour settings. Skips anything covering half the screen or more (video, loading pages). Checked on emulator (home, settings, dialogs, details, player); not yet checked on every screen. |
-| A11Y-201 | Done | Text size: follow system or 85-200%. Checked on emulator at 150%. Combined with 125% zoom, the details line under the title is cut short. |
-| A11Y-202 | Done, differently | Implemented as **Interface zoom** (100/110/125/140%), which enlarges cards, buttons, spacing and text together. Page headers shrink when zoomed so a full row of cards fits. Checked on emulator at 125% (home, movie details, player). 110% and 140% not yet checked. |
-| A11Y-208 (new) | Done | **Plain text titles**: every media title uses the one standard title font instead of logo artwork (headers, player, screensaver). **On by default** by the fork owner's decision; this is the one setting whose default differs from upstream. Checked on emulator. |
-| A11Y-301 | Done, differently | A separate **High contrast** setting (white on black, yellow on black, black on white) that overrides the application theme, rather than new entries in the theme list. All three checked on emulator (home, settings, details, player). Known gap: sliders show no difference between the filled and unfilled part of the track. |
-| A11Y-302 | Done | **Dim background image** slider (0-90%). Checked on emulator. |
-| A11Y-303 | Already upstream | Backdrop style "None" exists; it is now also listed under Accessibility. |
-| A11Y-401 | Done, main switch only | **Reduce motion** stops all animations app-wide. Per-animation switches are not done. Checked on emulator: focus zoom and backdrop change are immediate. |
-| A11Y-402 | Partly done | **Keep background still** added. Theme music setting is repeated under Accessibility. Not yet checked on emulator. |
-| A11Y-701 | Done | Subtitle **Preset**: Classic, High visibility, Low vision, Minimal. Not yet checked on emulator. |
-| A11Y-501 | Started | Player buttons now have spoken names (Play, Pause, Rewind, Next, Subtitles, Audio, Playback settings); they were empty or unreadable icon glyphs. Not yet checked on emulator. The other ~50 undescribed images and icons are not reviewed yet. |
-| A11Y-502 | Partly done | Poster and banner cards now describe themselves, e.g. "The Matrix, 1999, 60 percent watched, favorite". "Short card announcements" setting reads the title only. Confirmed in the emulator's accessibility tree on the home page; **not yet tried with TalkBack itself**. Genre, studio, chapter and person cards not reviewed. |
-| A11Y-1001 | Done | `TestThemeContrast`: high-contrast themes must meet AAA; regular themes are reported. |
-| A11Y-901 | Done | **Accessibility setup** screen shows once on first launch, before server setup. Offers text size, zoom, high contrast, focus outline, plain titles and reduce motion; each applies immediately. "Show accessibility setup" under Settings > Accessibility brings it back. People upgrading from an earlier build of the fork also see it once. Checked on emulator. |
-| A11Y-1004 | Mostly done | Docker dev and emulator containers are in `docker/`. App is now "Wholphin Accessible" with id `com.github.alex182.wholphin.accessible`, so it installs beside upstream. Fork workflow is described in CONTRIBUTING.md. A regular upstream merge has not been tried yet. |
-
-Everything else is not started.
-
-**Default check:** with every accessibility setting at its default, the home page on the emulator matches upstream (logo title, purple theme, same layout). This is a by-eye check plus unit tests; the automated screenshot comparison (A11Y-1002) is not built yet.
-
-**How to try it:** `docker/dev.sh ./gradlew assembleDefaultDebug` builds the APK in the container. `docker/emu.sh` drives the emulator container (`install`, `login`, `start`, `a11y`, `key`, `shot`); screenshots go to `build/a11y-shots/`.
+| Screen reader descriptions for cards and player buttons | No settings, no visual change | Not proposed |
+| Headings, loading and error announcements, seek bar position | No settings, no visual change | Not proposed |
+| Theme contrast unit test | Test only; reports several upstream theme pairs below AA | Not proposed |
+| Reduce motion | One switch | Not proposed |
+| Subtitle presets and larger maximum size | Small change to the subtitle page | Not proposed |
+| Prefer SDH / prefer audio description | Small change to track selection | Not proposed |
+| High-visibility focus outline | One overlay file | Not proposed |
 
 ## Conventions
 
