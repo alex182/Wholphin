@@ -8,6 +8,8 @@ option java_multiple_files = true;
 // Rules:
 // - Every field's proto default (0 / false / first enum value) MUST mean "upstream behaviour",
 //   so existing installs see no change and no migration is needed.
+//   Exceptions, by the fork owner's decision: allow_logo_titles (plain text titles are on by
+//   default) and setup_wizard_done (the setup screen shows once).
 // - Never renumber or reuse field numbers.
 
 enum FocusRingColor {
@@ -37,8 +39,11 @@ message AccessibilityPreferences {
   int32 text_scale_percent = 10;
   // Whole-interface zoom as a percentage; 0 means 100%
   int32 ui_zoom_percent = 11;
-  // Always show media titles as text in the standard font instead of logo artwork
-  bool plain_text_titles = 12;
+  // 12 was plain_text_titles before the default was flipped
+  reserved 12;
+  // Media titles are shown as text in the standard font unless this is set. This is the one
+  // place where the fork's default differs from upstream on purpose.
+  bool allow_logo_titles = 13;
 
   // --- Motion (20-29) ---
   bool reduce_motion = 20;
@@ -50,4 +55,8 @@ message AccessibilityPreferences {
   HighContrastMode high_contrast = 30;
   // Darkens the background image behind text, 0-90
   int32 backdrop_dim_percent = 31;
+
+  // --- Setup (40-49) ---
+  // The first-run accessibility setup screen is shown until this is set
+  bool setup_wizard_done = 40;
 }

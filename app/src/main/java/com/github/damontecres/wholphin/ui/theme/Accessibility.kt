@@ -14,7 +14,7 @@ import com.github.damontecres.wholphin.ui.theme.colors.HighContrastThemeColors
 /**
  * Resolved accessibility settings for use by composables. Read via [LocalAccessibility].
  *
- * The default instance is exactly upstream behaviour.
+ * The default instance is upstream behaviour, except that titles are plain text.
  */
 @Immutable
 data class AccessibilitySettings(
@@ -29,8 +29,11 @@ data class AccessibilitySettings(
     val highContrast: HighContrastMode = HighContrastMode.HIGH_CONTRAST_OFF,
     /** 0 to 0.9: how strongly to cover the backdrop image with the background colour */
     val backdropDim: Float = 0f,
-    /** Show media titles as text in the standard font, never as logo artwork */
-    val plainTextTitles: Boolean = false,
+    /**
+     * Show media titles as text in the standard font, never as logo artwork.
+     * On by default: the one deliberate difference from upstream.
+     */
+    val plainTextTitles: Boolean = true,
 ) {
     /** The high-contrast colours to use instead of the application theme, if enabled */
     val highContrastColors: ThemeColors?
@@ -67,7 +70,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         textScale = textScalePercent.takeIf { it > 0 }?.let { it.coerceIn(50, 300) / 100f },
         uiZoom = (uiZoomPercent.takeIf { it > 0 } ?: 100).coerceIn(50, 200) / 100f,
         reduceMotion = reduceMotion,
-        plainTextTitles = plainTextTitles,
+        plainTextTitles = !allowLogoTitles,
         backdropDim = backdropDimPercent.coerceIn(0, 90) / 100f,
         highContrast = if (highContrast == HighContrastMode.UNRECOGNIZED) HighContrastMode.HIGH_CONTRAST_OFF else highContrast,
     )

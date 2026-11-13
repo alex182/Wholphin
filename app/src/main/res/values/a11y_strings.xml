@@ -4,6 +4,13 @@
     <string name="a11y_settings">Accessibility</string>
     <string name="a11y_settings_summary">Text size, contrast, focus, motion and more</string>
 
+    <string name="a11y_group_setup">Setup</string>
+    <string name="a11y_wizard_show">Show accessibility setup</string>
+    <string name="a11y_wizard_show_summary">Turn on to go through the quick setup screen again</string>
+    <string name="a11y_wizard_title">Accessibility setup</string>
+    <string name="a11y_wizard_body">Make the app easier to see. Changes apply right away, and you can change them later in Settings.</string>
+    <string name="a11y_wizard_done">Continue</string>
+
     <string name="a11y_group_focus">Focus</string>
     <string name="a11y_group_text_layout">Text and layout</string>
     <string name="a11y_group_motion">Motion and distractions</string>

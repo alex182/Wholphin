@@ -19,6 +19,18 @@ object AccessibilityPreference {
             destination = Destination.Settings(PreferenceScreenOption.ACCESSIBILITY),
         )
 
+    /** Turning this on shows the setup screen again straight away */
+    val ShowSetupWizard =
+        AppSwitchPreference<AppPreferences>(
+            title = R.string.a11y_wizard_show,
+            defaultValue = true,
+            getter = { !it.accessibilityPreferences.setupWizardDone },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences { setupWizardDone = !value }
+            },
+            summary = R.string.a11y_wizard_show_summary,
+        )
+
     // region Focus
 
     val FocusRingEnabled =
@@ -104,10 +116,11 @@ object AccessibilityPreference {
     val PlainTextTitles =
         AppSwitchPreference<AppPreferences>(
             title = R.string.a11y_plain_titles,
-            defaultValue = false,
-            getter = { it.accessibilityPreferences.plainTextTitles },
+            // On by default: the one deliberate difference from upstream
+            defaultValue = true,
+            getter = { !it.accessibilityPreferences.allowLogoTitles },
             setter = { prefs, value ->
-                prefs.updateAccessibilityPreferences { plainTextTitles = value }
+                prefs.updateAccessibilityPreferences { allowLogoTitles = !value }
             },
             summary = R.string.a11y_plain_titles_summary,
         )
@@ -177,6 +190,13 @@ object AccessibilityPreference {
 
 val accessibilityPreferences =
     listOf(
+        PreferenceGroup(
+            title = R.string.a11y_group_setup,
+            preferences =
+                listOf(
+                    AccessibilityPreference.ShowSetupWizard,
+                ),
+        ),
         PreferenceGroup(
             title = R.string.a11y_group_focus,
             preferences =

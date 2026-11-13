@@ -10,6 +10,7 @@ import com.github.damontecres.wholphin.preferences.FocusRingColor
 import com.github.damontecres.wholphin.preferences.accessibilityPreferences
 import com.github.damontecres.wholphin.preferences.updateAccessibilityPreferences
 import com.github.damontecres.wholphin.ui.components.focusRingRect
+import com.github.damontecres.wholphin.ui.setup.accessibilityWizardPreferences
 import com.github.damontecres.wholphin.ui.theme.A11yLayout
 import com.github.damontecres.wholphin.ui.theme.AccessibilitySettings
 import com.github.damontecres.wholphin.ui.theme.toSettings
@@ -17,8 +18,8 @@ import org.junit.Assert
 import org.junit.Test
 
 /**
- * The fork's core rule: with every accessibility setting at its default, the app behaves exactly
- * like upstream Wholphin.
+ * The fork's core rule: with every accessibility setting at its default, the app behaves like
+ * upstream Wholphin. The one deliberate exception is that titles are plain text by default.
  */
 class TestAccessibilityDefaults {
     @Test
@@ -30,7 +31,8 @@ class TestAccessibilityDefaults {
         Assert.assertNull(settings.textScale)
         Assert.assertEquals(1f, settings.uiZoom)
         Assert.assertFalse(settings.reduceMotion)
-        Assert.assertFalse(settings.plainTextTitles)
+        // The one deliberate difference from upstream
+        Assert.assertTrue(settings.plainTextTitles)
         Assert.assertNull(settings.highContrastColors)
         Assert.assertEquals(0f, settings.backdropDim)
     }
@@ -66,6 +68,34 @@ class TestAccessibilityDefaults {
                     pref.getter(prefs),
                 )
             }
+    }
+
+    @Test
+    fun `Plain text titles are on by default and can be turned off`() {
+        val prefs = AppPreferencesSerializer().defaultValue
+        Assert.assertTrue(AccessibilityPreference.PlainTextTitles.getter(prefs))
+        val off = AccessibilityPreference.PlainTextTitles.setter(prefs, false)
+        Assert.assertFalse(off.accessibilityPreferences.toSettings().plainTextTitles)
+        val onAgain = AccessibilityPreference.PlainTextTitles.setter(off, true)
+        Assert.assertEquals(prefs.accessibilityPreferences, onAgain.accessibilityPreferences)
+    }
+
+    @Test
+    fun `Setup screen shows once and can be shown again`() {
+        val prefs = AppPreferencesSerializer().defaultValue
+        Assert.assertFalse(prefs.accessibilityPreferences.setupWizardDone)
+        val done = AccessibilityPreference.ShowSetupWizard.setter(prefs, false)
+        Assert.assertTrue(done.accessibilityPreferences.setupWizardDone)
+        val again = AccessibilityPreference.ShowSetupWizard.setter(done, true)
+        Assert.assertFalse(again.accessibilityPreferences.setupWizardDone)
+    }
+
+    @Test
+    fun `Setup screen only offers settings that exist under Accessibility`() {
+        val all =
+            accessibilityPreferences
+                .flatMap { group -> group.preferences + group.conditionalPreferences.flatMap { it.preferences } }
+        accessibilityWizardPreferences.forEach { Assert.assertTrue(it in all) }
     }
 
     @Test

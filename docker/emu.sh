@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Helper for the emulator container.
+#   docker/emu.sh up                 start the test server and a fresh emulator
+#   docker/emu.sh down               stop them
 #   docker/emu.sh install            install the latest x86_64 debug APK
 #   docker/emu.sh shot <name>        save a screenshot to build/a11y-shots/<name>.png
 #   docker/emu.sh key <KEY...>       send key events (e.g. DPAD_DOWN DPAD_CENTER)
@@ -11,6 +13,21 @@ set -euo pipefail
 C=wholphin-a11y-emu
 cmd="${1:-}"; shift || true
 case "$cmd" in
+  up)
+    # Start the test Jellyfin server (kept between runs) and a fresh emulator, then wait for boot
+    REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+    docker network create wholphin-a11y >/dev/null 2>&1 || true
+    docker start wholphin-a11y-jellyfin >/dev/null 2>&1 || {
+      echo "No test Jellyfin server found; see ACCESSIBILITY_ROADMAP.md for how it was set up" >&2; exit 1; }
+    docker rm -f "$C" >/dev/null 2>&1 || true
+    docker run -d --name "$C" --network wholphin-a11y --device /dev/kvm \
+      --group-add "$(stat -c %g /dev/kvm)" -v "$REPO_DIR":/workspace wholphin-a11y-emulator \
+      bash -c 'adb start-server >/dev/null 2>&1; emulator -avd tv -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -memory 3072 > /tmp/emu.log 2>&1' >/dev/null
+    docker exec "$C" bash -c 'adb wait-for-device; for i in $(seq 1 90); do [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = 1 ] && exit 0; sleep 5; done; exit 1'
+    echo "Emulator ready" ;;
+  down)
+    docker rm -f "$C" >/dev/null 2>&1 || true
+    docker stop wholphin-a11y-jellyfin >/dev/null 2>&1 || true ;;
   install)
     docker exec "$C" bash -c 'adb install -r -g $(ls -t /workspace/app/build/outputs/apk/default/debug/*x86_64.apk | head -1)' ;;
   shot)
@@ -21,9 +38,12 @@ case "$cmd" in
     # Fresh install: add the test Jellyfin server and sign in as test/test
     JF_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wholphin-a11y-jellyfin)
     a() { docker exec "$C" adb shell "$@"; }
-    a pm clear com.github.damontecres.wholphin.debug >/dev/null || true
-    a am start -n com.github.damontecres.wholphin.debug/com.github.damontecres.wholphin.MainActivity >/dev/null 2>&1
-    sleep 8; a input keyevent KEYCODE_DPAD_CENTER; sleep 2; a input keyevent KEYCODE_DPAD_CENTER; sleep 2
+    a pm clear com.github.alex182.wholphin.accessible.debug >/dev/null || true
+    a am start -n com.github.alex182.wholphin.accessible.debug/com.github.damontecres.wholphin.MainActivity >/dev/null 2>&1
+    sleep 8
+    if [ "${WIZARD:-skip}" = "stop" ]; then exit 0; fi   # WIZARD=stop leaves the setup screen open
+    a input keyevent KEYCODE_DPAD_CENTER; sleep 3        # "Continue" on the accessibility setup screen
+    a input keyevent KEYCODE_DPAD_CENTER; sleep 2; a input keyevent KEYCODE_DPAD_CENTER; sleep 2
     a input text "http://$JF_IP:8096"; sleep 1; a input keyevent KEYCODE_ENTER; sleep 6
     a input keyevent KEYCODE_DPAD_CENTER; sleep 2; a input keyevent KEYCODE_DPAD_CENTER; sleep 2
     a input text test; sleep 1; a input keyevent KEYCODE_ENTER; sleep 1
@@ -31,7 +51,7 @@ case "$cmd" in
   start)
     # Bring the app to the front and wait until it really is the top activity
     for _ in 1 2 3 4 5; do
-      docker exec "$C" adb shell am start -n com.github.damontecres.wholphin.debug/com.github.damontecres.wholphin.MainActivity >/dev/null 2>&1 || true
+      docker exec "$C" adb shell am start -n com.github.alex182.wholphin.accessible.debug/com.github.damontecres.wholphin.MainActivity >/dev/null 2>&1 || true
       sleep 4
       top=$(docker exec "$C" adb shell dumpsys activity activities 2>/dev/null | grep -m1 "topResumedActivity=" || true)
       if [[ "$top" == *wholphin* ]]; then sleep 5; exit 0; fi

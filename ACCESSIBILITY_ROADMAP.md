@@ -17,7 +17,7 @@ Updated as tickets land on the `accessible` branch. "Checked on emulator" means 
 | A11Y-101, 102 | Done | One app-wide overlay (`FocusRingOverlay`) outlines whatever has focus, including inside dialogs, instead of a modifier on every component. Thickness and colour settings. Skips anything covering half the screen or more (video, loading pages). Checked on emulator (home, settings, dialogs, details, player); not yet checked on every screen. |
 | A11Y-201 | Done | Text size: follow system or 85-200%. Checked on emulator at 150%. Combined with 125% zoom, the details line under the title is cut short. |
 | A11Y-202 | Done, differently | Implemented as **Interface zoom** (100/110/125/140%), which enlarges cards, buttons, spacing and text together. Page headers shrink when zoomed so a full row of cards fits. Checked on emulator at 125% (home, movie details, player). 110% and 140% not yet checked. |
-| A11Y-208 (new) | Done | **Plain text titles**: every media title uses the one standard title font instead of logo artwork (headers, player, screensaver). Checked on emulator. |
+| A11Y-208 (new) | Done | **Plain text titles**: every media title uses the one standard title font instead of logo artwork (headers, player, screensaver). **On by default** by the fork owner's decision; this is the one setting whose default differs from upstream. Checked on emulator. |
 | A11Y-301 | Done, differently | A separate **High contrast** setting (white on black, yellow on black, black on white) that overrides the application theme, rather than new entries in the theme list. All three checked on emulator (home, settings, details, player). Known gap: sliders show no difference between the filled and unfilled part of the track. |
 | A11Y-302 | Done | **Dim background image** slider (0-90%). Checked on emulator. |
 | A11Y-303 | Already upstream | Backdrop style "None" exists; it is now also listed under Accessibility. |
@@ -25,7 +25,8 @@ Updated as tickets land on the `accessible` branch. "Checked on emulator" means 
 | A11Y-402 | Partly done | **Keep background still** added. Theme music setting is repeated under Accessibility. Not yet checked on emulator. |
 | A11Y-701 | Done | Subtitle **Preset**: Classic, High visibility, Low vision, Minimal. Not yet checked on emulator. |
 | A11Y-1001 | Done | `TestThemeContrast`: high-contrast themes must meet AAA; regular themes are reported. |
-| A11Y-1004 | Partly done | Docker dev container and emulator container are in `docker/`. Application id/name and CONTRIBUTING notes are still to do. |
+| A11Y-901 | Done | **Accessibility setup** screen shows once on first launch, before server setup. Offers text size, zoom, high contrast, focus outline, plain titles and reduce motion; each applies immediately. "Show accessibility setup" under Settings > Accessibility brings it back. People upgrading from an earlier build of the fork also see it once. Checked on emulator. |
+| A11Y-1004 | Mostly done | Docker dev and emulator containers are in `docker/`. App is now "Wholphin Accessible" with id `com.github.alex182.wholphin.accessible`, so it installs beside upstream. Fork workflow is described in CONTRIBUTING.md. A regular upstream merge has not been tried yet. |
 
 Everything else is not started.
 
@@ -43,6 +44,7 @@ Everything else is not started.
 - **Everything is configurable (project rule).** Every user-facing change in this fork must have a setting that turns it on or off (or picks a level) under **Settings → Accessibility**. This applies to every ticket and is part of its Definition of Done, whether or not the ticket lists it:
   - The setting is stored in `AccessibilityPreferences` and appears in the Accessibility settings section (A11Y-004).
   - Turning it off restores the upstream Wholphin behaviour exactly. With every accessibility setting off, the fork looks and behaves like upstream.
+  - **One exception:** "Plain text titles" is on by default (fork owner's decision). Turning it off restores upstream's logo titles. The one-time setup screen is the other visible difference on first launch.
   - Changes apply immediately, without restarting the app.
   - Composite options (presets, "Simplified layout", "Reduce motion", the wizard) only set individual settings, which can each still be changed separately afterwards.
   - "Follow system" counts as a valid default where A11Y-003 applies.

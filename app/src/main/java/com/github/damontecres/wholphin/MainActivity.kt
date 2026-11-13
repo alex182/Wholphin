@@ -38,6 +38,7 @@ import androidx.tv.material3.Surface
 import com.github.damontecres.wholphin.data.ServerRepository
 import com.github.damontecres.wholphin.preferences.AppPreferences
 import com.github.damontecres.wholphin.preferences.PlayerBackend
+import com.github.damontecres.wholphin.preferences.updateAccessibilityPreferences
 import com.github.damontecres.wholphin.services.AppUpgradeHandler
 import com.github.damontecres.wholphin.services.BackdropService
 import com.github.damontecres.wholphin.services.DatePlayedInvalidationService
@@ -67,6 +68,7 @@ import com.github.damontecres.wholphin.ui.components.LoadingPage
 import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.playback.PlayExternalViewModel
+import com.github.damontecres.wholphin.ui.setup.AccessibilityWizard
 import com.github.damontecres.wholphin.ui.showToast
 import com.github.damontecres.wholphin.ui.theme.A11yMotionDurationScale
 import com.github.damontecres.wholphin.ui.theme.WholphinTheme
@@ -282,14 +284,36 @@ class MainActivity : AppCompatActivity() {
                                 ) {
                                     ProvideLocalClock {
                                         Box(modifier = Modifier.fillMaxSize()) {
-                                            MainContent(
-                                                backStack = setupNavigationManager.backStack,
-                                                navigationManager = navigationManager,
-                                                userPreferences = userPreferences,
-                                                backdropService = backdropService,
-                                                screensaverService = screensaverService,
-                                                modifier = Modifier.fillMaxSize(),
-                                            )
+                                            if (!appPreferences.accessibilityPreferences.setupWizardDone) {
+                                                // Accessibility: one-time setup before anything else
+                                                AccessibilityWizard(
+                                                    preferences = appPreferences,
+                                                    onUpdate = { update ->
+                                                        lifecycleScope.launch {
+                                                            userPreferencesDataStore.updateData(update)
+                                                        }
+                                                    },
+                                                    onDone = {
+                                                        lifecycleScope.launch {
+                                                            userPreferencesDataStore.updateData {
+                                                                it.updateAccessibilityPreferences {
+                                                                    setupWizardDone = true
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    modifier = Modifier.fillMaxSize(),
+                                                )
+                                            } else {
+                                                MainContent(
+                                                    backStack = setupNavigationManager.backStack,
+                                                    navigationManager = navigationManager,
+                                                    userPreferences = userPreferences,
+                                                    backdropService = backdropService,
+                                                    screensaverService = screensaverService,
+                                                    modifier = Modifier.fillMaxSize(),
+                                                )
+                                            }
                                             FocusRingOverlay()
                                         }
                                     }

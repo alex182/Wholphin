@@ -30,3 +30,13 @@ See the [developer's guide](./DEVELOPMENT.md) for more information.
 Wholphin has adopted the [Jellyfin LLM/"AI" Development Policy](https://jellyfin.org/docs/general/contributing/llm-policies/). AI/LLM assisted code contributions are permitted under the policy, but the author must undertand and be able to explain the code changes in their own words.
 
 At a minimum, you must disclose the usage any of AI/LLM assistance and you must write the pull request description _without_ AI assistance.
+
+## Accessibility fork
+
+This repository is a fork focused on visual accessibility. See [ACCESSIBILITY_ROADMAP.md](ACCESSIBILITY_ROADMAP.md) for the tickets and their status.
+
+- `main` tracks upstream (`damontecres/Wholphin`). All fork work is on `accessible`. Bring upstream changes in by merging `main` into `accessible`.
+- Build, test and format only inside the dev container: `docker/dev.sh ./gradlew assembleDefaultDebug testDefaultDebugUnitTest` and `docker/dev.sh ktlint -F "app/src/**/*.kt"`.
+- To look at changes on an Android TV emulator: `docker/emu.sh up`, then `install`, `login`, `shot <name>` (needs `/dev/kvm`).
+- Every user-facing change needs a setting under Settings > Accessibility whose default is upstream behaviour. New settings go in `app/src/main/proto/WholphinAccessibility.proto` and `preferences/AccessibilityPreference.kt`; new strings go in `app/src/main/res/values/a11y_strings.xml`.
+- Keep edits to upstream files small. Prefer one app-wide hook (as the focus outline, zoom and reduce motion do) over changing many screens.
