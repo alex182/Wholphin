@@ -4,6 +4,31 @@ A fork of [damontecres/Wholphin](https://github.com/damontecres/Wholphin) (Andro
 
 This file breaks the roadmap into tickets. Each ticket is sized to be roughly one PR.
 
+## Status
+
+Updated as tickets land on the `accessible` branch. "Checked on emulator" means it was tried on the Android TV emulator container against a test Jellyfin server.
+
+| Ticket | Status | Notes |
+|---|---|---|
+| A11Y-001 | Done | Stored in `WholphinAccessibility.proto`, field 1000 on `AppPreferences`. Every proto default is upstream behaviour, so no migration is needed. |
+| A11Y-002 | Done | `LocalAccessibility` in `ui/theme/Accessibility.kt`. |
+| A11Y-003 | Partly done | System font scale and animation scale are followed by default. TalkBack detection is still to do (needed by A11Y-106). |
+| A11Y-004 | Done | Settings > Accessibility, at the top of Settings. Checked on emulator. |
+| A11Y-101, 102 | Done | One app-wide overlay (`FocusRingOverlay`) outlines whatever has focus, including inside dialogs, instead of a modifier on every component. Thickness and colour settings. Checked on emulator (home, settings, dialogs); not yet checked on every screen. |
+| A11Y-201 | Done | Text size: follow system or 85-200%. Not yet checked on emulator at each size. |
+| A11Y-202 | Done, differently | Implemented as **Interface zoom** (100/110/125/140%), which enlarges cards, buttons, spacing and text together. Page headers shrink when zoomed so a full row of cards fits. Checked on emulator at 125% on the home page only. |
+| A11Y-208 (new) | Done | **Plain text titles**: every media title uses the one standard title font instead of logo artwork (headers, player, screensaver). Checked on emulator. |
+| A11Y-301 | Done, differently | A separate **High contrast** setting (white on black, yellow on black, black on white) that overrides the application theme, rather than new entries in the theme list. Checked on emulator (white on black). |
+| A11Y-302 | Done | **Dim background image** slider (0-90%). Checked on emulator. |
+| A11Y-303 | Already upstream | Backdrop style "None" exists; it is now also listed under Accessibility. |
+| A11Y-401 | Done, main switch only | **Reduce motion** stops all animations app-wide. Per-animation switches are not done. Not yet checked on emulator. |
+| A11Y-402 | Partly done | **Keep background still** added. Theme music setting is repeated under Accessibility. Not yet checked on emulator. |
+| A11Y-701 | Done | Subtitle **Preset**: Classic, High visibility, Low vision, Minimal. Not yet checked on emulator. |
+| A11Y-1001 | Done | `TestThemeContrast`: high-contrast themes must meet AAA; regular themes are reported. |
+| A11Y-1004 | Partly done | Docker dev container and emulator container are in `docker/`. Application id/name and CONTRIBUTING notes are still to do. |
+
+Everything else is not started.
+
 ## Conventions
 
 - **ID:** `A11Y-<epic><nn>` (e.g. `A11Y-102` = Epic 1, ticket 02)
@@ -246,6 +271,18 @@ For users with partial vision who don't want full TalkBack.
 ---
 
 ## Epic 3 — Colour and contrast
+
+### A11Y-208 · Plain text titles in one standard font
+**Priority:** P0 · **Size:** S · **Depends on:** A11Y-002
+
+Stylised logo artwork is hard to read for many low-vision users, and every title looks different.
+
+**Acceptance criteria**
+- Setting "Plain text titles" (default off). When on, every media title is shown as text in the one standard title style (`Title` in `ui/components/TitleOrLogo.kt`), never as logo artwork.
+- Applies everywhere a logo can appear: page headers, detail pages, the list view, the player overlay and the screensaver.
+- Overrides the existing upstream "prefer logos" setting when on.
+
+---
 
 ### A11Y-301 · High-contrast themes
 **Priority:** P0 · **Size:** M · **Depends on:** — · 🔼
@@ -706,6 +743,7 @@ Subtitle styling already has a lot of options (`SubtitlePreferences` in the prot
 | A11Y-205 | Simplified layout mode | P2 | M |
 | A11Y-206 | Hyperlegible font option | P1 | M |
 | A11Y-207 | Line height / letter spacing | P2 | S |
+| A11Y-208 | Plain text titles | P0 | S |
 | A11Y-301 | High-contrast themes | P0 | M |
 | A11Y-302 | Text scrim on backdrops | P0 | S |
 | A11Y-303 | No backdrop images | P1 | S |

@@ -4,6 +4,7 @@ package com.github.damontecres.wholphin.ui.nav
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,7 @@ import coil3.request.transitionFactory
 import com.github.damontecres.wholphin.preferences.BackdropStyle
 import com.github.damontecres.wholphin.services.BackdropResult
 import com.github.damontecres.wholphin.ui.CrossFadeFactory
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -213,5 +215,15 @@ fun Backdrop(
                         },
             )
         }
+    }
+    // Accessibility: optionally darken the backdrop so text on top of it is easier to read
+    val backdropDim = LocalAccessibility.current.backdropDim
+    if (backdropDim > 0f) {
+        Box(
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .background(baseBackgroundColor.copy(alpha = backdropDim)),
+        )
     }
 }

@@ -30,6 +30,9 @@ class TestAccessibilityDefaults {
         Assert.assertNull(settings.textScale)
         Assert.assertEquals(1f, settings.uiZoom)
         Assert.assertFalse(settings.reduceMotion)
+        Assert.assertFalse(settings.plainTextTitles)
+        Assert.assertNull(settings.highContrastColors)
+        Assert.assertEquals(0f, settings.backdropDim)
     }
 
     @Test

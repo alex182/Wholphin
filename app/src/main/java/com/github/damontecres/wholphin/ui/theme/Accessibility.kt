@@ -27,6 +27,10 @@ data class AccessibilitySettings(
     val uiZoom: Float = 1f,
     val reduceMotion: Boolean = false,
     val highContrast: HighContrastMode = HighContrastMode.HIGH_CONTRAST_OFF,
+    /** 0 to 0.9: how strongly to cover the backdrop image with the background colour */
+    val backdropDim: Float = 0f,
+    /** Show media titles as text in the standard font, never as logo artwork */
+    val plainTextTitles: Boolean = false,
 ) {
     /** The high-contrast colours to use instead of the application theme, if enabled */
     val highContrastColors: ThemeColors?
@@ -63,5 +67,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         textScale = textScalePercent.takeIf { it > 0 }?.let { it.coerceIn(50, 300) / 100f },
         uiZoom = (uiZoomPercent.takeIf { it > 0 } ?: 100).coerceIn(50, 200) / 100f,
         reduceMotion = reduceMotion,
+        plainTextTitles = plainTextTitles,
+        backdropDim = backdropDimPercent.coerceIn(0, 90) / 100f,
         highContrast = if (highContrast == HighContrastMode.UNRECOGNIZED) HighContrastMode.HIGH_CONTRAST_OFF else highContrast,
     )

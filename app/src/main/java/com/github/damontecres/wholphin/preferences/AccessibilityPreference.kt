@@ -101,6 +101,17 @@ object AccessibilityPreference {
             valueToIndex = { uiZoomValues.indexOf(it).coerceAtLeast(0) },
         )
 
+    val PlainTextTitles =
+        AppSwitchPreference<AppPreferences>(
+            title = R.string.a11y_plain_titles,
+            defaultValue = false,
+            getter = { it.accessibilityPreferences.plainTextTitles },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences { plainTextTitles = value }
+            },
+            summary = R.string.a11y_plain_titles_summary,
+        )
+
     // endregion
 
     // region Colour & contrast
@@ -118,6 +129,23 @@ object AccessibilityPreference {
             valueToIndex = { if (it != HighContrastMode.UNRECOGNIZED) it.number else 0 },
         )
 
+    val BackdropDim =
+        AppSliderPreference<AppPreferences>(
+            title = R.string.a11y_backdrop_dim,
+            defaultValue = 0,
+            min = 0,
+            max = 90,
+            interval = 10,
+            getter = {
+                it.accessibilityPreferences.backdropDimPercent
+                    .toLong()
+            },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences { backdropDimPercent = value.toInt() }
+            },
+            summarizer = { value -> value?.let { "$it%" } },
+        )
+
     // endregion
 
     // region Motion
@@ -131,6 +159,17 @@ object AccessibilityPreference {
                 prefs.updateAccessibilityPreferences { reduceMotion = value }
             },
             summary = R.string.a11y_reduce_motion_summary,
+        )
+
+    val StaticBackdrop =
+        AppSwitchPreference<AppPreferences>(
+            title = R.string.a11y_static_backdrop,
+            defaultValue = false,
+            getter = { it.accessibilityPreferences.staticBackdrop },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences { staticBackdrop = value }
+            },
+            summary = R.string.a11y_static_backdrop_summary,
         )
 
     // endregion
@@ -162,6 +201,7 @@ val accessibilityPreferences =
                 listOf(
                     AccessibilityPreference.TextScale,
                     AccessibilityPreference.UiZoom,
+                    AccessibilityPreference.PlainTextTitles,
                 ),
         ),
         PreferenceGroup(
@@ -169,6 +209,9 @@ val accessibilityPreferences =
             preferences =
                 listOf(
                     AccessibilityPreference.HighContrast,
+                    // Existing upstream setting, repeated here so it is easy to find
+                    AppPreference.BackdropStylePref,
+                    AccessibilityPreference.BackdropDim,
                 ),
         ),
         PreferenceGroup(
@@ -176,6 +219,9 @@ val accessibilityPreferences =
             preferences =
                 listOf(
                     AccessibilityPreference.ReduceMotion,
+                    AccessibilityPreference.StaticBackdrop,
+                    // Existing upstream setting, repeated here so it is easy to find
+                    AppPreference.PlayThemeMusic,
                 ),
         ),
     )

@@ -59,6 +59,7 @@ import com.github.damontecres.wholphin.ui.playback.AnalyticsState
 import com.github.damontecres.wholphin.ui.playback.ControllerViewState
 import com.github.damontecres.wholphin.ui.playback.CurrentPlayback
 import com.github.damontecres.wholphin.ui.playback.PlaybackDialogType
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import org.jellyfin.sdk.model.api.ImageType
 import org.jellyfin.sdk.model.api.MediaSegmentDto
 import org.jellyfin.sdk.model.api.TrickplayInfoDto
@@ -299,7 +300,12 @@ fun PlaybackOverlay(
         // Top
         val logoImageUrl = LocalImageUrlService.current.rememberImageUrl(item, ImageType.LOGO)
         AnimatedVisibility(
-            visible = !showDebugInfo && logoImageUrl.isNotNullOrBlank() && controllerViewState.controlsVisible,
+            visible =
+                !showDebugInfo &&
+                    logoImageUrl.isNotNullOrBlank() &&
+                    controllerViewState.controlsVisible &&
+                    // Accessibility: the title is already shown as text with the controls
+                    !LocalAccessibility.current.plainTextTitles,
             enter = slideIn { IntOffset(x = -it.width / 2, y = -it.height / 2) } + fadeIn(),
             exit = slideOut { IntOffset(x = -it.width / 2, y = -it.height / 2) } + fadeOut(),
             modifier =

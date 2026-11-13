@@ -37,11 +37,17 @@ message AccessibilityPreferences {
   int32 text_scale_percent = 10;
   // Whole-interface zoom as a percentage; 0 means 100%
   int32 ui_zoom_percent = 11;
+  // Always show media titles as text in the standard font instead of logo artwork
+  bool plain_text_titles = 12;
 
   // --- Motion (20-29) ---
   bool reduce_motion = 20;
+  // Keep the background image still while moving between items on a page
+  bool static_backdrop = 21;
 
   // --- Colour & contrast (30-39) ---
   // Overrides the application theme when not off
   HighContrastMode high_contrast = 30;
+  // Darkens the background image behind text, 0-90
+  int32 backdrop_dim_percent = 31;
 }

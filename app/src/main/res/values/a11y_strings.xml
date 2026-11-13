@@ -6,7 +6,7 @@
 
     <string name="a11y_group_focus">Focus</string>
     <string name="a11y_group_text_layout">Text and layout</string>
-    <string name="a11y_group_motion">Motion</string>
+    <string name="a11y_group_motion">Motion and distractions</string>
 
     <string name="a11y_focus_ring">High-visibility focus outline</string>
     <string name="a11y_focus_ring_summary">Draw a thick, high-contrast outline around the selected item</string>
@@ -40,6 +40,9 @@
         <item>140%</item>
     </string-array>
 
+    <string name="a11y_plain_titles">Plain text titles</string>
+    <string name="a11y_plain_titles_summary">Show every title in the same standard font instead of stylized logo artwork</string>
+
     <string name="a11y_group_contrast">Color and contrast</string>
     <string name="a11y_high_contrast">High contrast</string>
     <string-array name="a11y_high_contrast_modes">
@@ -49,6 +52,20 @@
         <item>Black on white</item>
     </string-array>
 
+    <string name="a11y_backdrop_dim">Dim background image</string>
+    <string name="a11y_static_backdrop">Keep background still</string>
+    <string name="a11y_static_backdrop_summary">Do not change the background image while moving between items</string>
+
     <string name="a11y_reduce_motion">Reduce motion</string>
     <string name="a11y_reduce_motion_summary">Turn off animations such as zooming, sliding and fading</string>
+
+    <string name="a11y_subtitle_preset_group">Quick styles</string>
+    <string name="a11y_subtitle_preset">Preset</string>
+    <string-array name="a11y_subtitle_presets">
+        <item>Custom</item>
+        <item>Classic</item>
+        <item>High visibility (large yellow on dark)</item>
+        <item>Low vision (extra large, solid box)</item>
+        <item>Minimal</item>
+    </string-array>
 </resources>

@@ -269,6 +269,10 @@ object SubtitleSettings {
     val preferences =
         listOf(
             PreferenceGroup(
+                title = R.string.a11y_subtitle_preset_group,
+                preferences = listOf(SubtitlePreset.Preference),
+            ),
+            PreferenceGroup(
                 title = R.string.font,
                 preferences =
                     listOf(
