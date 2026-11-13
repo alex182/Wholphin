@@ -48,7 +48,7 @@ class TestAccessibilityDefaults {
         val old =
             AppPreferences
                 .newBuilder()
-                .apply { debugLogging = true }
+                .apply { signInAutomatically = true }
                 .build()
                 .toByteArray()
         val parsed = AppPreferences.parseFrom(old)
