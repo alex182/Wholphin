@@ -760,6 +760,10 @@ fun navItemColor(
             else -> MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
         }
     }
+    if (focused && LocalAccessibility.current.activeHighlightColor != null) {
+        // Accessibility: the focused item is drawn in the chosen highlight colour
+        return MaterialTheme.colorScheme.inverseOnSurface
+    }
     val theme = LocalTheme.current
     if (theme == AppThemeColors.OLED_BLACK) {
         return when {

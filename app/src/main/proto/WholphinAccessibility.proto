@@ -61,6 +61,8 @@ enum HighlightColor {
   HIGHLIGHT_GREEN = 5;
   HIGHLIGHT_LIME = 6;
   HIGHLIGHT_PINK = 7;
+  // A subtle highlight for dark rooms; text on it is white instead of black
+  HIGHLIGHT_DARK_GREY = 8;
 }
 
 enum NavRepeatSpeed {
@@ -119,6 +121,8 @@ message AccessibilityPreferences {
 
   // --- Motion (20-29) ---
   bool reduce_motion = 20;
+  // Long titles and labels are cut off with "…" instead of scrolling sideways when selected
+  bool no_scrolling_text = 24;
   // Keep the background image still while moving between items on a page
   bool static_backdrop = 21;
   // How fast focus moves while a direction button is held down

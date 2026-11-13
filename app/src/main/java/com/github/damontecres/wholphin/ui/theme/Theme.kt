@@ -62,7 +62,7 @@ fun WholphinTheme(
                 scheme = scheme.copy(primary = accent, onPrimary = Color.Black, border = accent)
             }
             if (highlight != null) {
-                scheme = scheme.copy(inverseSurface = highlight, inverseOnSurface = Color.Black)
+                scheme = scheme.copy(inverseSurface = highlight, inverseOnSurface = accessibility.highlightContentColor)
             }
             scheme
         }
@@ -77,7 +77,10 @@ fun WholphinTheme(
                 fontScale = accessibility.textScale ?: baseDensity.fontScale,
             )
         }
-    SideEffect { A11yLayout.uiZoom = accessibility.uiZoom }
+    SideEffect {
+        A11yLayout.uiZoom = accessibility.uiZoom
+        A11yLayout.scrollingText = !accessibility.noScrollingText
+    }
     CompositionLocalProvider(
         // Several components special-case the OLED theme because it has a pure black background.
         // The high-contrast modes need the same handling.

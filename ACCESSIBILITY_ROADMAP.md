@@ -34,7 +34,8 @@ All work is on the `accessible` branch. Every setting below is under **Settings 
 | A11Y-303 | Already upstream | Backdrop style "None"; repeated under Accessibility. | - |
 | A11Y-304 | Partly done | One "Color-blind friendly (blue and orange)" mode, tested under simulated protanopia, deuteranopia and tritanopia. No separate theme per deficiency. | Tests |
 | A11Y-305 | Done differently | "Accent color" with five preset colours, each tested for contrast on every theme. No free colour picker. | Emulator (cyan) |
-| A11Y-309 | Done | "Menu highlight color": seven preset colours for the focused item in menus, lists and buttons (default keeps the theme's near-white). Not applied in high-contrast modes. | Emulator (yellow: settings, details buttons) |
+| A11Y-309 | Done | "Menu highlight color": seven light preset colours plus dark grey (white text) for the focused item in menus, lists and buttons (default keeps the theme's near-white). Not applied in high-contrast modes. | Emulator (yellow and dark grey: settings, side menu, details buttons) |
+| A11Y-310 | Done | "Stop scrolling titles": long titles are cut off with "…" instead of scrolling sideways when selected (one hook in `enableMarquee`, so it covers every scrolling label). | Emulator (home row with enlarged text) |
 | A11Y-306 | Done | "High-visibility status indicators" and "Show progress as a number". | Emulator (progress bar and number); watched mark not looked at closely |
 | A11Y-307 | Done | "Dim posters and artwork", "Remove color from artwork". Cards and backdrops only. | Tests |
 | A11Y-401 | Done, one switch | "Reduce motion" stops all animations. No per-animation switches. | Emulator |

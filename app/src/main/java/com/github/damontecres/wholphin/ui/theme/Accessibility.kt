@@ -3,6 +3,7 @@ package com.github.damontecres.wholphin.ui.theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.damontecres.wholphin.preferences.A11yFont
@@ -46,6 +47,8 @@ data class AccessibilitySettings(
     val maxHomeRows: Int = 0,
     val hideTechnicalDetails: Boolean = false,
     val reduceMotion: Boolean = false,
+    /** Long titles are cut off instead of scrolling sideways when selected */
+    val noScrollingText: Boolean = false,
     val highContrast: HighContrastMode = HighContrastMode.HIGH_CONTRAST_OFF,
     /** null means keep the theme's accent colour */
     val accentColor: Color? = null,
@@ -91,6 +94,10 @@ data class AccessibilitySettings(
     val activeHighlightColor: Color?
         get() = highlightColor.takeIf { highContrastColors == null }
 
+    /** Text and icon colour on a highlighted item: black on the light choices, white on dark grey */
+    val highlightContentColor: Color
+        get() = if (highlightColor?.let { it.luminance() > .25f } != false) Color.Black else Color.White
+
     companion object {
         val Default = AccessibilitySettings()
     }
@@ -110,8 +117,8 @@ fun AccentColor.toColor(): Color? =
     }
 
 /**
- * Menu highlight choices. Text on a highlighted item is black, so every choice is a light colour
- * (see TestAccessibilityHelpers).
+ * Menu highlight choices. Text on a highlighted item is black on the light colours and white on
+ * dark grey (see TestAccessibilityHelpers).
  */
 fun HighlightColor.toColor(): Color? =
     when (this) {
@@ -122,6 +129,7 @@ fun HighlightColor.toColor(): Color? =
         HighlightColor.HIGHLIGHT_GREEN -> Color(0xFF69F0AE)
         HighlightColor.HIGHLIGHT_LIME -> Color(0xFFC6FF00)
         HighlightColor.HIGHLIGHT_PINK -> Color(0xFFFF80AB)
+        HighlightColor.HIGHLIGHT_DARK_GREY -> Color(0xFF55555C)
         else -> null
     }
 
@@ -154,6 +162,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         maxHomeRows = maxHomeRows.coerceAtLeast(0),
         hideTechnicalDetails = hideTechnicalDetails,
         reduceMotion = reduceMotion,
+        noScrollingText = noScrollingText,
         plainTextTitles = !allowLogoTitles,
         cardAnnouncementsTitleOnly = cardAnnouncementsTitleOnly,
         backdropDim = backdropDimPercent.coerceIn(0, 90) / 100f,

@@ -264,6 +264,14 @@ object AccessibilityPreference {
             set = { alwaysShowCardTitles = it },
         )
 
+    val NoScrollingText =
+        a11ySwitch(
+            title = R.string.a11y_no_scrolling_text,
+            summary = R.string.a11y_no_scrolling_text_summary,
+            get = { it.noScrollingText },
+            set = { noScrollingText = it },
+        )
+
     val WrapCardTitles =
         a11ySwitch(
             title = R.string.a11y_wrap_titles,
@@ -345,6 +353,7 @@ object AccessibilityPreference {
                     HighlightColor.HIGHLIGHT_GREEN,
                     HighlightColor.HIGHLIGHT_LIME,
                     HighlightColor.HIGHLIGHT_PINK,
+                    HighlightColor.HIGHLIGHT_DARK_GREY,
                 ),
             get = { it.highlightColor },
             set = { highlightColor = it },
@@ -636,6 +645,7 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                     AccessibilityPreference.PlainTextTitles,
                     AccessibilityPreference.AlwaysShowCardTitles,
                     AccessibilityPreference.WrapCardTitles,
+                    AccessibilityPreference.NoScrollingText,
                 ),
         ),
         PreferenceGroup(

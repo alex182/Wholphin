@@ -94,11 +94,19 @@ class TestAccessibilityHelpers {
 
     @Test
     fun `Menu highlight colours keep black text readable and stand out from every theme`() {
-        HighlightColor.entries.filter { it != HighlightColor.UNRECOGNIZED }.mapNotNull { it.toColor() }.forEach { highlight ->
-            // Text on a highlighted item is black
+        HighlightColor.entries.filter { it != HighlightColor.UNRECOGNIZED }.forEach { choice ->
+            val highlight = choice.toColor() ?: return@forEach
+            // Text on a highlighted item is black, or white on the dark grey choice
+            val content = AccessibilitySettings(highlightColor = highlight).highlightContentColor
             Assert.assertTrue(
-                TestThemeContrast.contrastRatio(androidx.compose.ui.graphics.Color.Black, highlight) >= TestThemeContrast.AAA_TEXT,
+                "$choice text contrast",
+                TestThemeContrast.contrastRatio(content, highlight) >= TestThemeContrast.AAA_TEXT,
             )
+            // Dark grey is deliberately subtle against dark backgrounds
+            if (choice == HighlightColor.HIGHLIGHT_DARK_GREY) {
+                Assert.assertEquals(androidx.compose.ui.graphics.Color.White, content)
+                return@forEach
+            }
             AppThemeColors.entries.filter { it != AppThemeColors.UNRECOGNIZED }.forEach { theme ->
                 val scheme = getThemeColors(theme).darkScheme
                 val ratio = TestThemeContrast.contrastRatio(highlight, scheme.surface)

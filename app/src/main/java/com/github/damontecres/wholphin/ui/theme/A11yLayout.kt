@@ -14,6 +14,9 @@ import androidx.compose.runtime.setValue
 object A11yLayout {
     var uiZoom by mutableFloatStateOf(1f)
 
+    /** False when the "Stop scrolling text" setting is on; read by Modifier.enableMarquee */
+    var scrollingText by mutableStateOf(true)
+
     /** True while the video player is on screen, where dimming around the focus is not wanted */
     var inPlayer by mutableStateOf(false)
 

@@ -162,6 +162,7 @@
         <item>Green</item>
         <item>Lime</item>
         <item>Pink</item>
+        <item>Dark grey</item>
     </string-array>
     <string name="a11y_artwork_dim">Dim posters and artwork</string>
     <string name="a11y_artwork_desaturate">Remove color from artwork</string>
@@ -247,6 +248,8 @@
     <string name="a11y_per_profile">Separate settings for each profile</string>
     <string name="a11y_per_profile_summary">Each person signed in on this device keeps their own accessibility settings</string>
 
+    <string name="a11y_no_scrolling_text">Stop scrolling titles</string>
+    <string name="a11y_no_scrolling_text_summary">Cut long titles off with "…" instead of scrolling them sideways when selected</string>
     <string name="a11y_wrap_titles">Wrap long titles under cards</string>
     <string name="a11y_wrap_titles_summary">Show up to two lines instead of cutting the title off</string>
     <string name="a11y_apply_all_profiles">Copy these settings to all profiles</string>
