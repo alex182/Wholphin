@@ -599,7 +599,9 @@ class SeriesViewModel
         suspend fun lookupPeopleInEpisode(item: BaseItem) {
             peopleInEpisodeJob?.cancel()
             if (state.value.peopleInEpisode.itemId != item.id) {
-                _state.update { it.copy(peopleInEpisode = PeopleInItem()) }
+                // Keep showing the previous episode's people until the new ones arrive. Clearing
+                // them here collapsed the cast/guest star rows on every focus change, which
+                // shrank the page and made it jump while scrolling quickly through episodes.
                 val result =
                     peopleInEpisodeCache
                         .get(item.id) {
