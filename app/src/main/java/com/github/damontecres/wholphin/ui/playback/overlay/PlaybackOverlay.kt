@@ -58,7 +58,11 @@ import com.github.damontecres.wholphin.ui.isNotNullOrBlank
 import com.github.damontecres.wholphin.ui.playback.AnalyticsState
 import com.github.damontecres.wholphin.ui.playback.ControllerViewState
 import com.github.damontecres.wholphin.ui.playback.CurrentPlayback
+import com.github.damontecres.wholphin.ui.playback.LocalA11yPlayerControlsScale
+import com.github.damontecres.wholphin.ui.playback.LocalA11yPlayerSolidBackground
 import com.github.damontecres.wholphin.ui.playback.PlaybackDialogType
+import com.github.damontecres.wholphin.ui.playback.solidPanelStart
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import org.jellyfin.sdk.model.api.ImageType
 import org.jellyfin.sdk.model.api.MediaSegmentDto
 import org.jellyfin.sdk.model.api.TrickplayInfoDto
@@ -131,16 +135,29 @@ fun PlaybackOverlay(
             modifier = Modifier.matchParentSize(),
         ) {
             // Background scrim for OSD readability
+            // Accessibility: "Solid background behind controls" replaces the gradient with a
+            // dark panel over the lower part of the screen, where the controls are
+            val solidBackground = LocalA11yPlayerSolidBackground.current
+            val panelStart = solidPanelStart(LocalA11yPlayerControlsScale.current)
             val scrimBrush =
-                remember {
-                    Brush.verticalGradient(
-                        colors =
-                            listOf(
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.5f),
-                                Color.Black.copy(alpha = 0.80f),
-                            ),
-                    )
+                remember(solidBackground, panelStart) {
+                    if (solidBackground) {
+                        Brush.verticalGradient(
+                            0f to Color.Transparent,
+                            panelStart - .06f to Color.Transparent,
+                            panelStart to Color.Black.copy(alpha = 0.92f),
+                            1f to Color.Black.copy(alpha = 0.92f),
+                        )
+                    } else {
+                        Brush.verticalGradient(
+                            colors =
+                                listOf(
+                                    Color.Transparent,
+                                    Color.Black.copy(alpha = 0.5f),
+                                    Color.Black.copy(alpha = 0.80f),
+                                ),
+                        )
+                    }
                 }
             Box(
                 modifier =
@@ -299,7 +316,12 @@ fun PlaybackOverlay(
         // Top
         val logoImageUrl = LocalImageUrlService.current.rememberImageUrl(item, ImageType.LOGO)
         AnimatedVisibility(
-            visible = !showDebugInfo && logoImageUrl.isNotNullOrBlank() && controllerViewState.controlsVisible,
+            visible =
+                !showDebugInfo &&
+                    logoImageUrl.isNotNullOrBlank() &&
+                    controllerViewState.controlsVisible &&
+                    // Accessibility: the title is already shown as text with the controls
+                    !LocalAccessibility.current.plainTextTitles,
             enter = slideIn { IntOffset(x = -it.width / 2, y = -it.height / 2) } + fadeIn(),
             exit = slideOut { IntOffset(x = -it.width / 2, y = -it.height / 2) } + fadeOut(),
             modifier =

@@ -72,7 +72,9 @@ configure<ApplicationExtension> {
     compileSdk = libs.versions.compileSdk.getInt()
 
     defaultConfig {
-        applicationId = "com.github.damontecres.wholphin"
+        // Accessibility fork: its own id so it installs beside upstream Wholphin.
+        // The code namespace stays the same to keep upstream merges simple.
+        applicationId = "com.github.alex182.wholphin.accessible"
         minSdk = libs.versions.minSdk.getInt()
         targetSdk = libs.versions.targetSdk.getInt()
         versionCode = gitTags.trim().lines().size

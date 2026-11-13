@@ -38,6 +38,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -48,6 +50,7 @@ import androidx.tv.material3.surfaceColorAtElevation
 import coil3.SingletonImageLoader
 import coil3.imageLoader
 import com.github.damontecres.wholphin.R
+import com.github.damontecres.wholphin.preferences.AccessibilityPreference
 import com.github.damontecres.wholphin.preferences.AppPreference
 import com.github.damontecres.wholphin.preferences.AppPreferences
 import com.github.damontecres.wholphin.preferences.AppSwitchPreference
@@ -58,7 +61,9 @@ import com.github.damontecres.wholphin.preferences.MpvPreferences
 import com.github.damontecres.wholphin.preferences.PlayerBackend
 import com.github.damontecres.wholphin.preferences.ScreensaverPreference
 import com.github.damontecres.wholphin.preferences.SkipSegmentPreferences
+import com.github.damontecres.wholphin.preferences.accessibilityPreferences
 import com.github.damontecres.wholphin.preferences.advancedPreferences
+import com.github.damontecres.wholphin.preferences.applyAccessibilityToAllProfiles
 import com.github.damontecres.wholphin.preferences.basicPreferences
 import com.github.damontecres.wholphin.preferences.experimentalPreferences
 import com.github.damontecres.wholphin.preferences.lazyListWrapScrolling
@@ -167,6 +172,7 @@ fun PreferencesContent(
             PreferenceScreenOption.SKIP_SEGMENTS -> SkipSegmentPreferences
             PreferenceScreenOption.EXPERIMENTAL -> experimentalPreferences
             PreferenceScreenOption.HDR_FORMATS -> HdrFormatPreferences
+            PreferenceScreenOption.ACCESSIBILITY -> accessibilityPreferences
         }
     val screenTitle =
         when (preferenceScreenOption) {
@@ -178,6 +184,7 @@ fun PreferencesContent(
             PreferenceScreenOption.SKIP_SEGMENTS -> R.string.skip_behavior
             PreferenceScreenOption.EXPERIMENTAL -> R.string.experimental_settings
             PreferenceScreenOption.HDR_FORMATS -> R.string.hdr_formats
+            PreferenceScreenOption.ACCESSIBILITY -> R.string.a11y_settings
         }
 
     var visible by remember { mutableStateOf(false) }
@@ -295,6 +302,8 @@ fun PreferencesContent(
                             textAlign = TextAlign.Start,
                             modifier =
                                 Modifier
+                                    // Accessibility: section titles are headings
+                                    .semantics { heading() }
                                     .fillMaxWidth()
                                     .padding(top = 8.dp, bottom = 4.dp),
                         )
@@ -546,6 +555,30 @@ fun PreferencesContent(
                                             if (currentUser != null) {
                                                 viewModel.resetQuickConnectStatus()
                                                 showQuickConnectDialog = true
+                                            }
+                                        },
+                                        modifier = focusModifier,
+                                        summary = pref.summary(context, null),
+                                        onLongClick = {},
+                                        interactionSource = interactionSource,
+                                    )
+                                }
+
+                                AccessibilityPreference.ApplyToAllProfiles -> {
+                                    ClickPreference(
+                                        title = stringResource(pref.title),
+                                        onClick = {
+                                            scope.launch(ExceptionHandler()) {
+                                                preferences =
+                                                    viewModel.preferenceDataStore.updateData { prefs ->
+                                                        prefs.applyAccessibilityToAllProfiles()
+                                                    }
+                                                Toast
+                                                    .makeText(
+                                                        context,
+                                                        R.string.a11y_applied_all_profiles,
+                                                        Toast.LENGTH_SHORT,
+                                                    ).show()
                                             }
                                         },
                                         modifier = focusModifier,
@@ -813,6 +846,7 @@ fun PreferencesPage(
             PreferenceScreenOption.SKIP_SEGMENTS,
             PreferenceScreenOption.EXPERIMENTAL,
             PreferenceScreenOption.HDR_FORMATS,
+            PreferenceScreenOption.ACCESSIBILITY,
             -> {
                 PreferencesContent(
                     initialPreferences,

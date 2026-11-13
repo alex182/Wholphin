@@ -13,6 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -22,6 +24,7 @@ import coil3.compose.AsyncImage
 import com.github.damontecres.wholphin.data.model.BaseItem
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
 import com.github.damontecres.wholphin.ui.logCoilError
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import org.jellyfin.sdk.model.api.BaseItemKind
 import org.jellyfin.sdk.model.api.ImageType
 
@@ -33,10 +36,12 @@ fun TitleOrLogo(
     modifier: Modifier = Modifier,
 ) {
     var imageError by remember { mutableStateOf(false) }
+    // Accessibility: "Plain text titles" replaces logo artwork with the standard title font
+    val plainTextTitles = LocalAccessibility.current.plainTextTitles
     Box(
         modifier = modifier.heightIn(max = HeaderUtils.logoHeight),
     ) {
-        if (showLogo && logoImageUrl != null && !imageError) {
+        if (showLogo && !plainTextTitles && logoImageUrl != null && !imageError) {
             AsyncImage(
                 model = logoImageUrl,
                 contentDescription = title,
@@ -56,8 +61,11 @@ fun TitleOrLogo(
     }
 }
 
+/**
+ * The one standard style for media titles. Used wherever a title is shown as text.
+ */
 @Composable
-private fun Title(
+fun Title(
     title: String?,
     modifier: Modifier = Modifier,
 ) {
@@ -68,7 +76,8 @@ private fun Title(
         fontWeight = FontWeight.SemiBold,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
-        modifier = modifier,
+        // Accessibility: the title of the page or selected item is a heading
+        modifier = modifier.semantics { heading() },
     )
 }
 
@@ -116,11 +125,12 @@ fun SimpleTitleOrLogo(
 ) {
     val logoImageUrl = rememberLogoUrl(item)
     var imageError by remember { mutableStateOf(false) }
+    val plainTextTitles = LocalAccessibility.current.plainTextTitles
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier,
     ) {
-        if (showLogo && logoImageUrl != null && !imageError) {
+        if (showLogo && !plainTextTitles && logoImageUrl != null && !imageError) {
             AsyncImage(
                 model = logoImageUrl,
                 contentDescription = item?.title,

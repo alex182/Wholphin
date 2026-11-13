@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
@@ -54,6 +55,8 @@ fun HomeSettingsSourcePage(
                     headlineText = stringResource(R.string.load_from_server),
                     leadingContent = {
                         Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                            modifier = Modifier.clearAndSetSemantics { },
                             text = stringResource(R.string.fa_cloud_arrow_down),
                             fontFamily = FontAwesome,
                         )
@@ -69,6 +72,8 @@ fun HomeSettingsSourcePage(
                         headlineText = stringResource(R.string.load_from_server_plugin),
                         leadingContent = {
                             Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                                modifier = Modifier.clearAndSetSemantics { },
                                 text = stringResource(R.string.fa_download),
                                 fontFamily = FontAwesome,
                             )
@@ -84,6 +89,8 @@ fun HomeSettingsSourcePage(
                     headlineText = stringResource(R.string.load_from_web_client),
                     leadingContent = {
                         Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                            modifier = Modifier.clearAndSetSemantics { },
                             text = stringResource(R.string.fa_download),
                             fontFamily = FontAwesome,
                         )
@@ -98,6 +105,8 @@ fun HomeSettingsSourcePage(
                     headlineText = stringResource(R.string.reset),
                     leadingContent = {
                         Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                            modifier = Modifier.clearAndSetSemantics { },
                             text = stringResource(R.string.fa_arrows_rotate),
                             fontFamily = FontAwesome,
                         )

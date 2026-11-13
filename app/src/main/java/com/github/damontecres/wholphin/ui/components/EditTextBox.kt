@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
@@ -22,6 +23,7 @@ import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -67,6 +69,25 @@ fun EditTextBox(
     isPassword: Boolean = false,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
+    // Accessibility: the system keyboard cannot be reached with a screen reader on, so text is
+    // then entered with the app's own keyboard (see A11yKeyboard.kt)
+    if (!readOnly && useBuiltInKeyboard()) {
+        val text = state.text.toString()
+        BuiltInKeyboardField(
+            text = text,
+            onTextChange = { state.setTextAndPlaceCursorAtEnd(it) },
+            modifier = modifier,
+            enabled = enabled,
+            isPassword = isPassword,
+            isError = !isInputValid(text),
+            keyboardType = keyboardOptions.keyboardType,
+            maxLines = maxLines,
+            leadingIcon = leadingIcon,
+            onDone = onKeyboardAction?.let { handler -> { handler.onKeyboardAction { } } },
+            interactionSource = interactionSource,
+        )
+        return
+    }
     val focused by interactionSource.collectIsFocusedAsState()
     val colors =
         TextFieldDefaults.colors(
@@ -223,6 +244,25 @@ fun EditTextBox(
     placeholder: @Composable (() -> Unit)? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
+    // Accessibility: see the other EditTextBox
+    if (!readOnly && useBuiltInKeyboard()) {
+        BuiltInKeyboardField(
+            text = value,
+            onTextChange = onValueChange,
+            modifier = modifier,
+            enabled = enabled,
+            isPassword =
+                keyboardOptions.keyboardType == KeyboardType.Password ||
+                    keyboardOptions.keyboardType == KeyboardType.NumberPassword,
+            isError = !isInputValid(value),
+            keyboardType = keyboardOptions.keyboardType,
+            minHeight = height,
+            leadingIcon = leadingIcon,
+            onDone = { keyboardActions.runFor(keyboardOptions.imeAction) },
+            interactionSource = interactionSource,
+        )
+        return
+    }
     val colors =
         TextFieldDefaults.colors(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -395,4 +435,26 @@ private fun EditTextBoxPreview() {
             )
         }
     }
+}
+
+/**
+ * Accessibility: run the action a field registered for the keyboard's action button, for use by
+ * the built-in keyboard's "Done" key. Falls back to whichever action the field defined.
+ */
+private fun KeyboardActions.runFor(imeAction: ImeAction) {
+    val scope =
+        object : KeyboardActionScope {
+            override fun defaultKeyboardAction(imeAction: ImeAction) {}
+        }
+    val action =
+        when (imeAction) {
+            ImeAction.Done -> onDone
+            ImeAction.Go -> onGo
+            ImeAction.Next -> onNext
+            ImeAction.Previous -> onPrevious
+            ImeAction.Search -> onSearch
+            ImeAction.Send -> onSend
+            else -> null
+        } ?: onDone ?: onGo ?: onSearch ?: onSend ?: onNext
+    action?.invoke(scope)
 }

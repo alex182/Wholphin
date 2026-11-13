@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.Settings
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.widget.Toast
@@ -21,8 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.compositionContext
+import androidx.compose.ui.platform.createLifecycleAwareWindowRecomposer
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
@@ -33,7 +37,10 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import com.github.damontecres.wholphin.data.ServerRepository
 import com.github.damontecres.wholphin.preferences.AppPreferences
+import com.github.damontecres.wholphin.preferences.NavRepeatSpeed
 import com.github.damontecres.wholphin.preferences.PlayerBackend
+import com.github.damontecres.wholphin.preferences.switchAccessibilityProfile
+import com.github.damontecres.wholphin.preferences.updateAccessibilityPreferences
 import com.github.damontecres.wholphin.services.AppUpgradeHandler
 import com.github.damontecres.wholphin.services.BackdropService
 import com.github.damontecres.wholphin.services.DatePlayedInvalidationService
@@ -58,16 +65,25 @@ import com.github.damontecres.wholphin.services.tvprovider.TvProviderSchedulerSe
 import com.github.damontecres.wholphin.ui.CoilConfig
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
 import com.github.damontecres.wholphin.ui.collectLatestIn
+import com.github.damontecres.wholphin.ui.components.A11yQuickSettings
+import com.github.damontecres.wholphin.ui.components.A11yQuickSettingsDialog
+import com.github.damontecres.wholphin.ui.components.FocusRingOverlay
 import com.github.damontecres.wholphin.ui.components.LoadingPage
+import com.github.damontecres.wholphin.ui.components.SpeakFocusedItem
 import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.playback.PlayExternalViewModel
+import com.github.damontecres.wholphin.ui.setup.AccessibilityWizard
 import com.github.damontecres.wholphin.ui.showToast
+import com.github.damontecres.wholphin.ui.theme.A11yMotionDurationScale
 import com.github.damontecres.wholphin.ui.theme.WholphinTheme
 import com.github.damontecres.wholphin.ui.theme.colors.PurpleThemeColors
+import com.github.damontecres.wholphin.ui.theme.toSettings
 import com.github.damontecres.wholphin.ui.util.ProvideLocalClock
+import com.github.damontecres.wholphin.util.A11ySubtitles
 import com.github.damontecres.wholphin.util.DebugLogTree
 import com.github.damontecres.wholphin.util.ExceptionHandler
+import com.github.damontecres.wholphin.util.KeyRepeatThrottle
 import com.github.damontecres.wholphin.util.WholphinDispatchers
 import com.github.damontecres.wholphin.util.requestSerializersModule
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,8 +91,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -208,6 +227,19 @@ class MainActivity : AppCompatActivity() {
                 Timber.e(ex, "Error with settings flag secure")
             }.launchIn(lifecycleScope)
 
+        // Accessibility: "Separate settings for each profile" swaps settings when the user changes
+        viewModel.serverRepository.currentUserFlow
+            .combine(
+                userPreferencesDataStore.data
+                    .map { it.accessibilityPreferences.perProfileSettings }
+                    .distinctUntilChanged(),
+            ) { user, _ -> user?.id?.toString() }
+            .onEach { userId ->
+                userPreferencesDataStore.updateData { it.switchAccessibilityProfile(userId) }
+            }.catch { ex ->
+                Timber.e(ex, "Error switching accessibility profile")
+            }.launchIn(lifecycleScope)
+
         screensaverService.keepScreenOn
             .onEach { keepScreenOn ->
                 Timber.v("keepScreenOn: %s", keepScreenOn)
@@ -223,11 +255,21 @@ class MainActivity : AppCompatActivity() {
             }.launchIn(lifecycleScope)
 
         userPreferencesDataStore.data.collectLatestIn(lifecycleScope) { prefs ->
+            A11yMotionDurationScale.reduceMotion = prefs.accessibilityPreferences.reduceMotion
+            A11ySubtitles.update(prefs.accessibilityPreferences)
+            A11yQuickSettings.shortcut = prefs.accessibilityPreferences.quickShortcut
+            KeyRepeatThrottle.intervalMs =
+                when (prefs.accessibilityPreferences.navRepeatSpeed) {
+                    NavRepeatSpeed.NAV_REPEAT_SLOW -> 250
+                    NavRepeatSpeed.NAV_REPEAT_VERY_SLOW -> 500
+                    else -> 0
+                }
             signInAuto = prefs.signInAutomatically
             playerBackend = prefs.playbackPreferences.playerBackend
         }
 
         viewModel.appStart(intent)
+        installAccessibilityMotionScale()
         setContent {
             MaterialTheme(colorScheme = PurpleThemeColors.darkScheme) {
                 Surface(Modifier.fillMaxSize()) {
@@ -266,16 +308,54 @@ class MainActivity : AppCompatActivity() {
                                 WholphinTheme(
                                     true,
                                     appThemeColors = appPreferences.interfacePreferences.appThemeColors,
+                                    accessibility =
+                                        remember(appPreferences.accessibilityPreferences) {
+                                            appPreferences.accessibilityPreferences.toSettings()
+                                        },
                                 ) {
                                     ProvideLocalClock {
-                                        MainContent(
-                                            backStack = setupNavigationManager.backStack,
-                                            navigationManager = navigationManager,
-                                            userPreferences = userPreferences,
-                                            backdropService = backdropService,
-                                            screensaverService = screensaverService,
-                                            modifier = Modifier.fillMaxSize(),
-                                        )
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            if (!appPreferences.accessibilityPreferences.setupWizardDone) {
+                                                // Accessibility: one-time setup before anything else
+                                                AccessibilityWizard(
+                                                    preferences = appPreferences,
+                                                    onUpdate = { update ->
+                                                        lifecycleScope.launch {
+                                                            userPreferencesDataStore.updateData(update)
+                                                        }
+                                                    },
+                                                    onDone = {
+                                                        lifecycleScope.launch {
+                                                            userPreferencesDataStore.updateData {
+                                                                it.updateAccessibilityPreferences {
+                                                                    setupWizardDone = true
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    modifier = Modifier.fillMaxSize(),
+                                                )
+                                            } else {
+                                                MainContent(
+                                                    backStack = setupNavigationManager.backStack,
+                                                    navigationManager = navigationManager,
+                                                    userPreferences = userPreferences,
+                                                    backdropService = backdropService,
+                                                    screensaverService = screensaverService,
+                                                    modifier = Modifier.fillMaxSize(),
+                                                )
+                                            }
+                                            A11yQuickSettingsDialog(
+                                                preferences = appPreferences,
+                                                onUpdate = { update ->
+                                                    lifecycleScope.launch {
+                                                        userPreferencesDataStore.updateData(update)
+                                                    }
+                                                },
+                                            )
+                                            FocusRingOverlay()
+                                            SpeakFocusedItem()
+                                        }
                                     }
                                 }
                             }
@@ -286,7 +366,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Makes every animation in this window use [A11yMotionDurationScale] so the "Reduce motion"
+     * accessibility setting can turn animations off without restarting.
+     */
+    @OptIn(ExperimentalComposeUiApi::class)
+    private fun installAccessibilityMotionScale() {
+        refreshSystemAnimationScale()
+        window.decorView.compositionContext =
+            window.decorView.createLifecycleAwareWindowRecomposer(
+                coroutineContext = A11yMotionDurationScale,
+                lifecycle = lifecycle,
+            )
+    }
+
+    private fun refreshSystemAnimationScale() {
+        A11yMotionDurationScale.systemScale =
+            Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Accessibility: holding the chosen button opens the quick settings panel
+        if (A11yQuickSettings.handleKey(event)) {
+            return true
+        }
+        // Accessibility: optionally slow down movement while a direction button is held
+        if (KeyRepeatThrottle.shouldDrop(event)) {
+            return true
+        }
         if (screensaverService.state.value.run { show || showDim }) {
             screensaverService.stop(false)
             screensaverService.pulse()
@@ -300,6 +407,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Timber.d("onResume")
+        refreshSystemAnimationScale()
         viewModel.appResume()
         lifecycleScope.launchDefault {
             screensaverService.pulse()

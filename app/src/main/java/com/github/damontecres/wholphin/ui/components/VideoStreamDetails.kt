@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,6 +36,7 @@ import com.github.damontecres.wholphin.ui.PreviewTvSpec
 import com.github.damontecres.wholphin.ui.playback.audioStreamCount
 import com.github.damontecres.wholphin.ui.playback.embeddedSubtitleCount
 import com.github.damontecres.wholphin.ui.playback.externalSubtitlesCount
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.theme.WholphinTheme
 import com.github.damontecres.wholphin.ui.util.StreamFormatting.concatWithSpace
 import com.github.damontecres.wholphin.ui.util.StreamFormatting.formatAudioCodec
@@ -69,6 +71,8 @@ fun VideoStreamDetails(
     numberOfVersions: Int = 0,
     modifier: Modifier = Modifier,
 ) {
+    // Accessibility: "Hide technical details" removes the resolution/codec/audio chips
+    if (LocalAccessibility.current.hideTechnicalDetails) return
     val resources = LocalResources.current
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -193,7 +197,7 @@ fun StreamLabel(
                 Text(
                     text = stringResource(icon),
                     fontFamily = FontAwesome,
-                    modifier = Modifier,
+                    modifier = Modifier.clearAndSetSemantics { },
                 )
             }
             val string =

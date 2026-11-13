@@ -20,6 +20,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
@@ -135,5 +137,6 @@ fun ItemRowTitle(
     text = title,
     style = MaterialTheme.typography.titleLarge,
     color = MaterialTheme.colorScheme.onBackground,
-    modifier = modifier.padding(start = 8.dp),
+    // Accessibility: row titles are headings, so screen reader users can jump between rows
+    modifier = modifier.padding(start = 8.dp).semantics { heading() },
 )

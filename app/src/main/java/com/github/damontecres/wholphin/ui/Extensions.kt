@@ -32,6 +32,7 @@ import coil3.request.ErrorResult
 import com.github.damontecres.wholphin.data.model.BaseItem
 import com.github.damontecres.wholphin.ui.data.RowColumn
 import com.github.damontecres.wholphin.ui.data.RowColumnSaver
+import com.github.damontecres.wholphin.ui.theme.A11yLayout
 import com.github.damontecres.wholphin.util.ExceptionHandler
 import com.github.damontecres.wholphin.util.WholphinDispatchers
 import kotlinx.coroutines.CoroutineScope
@@ -190,7 +191,10 @@ fun RequestOrRestoreFocus(
 }
 
 fun Modifier.enableMarquee(focused: Boolean) =
-    if (focused) {
+    if (!A11yLayout.scrollingText) {
+        // Accessibility: "Stop scrolling text" leaves long text cut off instead
+        this
+    } else if (focused) {
         basicMarquee(
             initialDelayMillis = 250,
             animationMode = MarqueeAnimationMode.Immediately,

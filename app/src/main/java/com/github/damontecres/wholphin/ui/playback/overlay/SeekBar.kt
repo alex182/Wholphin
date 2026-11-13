@@ -43,8 +43,15 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
+import com.github.damontecres.wholphin.R
+import com.github.damontecres.wholphin.ui.formatDuration
 import com.github.damontecres.wholphin.ui.playback.ControllerViewState
 import com.github.damontecres.wholphin.ui.playback.calculateSeekAccelerationMultiplier
 import com.github.damontecres.wholphin.ui.playback.isDpadLeft
@@ -52,6 +59,7 @@ import com.github.damontecres.wholphin.ui.playback.isDpadRight
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * This is a seek bar which seeks by a percentage of the duration instead of a fixed amount of time
@@ -210,6 +218,18 @@ private fun SeekBarDisplay(
         targetValue = 6.dp.times((if (isFocused) 2f else 1f)),
     )
 
+    // Accessibility: expose the position to screen readers, e.g. "12m 30s of 1h 42m"
+    val resources = LocalResources.current
+    val positionSeconds = ((progress.coerceIn(0f, 1f).toDouble() * durationMs) / 1000).toLong()
+    val durationSeconds = durationMs / 1000
+    val positionLabel =
+        remember(positionSeconds, durationSeconds) {
+            resources.getString(
+                R.string.a11y_seek_position,
+                resources.formatDuration(positionSeconds.seconds),
+                resources.formatDuration(durationSeconds.seconds),
+            )
+        }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Canvas(
             modifier =
@@ -217,7 +237,10 @@ private fun SeekBarDisplay(
                     .fillMaxWidth()
                     .height(animatedIndicatorHeight)
                     .padding(horizontal = 4.dp)
-                    .onPreviewKeyEvent { event ->
+                    .semantics {
+                        progressBarRangeInfo = ProgressBarRangeInfo(progress.coerceIn(0f, 1f), 0f..1f)
+                        stateDescription = positionLabel
+                    }.onPreviewKeyEvent { event ->
                         if (!isDpadLeft(event) && !isDpadRight(event)) {
                             Timber.v("Ignoring %s", event)
                             return@onPreviewKeyEvent false

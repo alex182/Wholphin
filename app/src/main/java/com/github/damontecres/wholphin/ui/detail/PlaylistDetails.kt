@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -674,6 +675,8 @@ fun CollectionFolderViewScope.PlaylistItem(
                     contentHeight = contentHeight,
                 ) {
                     Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                        modifier = Modifier.clearAndSetSemantics { },
                         text = stringResource(R.string.fa_caret_up),
                         fontFamily = FontAwesome,
                     )
@@ -684,6 +687,8 @@ fun CollectionFolderViewScope.PlaylistItem(
                     contentHeight = contentHeight,
                 ) {
                     Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                        modifier = Modifier.clearAndSetSemantics { },
                         text = stringResource(R.string.fa_caret_down),
                         fontFamily = FontAwesome,
                     )
@@ -695,6 +700,8 @@ fun CollectionFolderViewScope.PlaylistItem(
                 contentHeight = contentHeight,
             ) {
                 Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                    modifier = Modifier.clearAndSetSemantics { },
                     text = stringResource(R.string.fa_ellipsis_vertical),
                     fontFamily = FontAwesome,
                 )

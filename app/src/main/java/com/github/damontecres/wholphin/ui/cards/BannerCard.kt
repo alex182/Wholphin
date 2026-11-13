@@ -28,8 +28,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
@@ -46,7 +48,10 @@ import com.github.damontecres.wholphin.ui.AspectRatios
 import com.github.damontecres.wholphin.ui.Cards
 import com.github.damontecres.wholphin.ui.FontAwesome
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
+import com.github.damontecres.wholphin.ui.components.a11yContentScale
+import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.enableMarquee
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import org.jellyfin.sdk.model.api.ImageType
 
 /**
@@ -103,6 +108,15 @@ fun BannerCard(
     val currentOnClick by rememberUpdatedState(onClick)
     val currentOnLongClick by rememberUpdatedState(onLongClick)
 
+    // Accessibility: describe the card (title and status) for screen readers
+    val description =
+        rememberCardDescription(
+            name = name ?: item?.title,
+            details = item?.subtitle,
+            watched = played,
+            watchedPercent = playPercent,
+            favorite = favorite,
+        )
     Card(
         modifier = modifier.size(cardHeight * aspectRatio, cardHeight),
         onClick = { currentOnClick() },
@@ -116,14 +130,18 @@ fun BannerCard(
         Box(
             modifier =
                 Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    // Inside the card so it becomes part of the focusable element
+                    .cardDescription(description),
 //                    .background(MaterialTheme.colorScheme.surfaceVariant),
         ) {
             if (!imageError && imageUrl != null) {
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = null,
-                    contentScale = imageContentScale,
+                    colorFilter = rememberArtworkColorFilter(),
+                    // Accessibility: optionally crop or fit instead of stretching
+                    contentScale = a11yContentScale(imageContentScale),
                     onError = remember { { imageError = true } },
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -174,6 +192,7 @@ fun BannerCard(
                 Text(
                     modifier =
                         Modifier
+                            .clearAndSetSemantics { }
                             .align(Alignment.TopStart)
                             .padding(8.dp),
                     color = colorResource(android.R.color.holo_red_light),
@@ -194,6 +213,7 @@ fun BannerCard(
                             .fillMaxWidth((playPercent / 100).toFloat()),
                 )
             }
+            A11yProgressExtras(playPercent)
         }
     }
 }
@@ -243,11 +263,16 @@ fun BannerCardWithTitle(
             useSeriesForPrimary = useSeriesForPrimary,
         )
         SlidingCardText(focused) {
+            // Accessibility: "Wrap long titles under cards" shows two lines. Two lines are always
+            // reserved then, so cards in a row stay aligned.
+            val wrapTitle = LocalAccessibility.current.wrapCardTitles
             Text(
                 text = title ?: "",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
+                maxLines = if (wrapTitle) 2 else 1,
+                minLines = if (wrapTitle) 2 else 1,
+                overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
                 modifier =
                     Modifier
@@ -260,6 +285,7 @@ fun BannerCardWithTitle(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
                 modifier =
                     Modifier

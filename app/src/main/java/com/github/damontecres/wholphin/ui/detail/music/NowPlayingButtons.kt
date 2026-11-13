@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -187,6 +188,7 @@ fun ShuffleButton(
                 },
             modifier =
                 Modifier
+                    .clearAndSetSemantics { }
                     .fillMaxWidth()
                     .align(Alignment.CenterVertically),
         )
@@ -246,6 +248,7 @@ fun RepeatButton(
                     },
                 modifier =
                     Modifier
+                        .clearAndSetSemantics { }
                         .fillMaxWidth()
                         .align(Alignment.Center),
             )

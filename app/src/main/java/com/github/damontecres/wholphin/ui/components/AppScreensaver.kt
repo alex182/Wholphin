@@ -59,6 +59,7 @@ import com.github.damontecres.wholphin.ui.AppColors
 import com.github.damontecres.wholphin.ui.CrossFadeFactory
 import com.github.damontecres.wholphin.ui.nav.TOP_SCRIM_ALPHA
 import com.github.damontecres.wholphin.ui.nav.TOP_SCRIM_END_FRACTION
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -171,7 +172,8 @@ fun AppScreensaverContent(
                 )
 
                 var logoError by remember(currentItem) { mutableStateOf(false) }
-                if (!logoError) {
+                val plainTextTitles = LocalAccessibility.current.plainTextTitles
+                if (!logoError && !plainTextTitles) {
                     AsyncImage(
                         model =
                             ImageRequest
@@ -198,14 +200,18 @@ fun AppScreensaverContent(
                                 .fillMaxWidth(.5f)
                                 .fillMaxHeight(.3f),
                     ) {
-                        Text(
-                            text = currentItem?.title ?: "",
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.displaySmall,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.align(Alignment.BottomStart),
-                        )
+                        if (plainTextTitles) {
+                            Title(currentItem?.title, Modifier.align(Alignment.BottomStart))
+                        } else {
+                            Text(
+                                text = currentItem?.title ?: "",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.displaySmall,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.align(Alignment.BottomStart),
+                            )
+                        }
                     }
                 }
             }

@@ -1,0 +1,37 @@
+name: Accessibility fork
+
+# Builds the fork and runs all unit tests, including the accessibility checks:
+# theme contrast (WCAG), settings coverage, and the "defaults match upstream" tests.
+on:
+  push:
+    branches:
+      - accessible
+  pull_request:
+    branches:
+      - accessible
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs='-Xmx6g -XX:MaxMetaspaceSize=1024m'"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0 # Need the tags to build
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build and run unit tests
+        run: ./gradlew assembleDefaultDebug testDefaultDebugUnitTest --no-daemon
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: app/build/reports/tests/testDefaultDebugUnitTest

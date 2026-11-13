@@ -1,0 +1,211 @@
+syntax = "proto3";
+
+option java_package = "com.github.damontecres.wholphin.preferences";
+option java_multiple_files = true;
+
+// Settings added by the accessibility fork.
+//
+// Rules:
+// - Every field's proto default (0 / false / first enum value) MUST mean "upstream behaviour",
+//   so existing installs see no change and no migration is needed.
+//   Exceptions, by the fork owner's decision: allow_logo_titles (plain text titles are on by
+//   default) and setup_wizard_done (the setup screen shows once).
+// - Never renumber or reuse field numbers.
+
+enum FocusRingColor {
+  FOCUS_RING_WHITE = 0;
+  FOCUS_RING_YELLOW = 1;
+  FOCUS_RING_CYAN = 2;
+  FOCUS_RING_MAGENTA = 3;
+  FOCUS_RING_THEME = 4;
+}
+
+enum FocusCue {
+  FOCUS_CUE_NONE = 0;
+  FOCUS_CUE_FILL = 1;
+  FOCUS_CUE_UNDERLINE = 2;
+}
+
+enum HighContrastMode {
+  HIGH_CONTRAST_OFF = 0;
+  HIGH_CONTRAST_WHITE_ON_BLACK = 1;
+  HIGH_CONTRAST_YELLOW_ON_BLACK = 2;
+  HIGH_CONTRAST_BLACK_ON_WHITE = 3;
+  // Blue and orange, safe for the common forms of colour blindness
+  HIGH_CONTRAST_COLOR_BLIND = 4;
+}
+
+enum A11yFont {
+  A11Y_FONT_DEFAULT = 0;
+  A11Y_FONT_ATKINSON = 1;
+  A11Y_FONT_LEXEND = 2;
+  A11Y_FONT_OPEN_DYSLEXIC = 3;
+}
+
+enum AccentColor {
+  ACCENT_DEFAULT = 0;
+  ACCENT_ORANGE = 1;
+  ACCENT_CYAN = 2;
+  ACCENT_LIME = 3;
+  ACCENT_PINK = 4;
+  ACCENT_WHITE = 5;
+}
+
+// Background colour of the focused item in menus, lists and buttons
+enum HighlightColor {
+  HIGHLIGHT_DEFAULT = 0;
+  HIGHLIGHT_YELLOW = 1;
+  HIGHLIGHT_ORANGE = 2;
+  HIGHLIGHT_CYAN = 3;
+  HIGHLIGHT_LIGHT_BLUE = 4;
+  HIGHLIGHT_GREEN = 5;
+  HIGHLIGHT_LIME = 6;
+  HIGHLIGHT_PINK = 7;
+  // A subtle highlight for dark rooms; text on it is white instead of black
+  HIGHLIGHT_DARK_GREY = 8;
+}
+
+// What to do when artwork has a very different shape from its card (e.g. a wide thumbnail in a
+// tall poster card) and the card is set to stretch images to fill
+enum ArtworkShape {
+  ARTWORK_STRETCH = 0;
+  ARTWORK_CROP = 1;
+  ARTWORK_FIT = 2;
+}
+
+// When text fields use the keyboard drawn by the app instead of the system keyboard
+enum BuiltInKeyboard {
+  // Only while a screen reader is running (the system keyboard cannot be reached with TalkBack)
+  BUILT_IN_KEYBOARD_AUTO = 0;
+  BUILT_IN_KEYBOARD_ALWAYS = 1;
+  BUILT_IN_KEYBOARD_NEVER = 2;
+}
+
+enum NavRepeatSpeed {
+  NAV_REPEAT_NORMAL = 0;
+  NAV_REPEAT_SLOW = 1;
+  NAV_REPEAT_VERY_SLOW = 2;
+}
+
+enum SoundCueStyle {
+  SOUND_CUE_NONE = 0;
+  SOUND_CUE_ITALIC = 1;
+  SOUND_CUE_COLOR = 2;
+}
+
+enum QuickShortcut {
+  QUICK_SHORTCUT_OFF = 0;
+  QUICK_SHORTCUT_MENU = 1;
+  QUICK_SHORTCUT_INFO = 2;
+  QUICK_SHORTCUT_PLAY_PAUSE = 3;
+}
+
+message AccessibilityPreferences {
+  // --- Focus (1-9) ---
+  bool focus_ring_enabled = 1;
+  // Thickness in dp; 0 means the default of 4dp
+  int32 focus_ring_thickness_dp = 2;
+  FocusRingColor focus_ring_color = 3;
+  // An extra cue besides colour and size
+  FocusCue focus_cue = 4;
+  // Darkens everything except the focused item, 0-60
+  int32 dim_unfocused_percent = 5;
+  // Read the focused item aloud with text-to-speech (when no screen reader is running)
+  bool speak_focused_item = 6;
+
+  // --- Text & layout (10-19) ---
+  // Text size as a percentage; 0 means follow the system font scale
+  int32 text_scale_percent = 10;
+  // Whole-interface zoom as a percentage; 0 means 100%
+  int32 ui_zoom_percent = 11;
+  // 12 was plain_text_titles before the default was flipped
+  reserved 12;
+  // Media titles are shown as text in the standard font unless this is set. This is the one
+  // place where the fork's default differs from upstream on purpose.
+  bool allow_logo_titles = 13;
+  // No themed text is smaller than this many sp; 0 means no minimum
+  int32 min_text_size_sp = 14;
+  A11yFont app_font = 15;
+  // Extra line height as a percentage of the normal height; 0 means unchanged
+  int32 line_height_percent = 16;
+  // Extra letter spacing in thousandths of an em; 0 means unchanged
+  int32 letter_spacing_permille = 17;
+  // Show titles under cards even where a row or library has them turned off
+  bool always_show_card_titles = 18;
+  // Show at most this many rows on the home page; 0 means no limit
+  int32 max_home_rows = 19;
+
+  // --- Motion (20-29) ---
+  bool reduce_motion = 20;
+  // Long titles and labels are cut off with "…" instead of scrolling sideways when selected
+  bool no_scrolling_text = 24;
+  // Keep the background image still while moving between items on a page
+  bool static_backdrop = 21;
+  // How fast focus moves while a direction button is held down
+  NavRepeatSpeed nav_repeat_speed = 22;
+  // Pause and warn before playing titles tagged as having flashing lights
+  bool photosensitivity_warning = 23;
+
+  // --- Colour & contrast (30-39) ---
+  // Overrides the application theme when not off
+  HighContrastMode high_contrast = 30;
+  // Darkens the background image behind text, 0-90
+  int32 backdrop_dim_percent = 31;
+  // Replaces the accent colour of the application theme
+  AccentColor accent_color = 32;
+  // Darkens posters and other artwork, 0-50
+  int32 artwork_dim_percent = 33;
+  // Removes colour from artwork, 0-100
+  int32 artwork_desaturate_percent = 34;
+  // Watched marks and progress bars drawn in black and white with outlines
+  bool high_visibility_status = 35;
+  // Show the watched percentage as a number on cards
+  bool show_progress_percent = 36;
+  // Colour behind the focused item in menus, lists and buttons; default keeps the theme's (near white)
+  HighlightColor highlight_color = 37;
+
+  // --- Setup (40-49) ---
+  // The first-run accessibility setup screen is shown until this is set
+  bool setup_wizard_done = 40;
+  // Holding this remote button opens the quick accessibility panel
+  QuickShortcut quick_shortcut = 41;
+  // Each user profile keeps its own accessibility settings
+  bool per_profile_settings = 42;
+  // Use the app's own on-screen keyboard for text entry
+  BuiltInKeyboard built_in_keyboard = 43;
+
+  // --- Screen reader (50-59) ---
+  // Cards announce only their title instead of title, year and watched status
+  bool card_announcements_title_only = 50;
+  // Do not announce audio and subtitle track changes to the screen reader
+  bool quiet_track_announcements = 51;
+
+  // --- Simplified layout (60-69) ---
+  // Hide resolution, codec and audio format chips
+  bool hide_technical_details = 60;
+  // Long titles under cards wrap onto a second line instead of being cut off
+  bool wrap_card_titles = 61;
+  // Avoid distorting artwork whose shape does not match its card
+  ArtworkShape artwork_shape = 62;
+
+  // --- Player (70-79) ---
+  // Size of the player controls as a percentage; 0 means 100%
+  int32 player_controls_scale_percent = 70;
+  // A solid dark panel behind the player controls instead of a gradient
+  bool solid_player_background = 71;
+  // Seconds before the player controls hide; 0 means use the regular playback setting
+  int32 controller_timeout_s = 72;
+  // Seconds the skip intro/credits button stays; 0 means the default of 10
+  int32 skip_button_timeout_s = 73;
+
+  // --- Subtitles and audio (80-89) ---
+  // Prefer subtitles for the deaf and hard of hearing (SDH) in the preferred language
+  bool prefer_sdh_subtitles = 80;
+  // Prefer audio description tracks
+  bool prefer_audio_description = 81;
+  bool subtitles_at_top = 82;
+  A11yFont subtitle_font = 83;
+  // MPV only: ignore styling inside ASS/SSA subtitles and use the user's subtitle style
+  bool force_subtitle_style = 84;
+  SoundCueStyle sound_cue_style = 85;
+}

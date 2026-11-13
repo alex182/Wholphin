@@ -5,20 +5,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.damontecres.wholphin.ui.theme.A11yLayout
 
 object HeaderUtils {
-    val topPadding = 48.dp
-    val bottomPadding = 32.dp
+    // Accessibility: these shrink when the interface is zoomed or text is enlarged so a row of
+    // cards still fits below the header. With default settings the scales are exactly 1.
+    val topPadding get() = 48.dp * A11yLayout.headerPaddingScale
+    val bottomPadding get() = 32.dp * A11yLayout.headerPaddingScale
     val startPadding = 8.dp
 
-    val padding = PaddingValues(top = topPadding, bottom = bottomPadding, start = startPadding)
+    val padding get() = PaddingValues(top = topPadding, bottom = bottomPadding, start = startPadding)
 
-    val height = 180.dp
+    val height get() = 180.dp * A11yLayout.headerScale
 
-    val logoHeight = 60.dp
+    val logoHeight get() = 60.dp * A11yLayout.headerScale.coerceAtLeast(.6f)
 
-    val modifier =
-        Modifier
-            .padding(padding)
-            .height(height)
+    val modifier
+        get() =
+            Modifier
+                .padding(padding)
+                .height(height)
 }

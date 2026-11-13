@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -227,7 +228,7 @@ fun PendingIndicator(modifier: Modifier = Modifier) {
             fontFamily = FontAwesome,
             fontSize = 10.sp,
             color = AppColors.Discover.Yellow,
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.clearAndSetSemantics { }.align(Alignment.Center),
         )
     }
 }
@@ -252,7 +253,7 @@ fun AvailableIndicator(modifier: Modifier = Modifier) {
             fontFamily = FontAwesome,
             fontSize = 10.sp,
             color = Color.White,
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.clearAndSetSemantics { }.align(Alignment.Center),
         )
     }
 }
@@ -305,7 +306,7 @@ fun BlocklistedIndicator(modifier: Modifier = Modifier) {
             fontFamily = FontAwesome,
             fontSize = 10.sp,
             color = Color.White,
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.clearAndSetSemantics { }.align(Alignment.Center),
         )
     }
 }

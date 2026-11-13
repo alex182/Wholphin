@@ -77,6 +77,18 @@ class BackdropService
             itemId: String,
             imageUrl: String?,
         ) = withContext(WholphinDispatchers.IO) {
+            // Accessibility: with "Keep background still", only the first item after a page
+            // change sets the backdrop; moving focus between items no longer changes it
+            val current = backdropFlow.value
+            val keepStill =
+                current.itemId != null &&
+                    preferences.data
+                        .firstOrNull()
+                        ?.accessibilityPreferences
+                        ?.staticBackdrop == true
+            if (keepStill) {
+                return@withContext
+            }
             if (backdropFlow.firstOrNull()?.imageUrl != imageUrl || imageUrl == null) {
                 _backdropFlow.update {
                     it.copy(

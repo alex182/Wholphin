@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -86,6 +87,7 @@ import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.preferences.PreferenceScreenOption
 import com.github.damontecres.wholphin.ui.setup.UserIconCardImage
 import com.github.damontecres.wholphin.ui.spacedByWithFooter
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.theme.LocalTheme
 import com.github.damontecres.wholphin.ui.toServerString
 import com.github.damontecres.wholphin.ui.tryRequestFocus
@@ -709,7 +711,7 @@ fun NavigationDrawerScope.NavItem(
                         fontSize = 16.sp,
                         fontFamily = FontAwesome,
                         color = color,
-                        modifier = Modifier,
+                        modifier = Modifier.clearAndSetSemantics { },
                     )
                 } else {
                     Icon(
@@ -749,6 +751,19 @@ fun navItemColor(
     focused: Boolean,
     drawerOpen: Boolean,
 ): Color {
+    if (LocalAccessibility.current.highContrastColors != null) {
+        // Accessibility: high-contrast modes only use the theme's two colours.
+        // A focused item is drawn inverted, so its content uses the inverse colour.
+        return when {
+            focused -> MaterialTheme.colorScheme.inverseOnSurface
+            selected -> MaterialTheme.colorScheme.onSurface
+            else -> MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
+        }
+    }
+    if (focused && LocalAccessibility.current.activeHighlightColor != null) {
+        // Accessibility: the focused item is drawn in the chosen highlight colour
+        return MaterialTheme.colorScheme.inverseOnSurface
+    }
     val theme = LocalTheme.current
     if (theme == AppThemeColors.OLED_BLACK) {
         return when {

@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,8 @@ import com.github.damontecres.wholphin.ui.AppColors
 import com.github.damontecres.wholphin.ui.Cards
 import com.github.damontecres.wholphin.ui.FontAwesome
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
+import com.github.damontecres.wholphin.ui.components.a11yContentScale
+import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.gt
 import com.github.damontecres.wholphin.ui.isNotNullOrBlank
 import com.github.damontecres.wholphin.ui.logCoilError
@@ -92,6 +95,7 @@ fun ItemCardImage(
         modifier = modifier,
         useFallbackText = useFallbackText,
         contentScale = contentScale,
+        details = item?.subtitle,
     )
 }
 
@@ -108,6 +112,7 @@ fun ItemCardImage(
     modifier: Modifier = Modifier,
     useFallbackText: Boolean = true,
     contentScale: ContentScale = ContentScale.Fit,
+    details: String? = null,
     fallback: @Composable BoxScope.() -> Unit = {
         ItemCardImageFallback(
             name = name,
@@ -117,14 +122,26 @@ fun ItemCardImage(
     },
 ) {
     var imageError by remember(imageUrl) { mutableStateOf(false) }
+    // Accessibility: describe the whole card (title and status) for screen readers
+    val description =
+        rememberCardDescription(
+            name = name,
+            details = details,
+            watched = watched,
+            watchedPercent = watchedPercent,
+            favorite = favorite,
+            unwatchedCount = unwatchedCount,
+        )
     Box(
-        modifier = modifier,
+        modifier = modifier.cardDescription(description),
     ) {
         if (!imageError && imageUrl.isNotNullOrBlank()) {
             AsyncImage(
                 model = imageUrl,
-                contentDescription = name,
-                contentScale = contentScale,
+                // The description is on the containing box
+                contentDescription = null,
+                colorFilter = rememberArtworkColorFilter(),
+                contentScale = a11yContentScale(contentScale),
                 alignment = Alignment.Center,
                 onError = {
                     logCoilError(imageUrl, it.result)
@@ -277,6 +294,7 @@ fun ItemCardImageOverlay(
                         .fillMaxWidth((watchedPercent / 100.0).toFloat()),
             )
         }
+        A11yProgressExtras(watchedPercent)
     }
 }
 
@@ -289,5 +307,5 @@ fun FavoriteIndicator(
     text = stringResource(R.string.fa_heart),
     fontSize = fontSize,
     fontFamily = FontAwesome,
-    modifier = modifier,
+    modifier = modifier.clearAndSetSemantics { },
 )

@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
@@ -111,6 +112,8 @@ fun HomeSettingsRowList(
                     headlineText = "Source",
                     leadingContent = {
                         Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                            modifier = Modifier.clearAndSetSemantics { },
                             text = stringResource(R.string.fa_download),
                             fontFamily = FontAwesome,
                         )
@@ -153,6 +156,8 @@ fun HomeSettingsRowList(
                     },
                     leadingContent = {
                         Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                            modifier = Modifier.clearAndSetSemantics { },
                             text = stringResource(R.string.fa_sliders),
                             fontFamily = FontAwesome,
                         )
@@ -246,6 +251,8 @@ fun HomeRowConfigContent(
                     enabled = moveUpAllowed,
                 ) {
                     Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                        modifier = Modifier.clearAndSetSemantics { },
                         text = stringResource(R.string.fa_caret_up),
                         fontFamily = FontAwesome,
                     )
@@ -255,6 +262,8 @@ fun HomeRowConfigContent(
                     enabled = moveDownAllowed,
                 ) {
                     Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                        modifier = Modifier.clearAndSetSemantics { },
                         text = stringResource(R.string.fa_caret_down),
                         fontFamily = FontAwesome,
                     )

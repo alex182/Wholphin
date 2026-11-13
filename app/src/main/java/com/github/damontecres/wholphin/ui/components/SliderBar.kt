@@ -22,9 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.dp
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import com.github.damontecres.wholphin.preferences.AppThemeColors
 import com.github.damontecres.wholphin.ui.handleDPadKeyEvents
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import com.github.damontecres.wholphin.ui.theme.LocalTheme
 
 /**
@@ -139,6 +141,11 @@ data class SliderColors(
  */
 @Composable
 fun sliderActiveColor(focused: Boolean): Color {
+    if (LocalAccessibility.current.highContrastColors != null) {
+        // Accessibility: high-contrast modes use the text colour, solid for the filled part
+        // and faint for the rest, so the two are clearly different
+        return LocalContentColor.current
+    }
     val theme = LocalTheme.current
     return when (theme) {
         AppThemeColors.UNRECOGNIZED,
@@ -175,6 +182,11 @@ fun sliderActiveColor(focused: Boolean): Color {
  */
 @Composable
 fun sliderInactiveColor(focused: Boolean): Color {
+    if (LocalAccessibility.current.highContrastColors != null) {
+        // Accessibility: high-contrast modes use the text colour, solid for the filled part
+        // and faint for the rest, so the two are clearly different
+        return LocalContentColor.current.copy(alpha = .3f)
+    }
     val theme = LocalTheme.current
     return when (theme) {
         AppThemeColors.UNRECOGNIZED,

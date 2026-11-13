@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,6 +92,7 @@ fun Program(
                     fontSize = 16.sp,
                     modifier =
                         Modifier
+                            .clearAndSetSemantics { }
                             .align(Alignment.CenterVertically)
                             .padding(start = 2.dp),
                 )
@@ -219,6 +221,7 @@ fun Channel(
                     fontFamily = FontAwesome,
                     modifier =
                         Modifier
+                            .clearAndSetSemantics { }
                             .padding(2.dp)
                             .align(Alignment.TopEnd),
                 )

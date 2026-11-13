@@ -56,10 +56,10 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.onLayoutRectChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
@@ -67,6 +67,7 @@ import androidx.tv.material3.Text
 import com.github.damontecres.wholphin.R
 import com.github.damontecres.wholphin.ui.AppColors
 import com.github.damontecres.wholphin.ui.FontAwesome
+import com.github.damontecres.wholphin.ui.components.a11y.Button
 import com.github.damontecres.wholphin.ui.ifElse
 import com.github.damontecres.wholphin.ui.playback.isBackwardButton
 import com.github.damontecres.wholphin.ui.playback.isForwardButton
@@ -501,7 +502,12 @@ fun JumpButton(
             jumpClick.invoke(jumpAmount)
         },
     ) {
-        Text(text = stringResource(stringRes), fontFamily = FontAwesome)
+        Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+            modifier = Modifier.clearAndSetSemantics { },
+            text = stringResource(stringRes),
+            fontFamily = FontAwesome,
+        )
     }
 }
 
