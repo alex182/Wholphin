@@ -50,6 +50,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -120,6 +121,8 @@ data class DialogItem(
         },
         leadingContent = {
             Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                modifier = Modifier.clearAndSetSemantics { },
                 text = stringResource(id = iconStringRes),
                 fontFamily = FontAwesome,
                 color = iconColor,
@@ -143,6 +146,8 @@ data class DialogItem(
         },
         leadingContent = {
             Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                modifier = Modifier.clearAndSetSemantics { },
                 text = stringResource(id = iconStringRes),
 //                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontFamily = FontAwesome,

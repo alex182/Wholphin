@@ -20,6 +20,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
@@ -231,6 +232,8 @@ fun ByParentSortDialogContent(
                 onClick = { onClick.invoke(sort) },
                 leadingContent = {
                     Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                        modifier = Modifier.clearAndSetSemantics { },
                         fontFamily = FontAwesome,
                         text =
                             if (sort == current.sort) {

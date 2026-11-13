@@ -35,6 +35,7 @@ import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -140,7 +141,7 @@ fun UserList(
                     Text(
                         text = stringResource(R.string.fa_arrow_left_arrow_right),
                         fontFamily = FontAwesome,
-                        modifier = Modifier.padding(end = 8.dp),
+                        modifier = Modifier.clearAndSetSemantics { }.padding(end = 8.dp),
                     )
                     Text(
                         text = stringResource(R.string.switch_servers),

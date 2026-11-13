@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import com.github.damontecres.wholphin.R
 import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 import kotlin.math.roundToInt
@@ -78,6 +78,11 @@ fun rememberCardDescription(
     }
 }
 
-/** Sets what a screen reader says for this card. Does nothing for an empty description. */
+/**
+ * Sets what a screen reader says for this card. Does nothing for an empty description.
+ *
+ * Everything inside the card (icon glyphs, count badges, fallback text) is replaced by the
+ * description, which already covers it.
+ */
 fun Modifier.cardDescription(description: String): Modifier =
-    if (description.isEmpty()) this else semantics { contentDescription = description }
+    if (description.isEmpty()) this else clearAndSetSemantics { contentDescription = description }

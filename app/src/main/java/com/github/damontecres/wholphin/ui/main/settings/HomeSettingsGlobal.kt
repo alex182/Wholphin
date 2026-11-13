@@ -15,6 +15,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
@@ -134,6 +135,8 @@ fun HomeSettingsGlobal(
                     headlineText = stringResource(R.string.view_removed_next_up),
                     leadingContent = {
                         Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+                            modifier = Modifier.clearAndSetSemantics { },
                             text = stringResource(R.string.fa_eye),
                             fontFamily = FontAwesome,
                         )

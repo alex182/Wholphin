@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -710,7 +711,7 @@ fun NavigationDrawerScope.NavItem(
                         fontSize = 16.sp,
                         fontFamily = FontAwesome,
                         color = color,
-                        modifier = Modifier,
+                        modifier = Modifier.clearAndSetSemantics { },
                     )
                 } else {
                     Icon(

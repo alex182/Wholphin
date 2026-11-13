@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -187,6 +188,7 @@ fun BannerCard(
                 Text(
                     modifier =
                         Modifier
+                            .clearAndSetSemantics { }
                             .align(Alignment.TopStart)
                             .padding(8.dp),
                     color = colorResource(android.R.color.holo_red_light),

@@ -56,6 +56,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.onLayoutRectChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -501,7 +502,12 @@ fun JumpButton(
             jumpClick.invoke(jumpAmount)
         },
     ) {
-        Text(text = stringResource(stringRes), fontFamily = FontAwesome)
+        Text(
+// Accessibility: icon-font glyph, meaningless to a screen reader
+            modifier = Modifier.clearAndSetSemantics { },
+            text = stringResource(stringRes),
+            fontFamily = FontAwesome,
+        )
     }
 }
 

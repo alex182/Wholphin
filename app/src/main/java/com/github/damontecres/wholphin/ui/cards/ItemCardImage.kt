@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -305,5 +306,5 @@ fun FavoriteIndicator(
     text = stringResource(R.string.fa_heart),
     fontSize = fontSize,
     fontFamily = FontAwesome,
-    modifier = modifier,
+    modifier = modifier.clearAndSetSemantics { },
 )
