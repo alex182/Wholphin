@@ -48,6 +48,7 @@ import com.github.damontecres.wholphin.ui.AspectRatios
 import com.github.damontecres.wholphin.ui.Cards
 import com.github.damontecres.wholphin.ui.FontAwesome
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
+import com.github.damontecres.wholphin.ui.components.a11yContentScale
 import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.enableMarquee
 import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
@@ -139,7 +140,8 @@ fun BannerCard(
                     model = imageUrl,
                     contentDescription = null,
                     colorFilter = rememberArtworkColorFilter(),
-                    contentScale = imageContentScale,
+                    // Accessibility: optionally crop or fit instead of stretching
+                    contentScale = a11yContentScale(imageContentScale),
                     onError = remember { { imageError = true } },
                     modifier = Modifier.fillMaxSize(),
                 )

@@ -5,6 +5,7 @@ import com.github.damontecres.wholphin.preferences.A11yFont
 import com.github.damontecres.wholphin.preferences.AccentColor
 import com.github.damontecres.wholphin.preferences.AppThemeColors
 import com.github.damontecres.wholphin.preferences.HighlightColor
+import com.github.damontecres.wholphin.ui.components.NoStretchContentScale
 import com.github.damontecres.wholphin.ui.components.artworkColorMatrix
 import com.github.damontecres.wholphin.ui.theme.AccessibilitySettings
 import com.github.damontecres.wholphin.ui.theme.AppTypography
@@ -127,6 +128,30 @@ class TestAccessibilityHelpers {
                     highContrast = com.github.damontecres.wholphin.preferences.HighContrastMode.HIGH_CONTRAST_OFF,
                 ).activeHighlightColor,
         )
+    }
+
+    @Test
+    fun `Artwork is only stretched when its shape is close to the card`() {
+        val card =
+            androidx.compose.ui.geometry
+                .Size(200f, 300f)
+        // A poster that is nearly 2:3 still fills the card exactly
+        val poster =
+            androidx.compose.ui.geometry
+                .Size(1000f, 1426f)
+        val posterScale = NoStretchContentScale.Crop.computeScaleFactor(poster, card)
+        Assert.assertEquals(200f, poster.width * posterScale.scaleX, .01f)
+        Assert.assertEquals(300f, poster.height * posterScale.scaleY, .01f)
+        // A wide thumbnail keeps its proportions: cropped it covers the card, fitted it is inside
+        val thumbnail =
+            androidx.compose.ui.geometry
+                .Size(1280f, 720f)
+        val crop = NoStretchContentScale.Crop.computeScaleFactor(thumbnail, card)
+        Assert.assertEquals(crop.scaleX, crop.scaleY, .0001f)
+        Assert.assertEquals(300f, thumbnail.height * crop.scaleY, .01f)
+        val fit = NoStretchContentScale.Fit.computeScaleFactor(thumbnail, card)
+        Assert.assertEquals(fit.scaleX, fit.scaleY, .0001f)
+        Assert.assertEquals(200f, thumbnail.width * fit.scaleX, .01f)
     }
 
     @Test

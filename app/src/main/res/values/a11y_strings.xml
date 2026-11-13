@@ -250,6 +250,12 @@
 
     <string name="a11y_no_scrolling_text">Stop scrolling titles</string>
     <string name="a11y_no_scrolling_text_summary">Cut long titles off with "…" instead of scrolling them sideways when selected</string>
+    <string name="a11y_artwork_shape">Posters with the wrong shape</string>
+    <string-array name="a11y_artwork_shapes">
+        <item>Stretch to fill the card</item>
+        <item>Crop to fill the card</item>
+        <item>Show the whole image</item>
+    </string-array>
     <string name="a11y_wrap_titles">Wrap long titles under cards</string>
     <string name="a11y_wrap_titles_summary">Show up to two lines instead of cutting the title off</string>
     <string name="a11y_apply_all_profiles">Copy these settings to all profiles</string>

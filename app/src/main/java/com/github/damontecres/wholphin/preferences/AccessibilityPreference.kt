@@ -272,6 +272,20 @@ object AccessibilityPreference {
             set = { noScrollingText = it },
         )
 
+    val ArtworkShapePref =
+        a11yChoice(
+            title = R.string.a11y_artwork_shape,
+            displayValues = R.array.a11y_artwork_shapes,
+            values =
+                listOf(
+                    ArtworkShape.ARTWORK_STRETCH,
+                    ArtworkShape.ARTWORK_CROP,
+                    ArtworkShape.ARTWORK_FIT,
+                ),
+            get = { it.artworkShape },
+            set = { artworkShape = it },
+        )
+
     val WrapCardTitles =
         a11ySwitch(
             title = R.string.a11y_wrap_titles,
@@ -646,6 +660,7 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                     AccessibilityPreference.AlwaysShowCardTitles,
                     AccessibilityPreference.WrapCardTitles,
                     AccessibilityPreference.NoScrollingText,
+                    AccessibilityPreference.ArtworkShapePref,
                 ),
         ),
         PreferenceGroup(

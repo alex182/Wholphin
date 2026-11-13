@@ -10,6 +10,7 @@ import com.github.damontecres.wholphin.preferences.A11yFont
 import com.github.damontecres.wholphin.preferences.AccentColor
 import com.github.damontecres.wholphin.preferences.AccessibilityPreference
 import com.github.damontecres.wholphin.preferences.AccessibilityPreferences
+import com.github.damontecres.wholphin.preferences.ArtworkShape
 import com.github.damontecres.wholphin.preferences.FocusCue
 import com.github.damontecres.wholphin.preferences.FocusRingColor
 import com.github.damontecres.wholphin.preferences.HighContrastMode
@@ -43,6 +44,8 @@ data class AccessibilitySettings(
     val letterSpacingEm: Float = 0f,
     val alwaysShowCardTitles: Boolean = false,
     val wrapCardTitles: Boolean = false,
+    /** What to do instead of stretching artwork whose shape does not match its card */
+    val artworkShape: ArtworkShape = ArtworkShape.ARTWORK_STRETCH,
     /** 0 means no limit */
     val maxHomeRows: Int = 0,
     val hideTechnicalDetails: Boolean = false,
@@ -159,6 +162,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         letterSpacingEm = letterSpacingPermille.coerceIn(0, 300) / 1000f,
         alwaysShowCardTitles = alwaysShowCardTitles,
         wrapCardTitles = wrapCardTitles,
+        artworkShape = if (artworkShape == ArtworkShape.UNRECOGNIZED) ArtworkShape.ARTWORK_STRETCH else artworkShape,
         maxHomeRows = maxHomeRows.coerceAtLeast(0),
         hideTechnicalDetails = hideTechnicalDetails,
         reduceMotion = reduceMotion,

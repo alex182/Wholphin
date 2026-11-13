@@ -40,6 +40,7 @@ import com.github.damontecres.wholphin.ui.AppColors
 import com.github.damontecres.wholphin.ui.Cards
 import com.github.damontecres.wholphin.ui.FontAwesome
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
+import com.github.damontecres.wholphin.ui.components.a11yContentScale
 import com.github.damontecres.wholphin.ui.components.rememberArtworkColorFilter
 import com.github.damontecres.wholphin.ui.gt
 import com.github.damontecres.wholphin.ui.isNotNullOrBlank
@@ -140,7 +141,7 @@ fun ItemCardImage(
                 // The description is on the containing box
                 contentDescription = null,
                 colorFilter = rememberArtworkColorFilter(),
-                contentScale = contentScale,
+                contentScale = a11yContentScale(contentScale),
                 alignment = Alignment.Center,
                 onError = {
                     logCoilError(imageUrl, it.result)

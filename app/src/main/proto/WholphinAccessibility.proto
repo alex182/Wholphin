@@ -65,6 +65,14 @@ enum HighlightColor {
   HIGHLIGHT_DARK_GREY = 8;
 }
 
+// What to do when artwork has a very different shape from its card (e.g. a wide thumbnail in a
+// tall poster card) and the card is set to stretch images to fill
+enum ArtworkShape {
+  ARTWORK_STRETCH = 0;
+  ARTWORK_CROP = 1;
+  ARTWORK_FIT = 2;
+}
+
 enum NavRepeatSpeed {
   NAV_REPEAT_NORMAL = 0;
   NAV_REPEAT_SLOW = 1;
@@ -167,6 +175,8 @@ message AccessibilityPreferences {
   bool hide_technical_details = 60;
   // Long titles under cards wrap onto a second line instead of being cut off
   bool wrap_card_titles = 61;
+  // Avoid distorting artwork whose shape does not match its card
+  ArtworkShape artwork_shape = 62;
 
   // --- Player (70-79) ---
   // Size of the player controls as a percentage; 0 means 100%
