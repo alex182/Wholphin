@@ -79,6 +79,8 @@ fun WholphinTheme(
         }
     SideEffect {
         A11yLayout.uiZoom = accessibility.uiZoom
+        A11yLayout.textHeightScale = density.fontScale * accessibility.lineHeightScale
+        A11yLayout.wrapCardTitles = accessibility.wrapCardTitles
         A11yLayout.scrollingText = !accessibility.noScrollingText
     }
     CompositionLocalProvider(

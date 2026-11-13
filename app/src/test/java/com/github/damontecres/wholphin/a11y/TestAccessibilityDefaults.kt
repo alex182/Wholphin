@@ -159,4 +159,25 @@ class TestAccessibilityDefaults {
             A11yLayout.uiZoom = 1f
         }
     }
+
+    @Test
+    fun `Headers make room when text is larger or card titles wrap`() {
+        try {
+            Assert.assertEquals(1f, A11yLayout.headerPaddingScale)
+            // Larger text alone is absorbed by the padding around the header
+            A11yLayout.textHeightScale = 1.5f
+            Assert.assertTrue(A11yLayout.headerPaddingScale < 1f)
+            Assert.assertEquals(1f, A11yLayout.headerScale)
+            // Two-line titles as well: the header itself shrinks and drops its description
+            A11yLayout.wrapCardTitles = true
+            Assert.assertTrue(A11yLayout.headerScale < 1f)
+            Assert.assertTrue(A11yLayout.compactHeaders)
+            A11yLayout.textHeightScale = 3f
+            Assert.assertTrue(A11yLayout.headerScale >= .3f)
+            Assert.assertTrue(A11yLayout.headerPaddingScale >= .3f)
+        } finally {
+            A11yLayout.textHeightScale = 1f
+            A11yLayout.wrapCardTitles = false
+        }
+    }
 }
