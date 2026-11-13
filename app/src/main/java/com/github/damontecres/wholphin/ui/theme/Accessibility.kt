@@ -12,6 +12,7 @@ import com.github.damontecres.wholphin.preferences.AccessibilityPreferences
 import com.github.damontecres.wholphin.preferences.FocusCue
 import com.github.damontecres.wholphin.preferences.FocusRingColor
 import com.github.damontecres.wholphin.preferences.HighContrastMode
+import com.github.damontecres.wholphin.preferences.HighlightColor
 import com.github.damontecres.wholphin.ui.theme.colors.HighContrastThemeColors
 
 /**
@@ -48,6 +49,8 @@ data class AccessibilitySettings(
     val highContrast: HighContrastMode = HighContrastMode.HIGH_CONTRAST_OFF,
     /** null means keep the theme's accent colour */
     val accentColor: Color? = null,
+    /** Background of the focused item in menus, lists and buttons; null means keep the theme's */
+    val highlightColor: Color? = null,
     /** 0 to 0.9: how strongly to cover the backdrop image with the background colour */
     val backdropDim: Float = 0f,
     /** 0 to 0.5: how much to darken artwork */
@@ -84,6 +87,10 @@ data class AccessibilitySettings(
         get() =
             minTextSizeSp > 0 || font != A11yFont.A11Y_FONT_DEFAULT || lineHeightScale != 1f || letterSpacingEm != 0f
 
+    /** The menu highlight to apply, if any. High-contrast modes keep their own two colours. */
+    val activeHighlightColor: Color?
+        get() = highlightColor.takeIf { highContrastColors == null }
+
     companion object {
         val Default = AccessibilitySettings()
     }
@@ -99,6 +106,22 @@ fun AccentColor.toColor(): Color? =
         AccentColor.ACCENT_LIME -> Color(0xFFC6FF00)
         AccentColor.ACCENT_PINK -> Color(0xFFFF80AB)
         AccentColor.ACCENT_WHITE -> Color(0xFFFFFFFF)
+        else -> null
+    }
+
+/**
+ * Menu highlight choices. Text on a highlighted item is black, so every choice is a light colour
+ * (see TestAccessibilityHelpers).
+ */
+fun HighlightColor.toColor(): Color? =
+    when (this) {
+        HighlightColor.HIGHLIGHT_YELLOW -> Color(0xFFFFEB3B)
+        HighlightColor.HIGHLIGHT_ORANGE -> Color(0xFFFFB74D)
+        HighlightColor.HIGHLIGHT_CYAN -> Color(0xFF4DD0E1)
+        HighlightColor.HIGHLIGHT_LIGHT_BLUE -> Color(0xFF82B1FF)
+        HighlightColor.HIGHLIGHT_GREEN -> Color(0xFF69F0AE)
+        HighlightColor.HIGHLIGHT_LIME -> Color(0xFFC6FF00)
+        HighlightColor.HIGHLIGHT_PINK -> Color(0xFFFF80AB)
         else -> null
     }
 
@@ -135,6 +158,7 @@ fun AccessibilityPreferences.toSettings(): AccessibilitySettings =
         cardAnnouncementsTitleOnly = cardAnnouncementsTitleOnly,
         backdropDim = backdropDimPercent.coerceIn(0, 90) / 100f,
         accentColor = accentColor.toColor(),
+        highlightColor = highlightColor.toColor(),
         artworkDim = artworkDimPercent.coerceIn(0, 50) / 100f,
         artworkDesaturate = artworkDesaturatePercent.coerceIn(0, 100) / 100f,
         highVisibilityStatus = highVisibilityStatus,

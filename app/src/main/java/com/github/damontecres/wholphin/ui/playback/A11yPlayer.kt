@@ -22,12 +22,12 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.Button
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.github.damontecres.wholphin.R
 import com.github.damontecres.wholphin.preferences.AccessibilityPreferences
 import com.github.damontecres.wholphin.ui.components.Dialog
+import com.github.damontecres.wholphin.ui.components.a11y.Button
 import com.github.damontecres.wholphin.ui.tryRequestFocus
 import java.util.UUID
 

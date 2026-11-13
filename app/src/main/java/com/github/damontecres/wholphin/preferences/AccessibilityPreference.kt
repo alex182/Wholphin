@@ -331,6 +331,25 @@ object AccessibilityPreference {
             set = { accentColor = it },
         )
 
+    val Highlight =
+        a11yChoice(
+            title = R.string.a11y_highlight,
+            displayValues = R.array.a11y_highlights,
+            values =
+                listOf(
+                    HighlightColor.HIGHLIGHT_DEFAULT,
+                    HighlightColor.HIGHLIGHT_YELLOW,
+                    HighlightColor.HIGHLIGHT_ORANGE,
+                    HighlightColor.HIGHLIGHT_CYAN,
+                    HighlightColor.HIGHLIGHT_LIGHT_BLUE,
+                    HighlightColor.HIGHLIGHT_GREEN,
+                    HighlightColor.HIGHLIGHT_LIME,
+                    HighlightColor.HIGHLIGHT_PINK,
+                ),
+            get = { it.highlightColor },
+            set = { highlightColor = it },
+        )
+
     val BackdropDim =
         a11yPercentSlider(
             title = R.string.a11y_backdrop_dim,
@@ -633,6 +652,7 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                 listOf(
                     AccessibilityPreference.HighContrast,
                     AccessibilityPreference.Accent,
+                    AccessibilityPreference.Highlight,
                     // Existing upstream setting, repeated here so it is easy to find
                     AppPreference.BackdropStylePref,
                     AccessibilityPreference.BackdropDim,

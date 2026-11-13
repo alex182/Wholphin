@@ -52,13 +52,19 @@ fun WholphinTheme(
         }
     // Accessibility: optional accent colour (not used with high contrast, which has its own)
     val accent = accessibility.accentColor.takeIf { accessibility.highContrastColors == null }
+    // Accessibility: optional colour for the focused item in menus and lists, which the
+    // components draw with the scheme's inverse surface colour
+    val highlight = accessibility.activeHighlightColor
     val colorScheme =
-        remember(baseColorScheme, accent) {
+        remember(baseColorScheme, accent, highlight) {
+            var scheme = baseColorScheme
             if (accent != null) {
-                baseColorScheme.copy(primary = accent, onPrimary = Color.Black, border = accent)
-            } else {
-                baseColorScheme
+                scheme = scheme.copy(primary = accent, onPrimary = Color.Black, border = accent)
             }
+            if (highlight != null) {
+                scheme = scheme.copy(inverseSurface = highlight, inverseOnSurface = Color.Black)
+            }
+            scheme
         }
     // Accessibility: font, minimum size, line height and letter spacing
     val typography = remember(accessibility) { AppTypography.withAccessibility(accessibility) }

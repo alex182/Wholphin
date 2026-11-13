@@ -51,7 +51,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.compose.state.rememberCurrentMediaItemState
-import androidx.tv.material3.Button
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
@@ -65,6 +64,7 @@ import com.github.damontecres.wholphin.ui.components.ContextMenu
 import com.github.damontecres.wholphin.ui.components.ContextMenuDialog
 import com.github.damontecres.wholphin.ui.components.LoadingPage
 import com.github.damontecres.wholphin.ui.components.QueueContextActions
+import com.github.damontecres.wholphin.ui.components.a11y.Button
 import com.github.damontecres.wholphin.ui.findActivity
 import com.github.damontecres.wholphin.ui.nav.Backdrop
 import com.github.damontecres.wholphin.ui.playback.PlaybackKeyHandler

@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.sp
 import com.github.damontecres.wholphin.preferences.A11yFont
 import com.github.damontecres.wholphin.preferences.AccentColor
 import com.github.damontecres.wholphin.preferences.AppThemeColors
+import com.github.damontecres.wholphin.preferences.HighlightColor
 import com.github.damontecres.wholphin.ui.components.artworkColorMatrix
 import com.github.damontecres.wholphin.ui.theme.AccessibilitySettings
 import com.github.damontecres.wholphin.ui.theme.AppTypography
@@ -89,6 +90,35 @@ class TestAccessibilityHelpers {
             )
         }
         Assert.assertNull(AccentColor.ACCENT_DEFAULT.toColor())
+    }
+
+    @Test
+    fun `Menu highlight colours keep black text readable and stand out from every theme`() {
+        HighlightColor.entries.filter { it != HighlightColor.UNRECOGNIZED }.mapNotNull { it.toColor() }.forEach { highlight ->
+            // Text on a highlighted item is black
+            Assert.assertTrue(
+                TestThemeContrast.contrastRatio(androidx.compose.ui.graphics.Color.Black, highlight) >= TestThemeContrast.AAA_TEXT,
+            )
+            AppThemeColors.entries.filter { it != AppThemeColors.UNRECOGNIZED }.forEach { theme ->
+                val scheme = getThemeColors(theme).darkScheme
+                val ratio = TestThemeContrast.contrastRatio(highlight, scheme.surface)
+                Assert.assertTrue("Highlight $highlight on $theme surface is %.2f:1".format(ratio), ratio >= TestThemeContrast.AA_TEXT)
+            }
+        }
+        Assert.assertNull(HighlightColor.HIGHLIGHT_DEFAULT.toColor())
+        // High-contrast modes keep their own colours
+        val settings =
+            AccessibilitySettings(
+                highlightColor = HighlightColor.HIGHLIGHT_YELLOW.toColor(),
+                highContrast = com.github.damontecres.wholphin.preferences.HighContrastMode.HIGH_CONTRAST_WHITE_ON_BLACK,
+            )
+        Assert.assertNull(settings.activeHighlightColor)
+        Assert.assertNotNull(
+            settings
+                .copy(
+                    highContrast = com.github.damontecres.wholphin.preferences.HighContrastMode.HIGH_CONTRAST_OFF,
+                ).activeHighlightColor,
+        )
     }
 
     @Test

@@ -152,6 +152,17 @@
         <item>Pink</item>
         <item>White</item>
     </string-array>
+    <string name="a11y_highlight">Menu highlight color</string>
+    <string-array name="a11y_highlights">
+        <item>Theme default (white)</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Cyan</item>
+        <item>Light blue</item>
+        <item>Green</item>
+        <item>Lime</item>
+        <item>Pink</item>
+    </string-array>
     <string name="a11y_artwork_dim">Dim posters and artwork</string>
     <string name="a11y_artwork_desaturate">Remove color from artwork</string>
     <string name="a11y_status_indicators">High-visibility status indicators</string>

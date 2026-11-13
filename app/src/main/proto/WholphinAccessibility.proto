@@ -51,6 +51,18 @@ enum AccentColor {
   ACCENT_WHITE = 5;
 }
 
+// Background colour of the focused item in menus, lists and buttons
+enum HighlightColor {
+  HIGHLIGHT_DEFAULT = 0;
+  HIGHLIGHT_YELLOW = 1;
+  HIGHLIGHT_ORANGE = 2;
+  HIGHLIGHT_CYAN = 3;
+  HIGHLIGHT_LIGHT_BLUE = 4;
+  HIGHLIGHT_GREEN = 5;
+  HIGHLIGHT_LIME = 6;
+  HIGHLIGHT_PINK = 7;
+}
+
 enum NavRepeatSpeed {
   NAV_REPEAT_NORMAL = 0;
   NAV_REPEAT_SLOW = 1;
@@ -129,6 +141,8 @@ message AccessibilityPreferences {
   bool high_visibility_status = 35;
   // Show the watched percentage as a number on cards
   bool show_progress_percent = 36;
+  // Colour behind the focused item in menus, lists and buttons; default keeps the theme's (near white)
+  HighlightColor highlight_color = 37;
 
   // --- Setup (40-49) ---
   // The first-run accessibility setup screen is shown until this is set

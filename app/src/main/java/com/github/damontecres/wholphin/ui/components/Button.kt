@@ -34,6 +34,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ProvideTextStyle
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
+import com.github.damontecres.wholphin.ui.theme.LocalAccessibility
 
 /**
  * This is a re-implementation of [androidx.tv.material3.Button] with altered sizing, padding, colors, etc
@@ -56,9 +57,10 @@ fun Button(
         ClickableSurfaceDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
             contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-            focusedContainerColor = MaterialTheme.colorScheme.onSurface,
+            // Accessibility: optional highlight colour instead of the text colour
+            focusedContainerColor = LocalAccessibility.current.activeHighlightColor ?: MaterialTheme.colorScheme.onSurface,
             focusedContentColor = MaterialTheme.colorScheme.inverseOnSurface,
-            pressedContainerColor = MaterialTheme.colorScheme.onSurface,
+            pressedContainerColor = LocalAccessibility.current.activeHighlightColor ?: MaterialTheme.colorScheme.onSurface,
             pressedContentColor = MaterialTheme.colorScheme.inverseOnSurface,
             disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
