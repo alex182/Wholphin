@@ -227,6 +227,31 @@
     <string name="a11y_force_sub_style">Use my style for styled subtitles</string>
     <string name="a11y_force_sub_style_summary">Ignore fonts and colors built into ASS/SSA subtitles (MPV player only)</string>
 
+    <string name="a11y_group_description">Spoken description of the picture</string>
+    <string name="a11y_describe_scenes">Describe scenes aloud</string>
+    <string name="a11y_describe_scenes_summary">While a video plays, say what is happening in the picture</string>
+    <string name="a11y_read_text">Read on-screen text aloud</string>
+    <string name="a11y_read_text_summary">While a video plays, read words that appear in the picture, such as signs and captions</string>
+    <string name="a11y_describe_server">Description server</string>
+    <string name="a11y_describe_server_summary">Not set. Enter the address of a computer running Ollama, for example 192.168.1.50. Pictures from the video are sent to it.</string>
+    <string name="a11y_describe_model">Description model</string>
+    <string name="a11y_describe_interval">Wait between looks at the picture</string>
+    <string-array name="a11y_describe_intervals">
+        <item>1 second</item>
+        <item>2 seconds</item>
+        <item>3 seconds</item>
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>20 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+    </string-array>
+    <string name="a11y_describe_title_info">Use names from the cast list</string>
+    <string name="a11y_describe_title_info_summary">Tell the description server the title, plot summary and characters, so it can say who is on screen</string>
+    <string name="a11y_describe_unavailable">Spoken description is not available. Check the description server in the accessibility settings.</string>
+    <string name="a11y_describe_too_slow">Spoken description is not keeping up. The description server is answering too slowly.</string>
+    <string name="a11y_describe_text_says">On screen: %1$s</string>
+
     <string name="a11y_speak_focus">Speak selected item</string>
     <string name="a11y_speak_focus_summary">Read the selected item aloud. Not used while TalkBack is on.</string>
     <string name="a11y_quiet_tracks">Do not announce track changes</string>

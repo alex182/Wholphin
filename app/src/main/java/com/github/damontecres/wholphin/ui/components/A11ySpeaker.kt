@@ -96,7 +96,8 @@ fun spokenLabel(
     return parts.joinToString(", ").takeIf { it.isNotBlank() }
 }
 
-private class Speaker(
+/** The device's text-to-speech voice. Call [shutdown] when done. */
+class Speaker(
     context: Context,
 ) {
     private var ready = false
@@ -109,13 +110,20 @@ private class Speaker(
             pending = null
         }
 
-    fun speak(text: String) {
+    val isSpeaking: Boolean
+        get() = pending != null || runCatching { tts.isSpeaking }.getOrDefault(false)
+
+    /** Speaks [text], cutting off anything still being spoken unless [interrupt] is false */
+    fun speak(
+        text: String,
+        interrupt: Boolean = true,
+    ) {
         if (!ready) {
             pending = text
             return
         }
-        Timber.d("Speaking focused item: %s", text)
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "a11y-focus")
+        Timber.d("Speaking: %s", text)
+        tts.speak(text, if (interrupt) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD, null, "a11y")
     }
 
     fun shutdown() {
