@@ -208,4 +208,21 @@ message AccessibilityPreferences {
   // MPV only: ignore styling inside ASS/SSA subtitles and use the user's subtitle style
   bool force_subtitle_style = 84;
   SoundCueStyle sound_cue_style = 85;
+
+  // --- Spoken description during playback (90-99) ---
+  // Describe what is happening in the picture aloud. Frames go to the description server.
+  bool describe_scenes = 90;
+  // Read words that appear in the picture aloud (signs, captions, letters)
+  bool read_on_screen_text = 91;
+  // Address of the Ollama server that looks at the frames, e.g. "192.168.1.50" or
+  // "http://host:11434". Nothing is described until this is set.
+  string description_server = 92;
+  // Ollama vision model; empty means the default
+  string description_model = 93;
+  // Seconds to wait between looks at the picture; 0 means the default of 3. A change of shot
+  // is looked at sooner when this is longer than 2.5 seconds.
+  int32 description_interval_s = 94;
+  // The title, plot summary and cast list from the media server are given to the model so it
+  // can name people and places, unless this is set
+  bool describe_without_title_info = 95;
 }

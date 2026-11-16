@@ -1,5 +1,6 @@
 package com.github.damontecres.wholphin.preferences
 
+import android.content.Context
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import com.github.damontecres.wholphin.R
@@ -7,6 +8,7 @@ import com.github.damontecres.wholphin.ui.nav.Destination
 import com.github.damontecres.wholphin.ui.preferences.ConditionalPreferences
 import com.github.damontecres.wholphin.ui.preferences.PreferenceGroup
 import com.github.damontecres.wholphin.ui.preferences.PreferenceScreenOption
+import com.github.damontecres.wholphin.util.A11ySceneDescription
 
 private fun a11ySwitch(
     @StringRes title: Int,
@@ -569,6 +571,85 @@ object AccessibilityPreference {
 
     // endregion
 
+    // region Spoken description
+
+    val DescribeScenes =
+        a11ySwitch(
+            title = R.string.a11y_describe_scenes,
+            summary = R.string.a11y_describe_scenes_summary,
+            get = { it.describeScenes },
+            set = { describeScenes = it },
+        )
+
+    val ReadOnScreenText =
+        a11ySwitch(
+            title = R.string.a11y_read_text,
+            summary = R.string.a11y_read_text_summary,
+            get = { it.readOnScreenText },
+            set = { readOnScreenText = it },
+        )
+
+    /** On by default; stored inverted so that unset means on */
+    val DescriptionTitleInfo =
+        a11ySwitch(
+            title = R.string.a11y_describe_title_info,
+            summary = R.string.a11y_describe_title_info_summary,
+            defaultValue = true,
+            get = { !it.describeWithoutTitleInfo },
+            set = { describeWithoutTitleInfo = !it },
+        )
+
+    /** Shows the address once one is set, otherwise says what to enter */
+    val DescriptionServer =
+        object : AppStringPreference<AppPreferences>(
+            title = R.string.a11y_describe_server,
+            defaultValue = "",
+            getter = { it.accessibilityPreferences.descriptionServer },
+            setter = { prefs, value -> prefs.updateAccessibilityPreferences { descriptionServer = value.trim() } },
+            summary = R.string.a11y_describe_server_summary,
+        ) {
+            override fun summary(
+                context: Context,
+                value: String?,
+            ): String? = value?.takeIf { it.isNotBlank() } ?: super.summary(context, value)
+        }
+
+    /** Stored as empty for the default model */
+    val DescriptionModel =
+        AppStringPreference<AppPreferences>(
+            title = R.string.a11y_describe_model,
+            defaultValue = A11ySceneDescription.DEFAULT_MODEL,
+            getter = { it.accessibilityPreferences.descriptionModel.ifEmpty { A11ySceneDescription.DEFAULT_MODEL } },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences {
+                    descriptionModel = value.trim().takeUnless { it == A11ySceneDescription.DEFAULT_MODEL }.orEmpty()
+                }
+            },
+            summary = null,
+        )
+
+    /** Seconds. Stored as 0 for the default of 3. */
+    val descriptionIntervalValues = listOf(1, 2, 3, 5, 10, 20, 30, 60)
+    val DescriptionInterval =
+        AppChoicePreference<AppPreferences, Int>(
+            title = R.string.a11y_describe_interval,
+            defaultValue = A11ySceneDescription.DEFAULT_INTERVAL_S,
+            displayValues = R.array.a11y_describe_intervals,
+            getter = {
+                it.accessibilityPreferences.descriptionIntervalS
+                    .takeIf { v -> v in descriptionIntervalValues } ?: A11ySceneDescription.DEFAULT_INTERVAL_S
+            },
+            setter = { prefs, value ->
+                prefs.updateAccessibilityPreferences {
+                    descriptionIntervalS = value.takeUnless { it == A11ySceneDescription.DEFAULT_INTERVAL_S } ?: 0
+                }
+            },
+            indexToValue = { descriptionIntervalValues.getOrElse(it) { A11ySceneDescription.DEFAULT_INTERVAL_S } },
+            valueToIndex = { descriptionIntervalValues.indexOf(it).coerceAtLeast(0) },
+        )
+
+    // endregion
+
     // region Screen reader
 
     val SpeakFocusedItem =
@@ -723,6 +804,27 @@ val accessibilityPreferences: List<PreferenceGroup<AppPreferences>> by lazy {
                     AccessibilityPreference.ForceSubtitleStyle,
                     AccessibilityPreference.PreferSdh,
                     AccessibilityPreference.PreferAudioDescription,
+                ),
+        ),
+        PreferenceGroup(
+            title = R.string.a11y_group_description,
+            preferences =
+                listOf(
+                    AccessibilityPreference.DescribeScenes,
+                    AccessibilityPreference.ReadOnScreenText,
+                ),
+            conditionalPreferences =
+                listOf(
+                    ConditionalPreferences(
+                        condition = { it.accessibilityPreferences.run { describeScenes || readOnScreenText } },
+                        preferences =
+                            listOf(
+                                AccessibilityPreference.DescriptionServer,
+                                AccessibilityPreference.DescriptionModel,
+                                AccessibilityPreference.DescriptionInterval,
+                                AccessibilityPreference.DescriptionTitleInfo,
+                            ),
+                    ),
                 ),
         ),
         PreferenceGroup(

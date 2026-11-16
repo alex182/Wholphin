@@ -192,6 +192,13 @@ fun PlaybackPageContent(
         },
     )
 
+    // Accessibility: "Describe scenes aloud" and "Read on-screen text aloud"
+    DescribeScenes(
+        prefs = preferences.appPreferences.accessibilityPreferences,
+        player = player,
+        item = state.currentPlayback?.item?.data,
+    )
+
     // Accessibility: "Photosensitivity warning" pauses and asks before playing tagged titles
     val warningItem = state.currentPlayback?.item
     var warningHandledFor by remember { mutableStateOf<UUID?>(null) }

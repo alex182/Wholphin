@@ -6,6 +6,7 @@ import com.github.damontecres.wholphin.preferences.AppPreference
 import com.github.damontecres.wholphin.preferences.AppPreferences
 import com.github.damontecres.wholphin.preferences.AppPreferencesSerializer
 import com.github.damontecres.wholphin.preferences.AppSliderPreference
+import com.github.damontecres.wholphin.preferences.AppStringPreference
 import com.github.damontecres.wholphin.preferences.AppSwitchPreference
 import com.github.damontecres.wholphin.preferences.accessibilityPreferences
 import org.junit.Assert
@@ -66,6 +67,10 @@ class TestSettingsCoverage {
             is AppSliderPreference -> {
                 val current = pref.getter(prefs)
                 pref.setter(prefs, if (current != pref.max) pref.max else pref.min)
+            }
+
+            is AppStringPreference -> {
+                pref.setter(prefs, pref.getter(prefs) + "x")
             }
 
             else -> {
